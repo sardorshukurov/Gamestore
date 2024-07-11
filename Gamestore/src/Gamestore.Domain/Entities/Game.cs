@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Gamestore.Domain.Common;
 
 namespace Gamestore.Domain.Entities;
 
-public class Game
+public class Game : IBaseEntity
 {
     [Key]
     [Required]

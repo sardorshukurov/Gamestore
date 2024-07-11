@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Gamestore.Domain.Common;
 
 namespace Gamestore.Domain.Entities;
 
-public class Platform
+public class Platform : IBaseEntity
 {
     [Key]
     [Required]
