@@ -7,7 +7,7 @@ public class Genre : IBaseEntity
 {
     [Key]
     [Required]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public string Name { get; set; }
