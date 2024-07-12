@@ -6,7 +6,9 @@ public interface IRepository<T>
 {
     Task CreateAsync(T entity);
 
-    Task DeleteAsync(Guid id);
+    Task DeleteByIdAsync(Guid id);
+
+    Task DeleteByFilterAsync(Expression<Func<T, bool>> filter);
 
     Task UpdateAsync(Guid id, T entity);
 

@@ -22,12 +22,21 @@ public class Repository<T> : IRepository<T>
         await _dbSet.AddAsync(entity);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteByIdAsync(Guid id)
     {
         var entity = await _dbSet.FindAsync(id);
         if (entity is not null)
         {
             _dbSet.Remove(entity);
+        }
+    }
+
+    public async Task DeleteByFilterAsync(Expression<Func<T, bool>> filter)
+    {
+        var entities = await _dbSet.Where(filter).ToListAsync();
+        if (entities.Count != 0)
+        {
+            _dbSet.RemoveRange(entities);
         }
     }
 

@@ -1,21 +1,16 @@
-using Gamestore.BLL.DTOs.Genre;
-using Gamestore.BLL.DTOs.Platform;
-
 using GameEntity = Gamestore.DAL.Entities.Game;
 
 namespace Gamestore.BLL.DTOs.Game;
 
 public static class GameMappingExtensions
 {
-    public static GameDto AsDto(this GameEntity game, ICollection<GenreShortDto> genres, ICollection<PlatformShortDto> platforms)
+    public static GameDto AsDto(this GameEntity game)
     {
         return new GameDto(
             game.Id,
             game.Name,
             game.Key,
-            game.Description,
-            genres,
-            platforms);
+            game.Description);
     }
 
     public static GameShortDto AsShortDto(this GameEntity game)
