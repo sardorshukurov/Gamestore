@@ -1,7 +1,7 @@
-using Gamestore.Domain.Entities;
+using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Gamestore.Infrastructure.Data;
+namespace Gamestore.DAL.Data;
 
 public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(options)
 {

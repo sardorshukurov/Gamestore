@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Gamestore.Domain.Entities;
+namespace Gamestore.DAL.Entities;
 
 public class GamePlatform
 {

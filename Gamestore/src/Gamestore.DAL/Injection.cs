@@ -1,9 +1,9 @@
-using Gamestore.Infrastructure.Data;
+using Gamestore.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Gamestore.Infrastructure;
+namespace Gamestore.DAL;
 
 public static class Injection
 {

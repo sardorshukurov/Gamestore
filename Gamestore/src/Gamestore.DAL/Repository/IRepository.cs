@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Gamestore.Infrastructure.Repository;
+namespace Gamestore.DAL.Repository;
 
 public interface IRepository<T>
 {
