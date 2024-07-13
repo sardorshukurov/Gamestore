@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Platform;
+using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
 
@@ -28,8 +29,8 @@ public class PlatformService(IRepository<Platform> repository, IRepository<Game>
 
     public async Task UpdateAsync(UpdatePlatformDto dto)
     {
-        // TODO: Replace with custom exception
-        var platformToUpdate = await _repository.GetByIdAsync(dto.Id) ?? throw new Exception("Platform not found");
+        var platformToUpdate = await _repository.GetByIdAsync(dto.Id)
+                               ?? throw new PlatformNotFoundException(dto.Id);
 
         dto.UpdateEntity(platformToUpdate);
 
@@ -52,9 +53,8 @@ public class PlatformService(IRepository<Platform> repository, IRepository<Game>
 
     public async Task<ICollection<PlatformShortDto>> GetAllByGameKeyAsync(string gameKey)
     {
-        // TODO: replace with custom exception
         var game = (await _gameRepository.GetOneAsync(g => g.Key == gameKey)) ??
-                   throw new Exception("Game not found");
+                   throw new GameNotFoundException(gameKey);
 
         var platformIds = (await _gamePlatformRepository.GetAllByFilterAsync(gg => gg.GameId == game.Id))
             .Select(p => p.PlatformId);

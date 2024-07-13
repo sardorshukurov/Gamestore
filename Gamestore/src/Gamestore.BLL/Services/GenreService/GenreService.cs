@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Genre;
+using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
 
@@ -37,8 +38,8 @@ public class GenreService(IRepository<Genre> repository, IRepository<GameGenre> 
 
     public async Task UpdateAsync(UpdateGenreDto dto)
     {
-        // TODO: Replace with custom exception
-        var genreToUpdate = await _repository.GetByIdAsync(dto.Id) ?? throw new Exception("Genre not found");
+        var genreToUpdate = await _repository.GetByIdAsync(dto.Id)
+                            ?? throw new GenreNotFoundException(dto.Id);
 
         dto.UpdateEntity(genreToUpdate);
 
@@ -61,9 +62,8 @@ public class GenreService(IRepository<Genre> repository, IRepository<GameGenre> 
 
     public async Task<ICollection<GenreShortDto>> GetAllByGameKeyAsync(string gameKey)
     {
-        // TODO: replace with custom exception
         var game = (await _gameRepository.GetOneAsync(g => g.Key == gameKey)) ??
-                     throw new Exception("Game not found");
+                     throw new GameNotFoundException(gameKey);
 
         var genreIds = (await _gameGenreRepository.GetAllByFilterAsync(gg => gg.GameId == game.Id))
             .Select(g => g.GenreId);
