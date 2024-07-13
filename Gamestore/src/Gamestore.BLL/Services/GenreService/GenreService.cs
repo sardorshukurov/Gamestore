@@ -38,6 +38,11 @@ public class GenreService(IRepository<Genre> repository, IRepository<GameGenre> 
 
     public async Task UpdateAsync(UpdateGenreDto dto)
     {
+        if (dto.ParentGenreId is not null)
+        {
+            _ = await _repository.GetByIdAsync((Guid)dto.ParentGenreId) ?? throw new GenreNotFoundException((Guid)dto.ParentGenreId);
+        }
+
         var genreToUpdate = await _repository.GetByIdAsync(dto.Id)
                             ?? throw new GenreNotFoundException(dto.Id);
 
@@ -54,6 +59,11 @@ public class GenreService(IRepository<Genre> repository, IRepository<GameGenre> 
 
     public async Task CreateAsync(CreateGenreDto dto)
     {
+        if (dto.ParentGenreId is not null)
+        {
+            _ = await _repository.GetByIdAsync((Guid)dto.ParentGenreId) ?? throw new GenreNotFoundException((Guid)dto.ParentGenreId);
+        }
+
         var genreToAdd = dto.AsEntity();
 
         await _repository.CreateAsync(genreToAdd);
