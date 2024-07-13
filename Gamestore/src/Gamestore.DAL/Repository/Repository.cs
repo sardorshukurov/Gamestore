@@ -1,12 +1,11 @@
 using System.Linq.Expressions;
-using Gamestore.DAL.Common;
 using Gamestore.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Repository;
 
 public class Repository<T> : IRepository<T>
-    where T : class, IBaseEntity
+    where T : class
 {
     private readonly MainDbContext _dbContext;
     private readonly DbSet<T> _dbSet;
