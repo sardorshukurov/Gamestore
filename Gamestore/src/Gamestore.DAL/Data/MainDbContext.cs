@@ -1,3 +1,4 @@
+using Gamestore.DAL.Data.Configuration;
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,4 +15,15 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
     public DbSet<GameGenre> GamesGenres { get; set; }
 
     public DbSet<GamePlatform> GamesPlatforms { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ConfigureGames();
+        modelBuilder.ConfigureGenres();
+        modelBuilder.ConfigureGenres();
+        modelBuilder.ConfigureGameGenres();
+        modelBuilder.ConfigureGamePlatforms();
+
+        base.OnModelCreating(modelBuilder);
+    }
 }
