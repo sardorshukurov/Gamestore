@@ -1,3 +1,4 @@
+using System.Text;
 using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Genre;
 using Gamestore.API.DTOs.Platform;
@@ -6,6 +7,7 @@ using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Gamestore.API.Controllers;
 
@@ -110,22 +112,28 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         }
     }
 
-    // [HttpGet("{key}/file")]
-    // public async Task<IActionResult> GetFile(string key)
-    // {
-    //     try
-    //     {
-    //         throw new NotImplementedException();
-    //
-    //         // var game = await _gameService.GetByKeyAsync(key);
-    //
-    //         // return game is null ? (IActionResult)NotFound($"Game with key {key} not found");
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         return StatusCode(500, e.Message);
-    //     }
-    // }
+    [HttpGet("{key}/file")]
+    public async Task<IActionResult> GetFile(string key)
+    {
+        try
+        {
+            var game = await _gameService.GetByKeyAsync(key);
+
+            if (game is null)
+            {
+                return NotFound($"Game with key {key} not found");
+            }
+
+            var fileName = $"{game.Name}_{DateTime.Now:yyyyMMddHHmmss}.txt";
+            var serializedGame = JsonConvert.SerializeObject(game);
+            return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     [HttpGet("{key}/genres")]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetGenresByKey(string key)
     {
