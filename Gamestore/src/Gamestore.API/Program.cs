@@ -1,5 +1,7 @@
 using Gamestore.BLL;
 using Gamestore.DAL;
+using Gamestore.DAL.Data;
+using Gamestore.DAL.Data.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,5 +24,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<MainDbContext>();
+    DbSeeder.AddDemoData(context);
+}
 
 app.Run();
