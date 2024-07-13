@@ -15,6 +15,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     private readonly IGameService _gameService = gameService;
 
     [HttpGet("{id}/games")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
     {
         try
@@ -45,6 +46,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     }
 
     [HttpGet("{id}")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GenreShortResponse>> GetGenre(Guid id)
     {
         try
@@ -60,6 +62,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetAll()
     {
         try
@@ -76,6 +79,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     }
 
     [HttpGet("{parentId}/genres")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetSubGenres(Guid parentId)
     {
         try

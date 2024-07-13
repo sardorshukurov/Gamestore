@@ -15,6 +15,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     private readonly IGameService _gameService = gameService;
 
     [HttpGet("{id}/games")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
     {
         try
@@ -45,6 +46,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     }
 
     [HttpGet("{id}")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<PlatformShortResponse>> GetById(Guid id)
     {
         try
@@ -60,6 +62,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetAll()
     {
         try

@@ -7,6 +7,7 @@ using Gamestore.DAL.Data.Seeder;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

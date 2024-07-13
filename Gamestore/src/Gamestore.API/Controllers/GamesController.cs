@@ -34,6 +34,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet("{key}")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetByKey(string key)
     {
         try
@@ -49,6 +50,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet("find/{id}")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetById(Guid id)
     {
         try
@@ -64,6 +66,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
     {
         try
@@ -117,6 +120,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet("{key}/file")]
+    [ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetFile(string key)
     {
         try
@@ -139,6 +143,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet("{key}/genres")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetGenresByKey(string key)
     {
         try
@@ -159,6 +164,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet("{key}/platforms")]
+    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetPlatformsByKey(string key)
     {
         try
