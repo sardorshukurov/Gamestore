@@ -1,17 +1,15 @@
-using Gamestore.API.DTOs.Game;
 using Gamestore.BLL.DTOs.Genre;
 
 namespace Gamestore.API.DTOs.Genre;
 
 public static class GenreMappingExtensions
 {
-    public static GenreResponse AsResponse(this GenreDto dto, ICollection<GameShortResponse> games)
+    public static GenreResponse AsResponse(this GenreDto dto)
     {
         return new GenreResponse(
             dto.Id,
             dto.Name,
-            dto.ParentGenreName,
-            games);
+            dto.ParentGenreId);
     }
 
     public static GenreShortResponse AsShortResponse(this GenreDto dto)
@@ -21,7 +19,14 @@ public static class GenreMappingExtensions
             dto.Name);
     }
 
-    public static CreateGenreDto AsEntity(this CreateGenreRequest request)
+    public static GenreShortResponse AsShortResponse(this GenreShortDto dto)
+    {
+        return new GenreShortResponse(
+            dto.Id,
+            dto.Name);
+    }
+
+    public static CreateGenreDto AsDto(this CreateGenreRequest request)
     {
         return new CreateGenreDto(
             request.Name,

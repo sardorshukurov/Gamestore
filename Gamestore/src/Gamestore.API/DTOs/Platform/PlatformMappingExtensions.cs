@@ -20,6 +20,13 @@ public static class PlatformMappingExtensions
             dto.Type);
     }
 
+    public static PlatformShortResponse AsShortResponse(this PlatformShortDto dto)
+    {
+        return new PlatformShortResponse(
+            dto.Id,
+            dto.Type);
+    }
+
     public static CreatePlatformDto AsDto(this CreatePlatformRequest request)
     {
         return new CreatePlatformDto(

@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Game;
+using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
 
@@ -61,19 +62,19 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
         return game?.AsDto();
     }
 
-    public async Task UpdateAsync(Guid id, UpdateGameDto dto)
+    public async Task UpdateAsync(UpdateGameDto dto)
     {
-        var game = await _repository.GetByIdAsync(id) ?? throw new Exception("Game not found");
+        var game = await _repository.GetByIdAsync(dto.Id) ?? throw new GameNotFoundException(dto.Id);
         dto.UpdateEntity(game);
 
-        await _gameGenreRepository.DeleteByFilterAsync(gg => gg.GameId == id);
-        await _gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == id);
+        await _gameGenreRepository.DeleteByFilterAsync(gg => gg.GameId == dto.Id);
+        await _gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == dto.Id);
 
         if (dto.GenresIds is not null && dto.GenresIds.Count != 0)
         {
             foreach (var genreId in dto.GenresIds)
             {
-                var gameGenre = new GameGenre { GameId = id, GenreId = genreId };
+                var gameGenre = new GameGenre { GameId = dto.Id, GenreId = genreId };
                 await _gameGenreRepository.CreateAsync(gameGenre);
             }
         }
@@ -82,7 +83,7 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
         {
             foreach (var platformId in dto.PlatformsIds)
             {
-                var gamePlatform = new GamePlatform { GameId = id, PlatformId = platformId };
+                var gamePlatform = new GamePlatform { GameId = dto.Id, PlatformId = platformId };
                 await _gamePlatformRepository.CreateAsync(gamePlatform);
             }
         }

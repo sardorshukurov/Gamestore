@@ -14,7 +14,7 @@ public interface IGameService
 
     Task<GameDto?> GetByIdAsync(Guid id);
 
-    Task UpdateAsync(Guid id, UpdateGameDto dto);
+    Task UpdateAsync(UpdateGameDto dto);
 
     Task CreateAsync(CreateGameDto dto);
 

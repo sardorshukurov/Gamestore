@@ -10,6 +10,7 @@ public static class GenreMappingExtensions
         return new GenreDto(
             genre.Id,
             genre.Name,
+            parentGenre?.Id,
             parentGenre?.Name,
             games);
     }
@@ -18,7 +19,8 @@ public static class GenreMappingExtensions
     {
         return new GenreShortDto(
             genre.Id,
-            genre.Name);
+            genre.Name,
+            genre.ParentGenreId);
     }
 
     public static GenreEntity AsEntity(this CreateGenreDto dto)
