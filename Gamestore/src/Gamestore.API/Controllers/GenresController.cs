@@ -118,6 +118,10 @@ public class GenresController(IGenreService genreService, IGameService gameServi
             await _genreService.DeleteAsync(id);
             return NoContent();
         }
+        catch (NotFoundException)
+        {
+            return NotFound($"Genre with id {id} not found");
+        }
         catch (Exception e)
         {
             return StatusCode(500, e.Message);

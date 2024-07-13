@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,10 @@ public class Repository<T> : IRepository<T>
         {
             _dbSet.Remove(entity);
         }
+        else
+        {
+            throw new NotFoundException($"Entity of type {typeof(T)} not found");
+        }
     }
 
     public async Task DeleteByFilterAsync(Expression<Func<T, bool>> filter)
@@ -47,6 +52,10 @@ public class Repository<T> : IRepository<T>
             _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
             _dbSet.Update(existingEntity);
         }
+        else
+        {
+            throw new NotFoundException($"Entity of type {typeof(T)} not found");
+        }
     }
 
     public async Task<T?> GetByIdAsync(Guid id)
@@ -56,8 +65,7 @@ public class Repository<T> : IRepository<T>
 
     public async Task<T?> GetOneAsync(Expression<Func<T, bool>> filter)
     {
-        return await _dbSet.AsNoTracking()
-            .FirstOrDefaultAsync(filter);
+        return await _dbSet.FirstOrDefaultAsync(filter);
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()

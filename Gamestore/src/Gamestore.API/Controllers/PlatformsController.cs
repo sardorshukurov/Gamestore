@@ -103,6 +103,10 @@ public class PlatformsController(IPlatformService platformService, IGameService 
 
             return NoContent();
         }
+        catch (NotFoundException)
+        {
+            return NotFound($"Platform with id {id} not found");
+        }
         catch (Exception e)
         {
             return StatusCode(500, e.Message);

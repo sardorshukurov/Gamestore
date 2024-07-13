@@ -106,6 +106,10 @@ public class GamesController(IGameService gameService, IGenreService genreServic
             await _gameService.DeleteByKeyAsync(key);
             return NoContent();
         }
+        catch (NotFoundException)
+        {
+            return NotFound($"Game with key {key} not found");
+        }
         catch (Exception e)
         {
             return StatusCode(500, e.Message);
