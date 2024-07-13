@@ -25,7 +25,7 @@ public static class GameMappingExtensions
         return new GameEntity
         {
             Name = dto.Name,
-            Key = dto.Key,
+            Key = dto.Key ?? dto.Name,
             Description = dto.Description,
         };
     }
@@ -33,7 +33,7 @@ public static class GameMappingExtensions
     public static void UpdateEntity(this UpdateGameDto dto, GameEntity game)
     {
         game.Name = dto.Name;
-        game.Key = dto.Key;
+        game.Key = dto.Key ?? dto.Name;
         game.Description = dto.Description;
     }
 }
