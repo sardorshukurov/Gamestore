@@ -1,3 +1,4 @@
+using Gamestore.API.Middlewares;
 using Gamestore.BLL;
 using Gamestore.DAL;
 using Gamestore.DAL.Data;
@@ -22,6 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 
