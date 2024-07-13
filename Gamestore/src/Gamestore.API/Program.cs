@@ -1,7 +1,14 @@
+using Gamestore.BLL;
+using Gamestore.DAL;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAppDbContext(builder.Configuration);
+builder.Services.AddRepositories();
+builder.Services.AddBusinessLogicServices();
 
 var app = builder.Build();
 
