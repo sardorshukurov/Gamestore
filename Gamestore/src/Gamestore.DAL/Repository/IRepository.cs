@@ -21,4 +21,6 @@ public interface IRepository<T>
     Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter);
 
     Task SaveChangesAsync();
+
+    Task<int> CountAsync();
 }

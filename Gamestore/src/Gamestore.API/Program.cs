@@ -7,6 +7,8 @@ using Gamestore.DAL.Data.Seeder;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+builder.Services.AddTransient<AddTotalGamesInHeaderMiddleware>();
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers();
@@ -16,6 +18,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAppDbContext(builder.Configuration);
 builder.Services.AddRepositories();
 builder.Services.AddBusinessLogicServices();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "CorsPolicy",
+        corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("x-total-number-of-games"));
+});
 
 var app = builder.Build();
 
@@ -27,7 +39,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("CorsPolicy");
+
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
 
 app.MapControllers();
 

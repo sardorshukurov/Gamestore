@@ -85,4 +85,9 @@ public class Repository<T> : IRepository<T>
     {
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<int> CountAsync()
+    {
+        return await _dbSet.CountAsync();
+    }
 }
