@@ -41,7 +41,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         {
             var game = await _gameService.GetByKeyAsync(key);
 
-            return game is null ? NotFound($"Game with key {key} not found") : Ok(game);
+            return game is null ? NotFound($"Game with key {key} not found") : Ok(game.AsResponse());
         }
         catch (Exception e)
         {
@@ -57,7 +57,7 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         {
             var game = await _gameService.GetByIdAsync(id);
 
-            return game is null ? NotFound($"Game with id {id} not found") : Ok(game);
+            return game is null ? NotFound($"Game with id {id} not found") : Ok(game.AsResponse());
         }
         catch (Exception e)
         {
