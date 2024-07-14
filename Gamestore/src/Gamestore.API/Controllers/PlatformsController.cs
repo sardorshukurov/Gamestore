@@ -53,7 +53,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
         {
             var platform = await _platformService.GetByIdAsync(id);
 
-            return platform is null ? NotFound($"Platform with id {id} not found") : platform.AsShortResponse();
+            return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.AsShortResponse());
         }
         catch (Exception e)
         {
