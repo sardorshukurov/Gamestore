@@ -8,7 +8,7 @@ using Gamestore.BLL.Services.PlatformService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gamestore.API.Tests.Controllers;
+namespace Gamestore.Tests.API.Controllers;
 
 public class PlatformsControllerTests
 {

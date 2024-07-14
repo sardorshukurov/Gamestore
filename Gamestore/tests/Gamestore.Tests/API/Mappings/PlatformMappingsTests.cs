@@ -2,7 +2,7 @@ using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Platform;
 using Gamestore.BLL.DTOs.Platform;
 
-namespace Gamestore.API.Tests.Mappings;
+namespace Gamestore.Tests.API.Mappings;
 
 public class PlatformMappingsTests
 {

@@ -1,7 +1,7 @@
 using Gamestore.API.DTOs.Genre;
 using Gamestore.BLL.DTOs.Genre;
 
-namespace Gamestore.API.Tests.Mappings;
+namespace Gamestore.Tests.API.Mappings;
 
 public class GenreMappingsTests
 {

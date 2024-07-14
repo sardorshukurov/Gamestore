@@ -13,7 +13,7 @@ using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Gamestore.API.Tests.Controllers;
+namespace Gamestore.Tests.API.Controllers;
 
 public class GamesControllerTests
 {

@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.DAL.Entities;
 
-namespace Gamestore.BLL.Tests.Mappings;
+namespace Gamestore.Tests.BLL.Mappings;
 
 public class GameMappingsTests
 {

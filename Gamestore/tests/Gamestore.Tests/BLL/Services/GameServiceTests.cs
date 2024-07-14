@@ -5,7 +5,7 @@ using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
 
-namespace Gamestore.BLL.Tests.Services;
+namespace Gamestore.Tests.BLL.Services;
 
 public class GameServiceTests
 {

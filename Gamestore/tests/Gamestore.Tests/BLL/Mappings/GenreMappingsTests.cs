@@ -2,7 +2,7 @@ using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.DAL.Entities;
 
-namespace Gamestore.BLL.Tests.Mappings;
+namespace Gamestore.Tests.BLL.Mappings;
 
 public class GenreMappingsTests
 {
