@@ -147,7 +147,7 @@ public class GameServiceTests
         // Arrange
         var platformId = Guid.NewGuid();
 
-        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.PlatformId == platformId)).ReturnsAsync(new List<GamePlatform>());
+        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.PlatformId == platformId)).ReturnsAsync([]);
 
         // Act
         var result = await _service.GetByPlatformAsync(platformId);

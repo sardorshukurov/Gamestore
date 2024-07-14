@@ -102,7 +102,7 @@ public class GenreServiceTests
     {
         // Arrange
         var parentId = Guid.NewGuid();
-        _genreRepositoryMock.Setup(x => x.GetAllByFilterAsync(g => g.ParentGenreId == parentId)).ReturnsAsync(new List<Genre>());
+        _genreRepositoryMock.Setup(x => x.GetAllByFilterAsync(g => g.ParentGenreId == parentId)).ReturnsAsync([]);
 
         // Act
         var result = await _service.GetSubGenresAsync(parentId);
@@ -241,8 +241,8 @@ public class GenreServiceTests
         game.Key = gameKey;
 
         _gameRepositoryMock.Setup(x => x.GetOneAsync(g => g.Key == gameKey)).ReturnsAsync(game);
-        _gameGenreRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GameId == game.Id)).ReturnsAsync(new List<GameGenre>());
-        _genreRepositoryMock.Setup(x => x.GetAllByFilterAsync(g => It.IsAny<IEnumerable<Guid>>().Contains(g.Id))).ReturnsAsync(new List<Genre>());
+        _gameGenreRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GameId == game.Id)).ReturnsAsync([]);
+        _genreRepositoryMock.Setup(x => x.GetAllByFilterAsync(g => It.IsAny<IEnumerable<Guid>>().Contains(g.Id))).ReturnsAsync([]);
 
         // Act
         var result = await _service.GetAllByGameKeyAsync(gameKey);
