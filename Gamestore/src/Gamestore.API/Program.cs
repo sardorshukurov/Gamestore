@@ -11,14 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // configuring logging
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
+    .MinimumLevel.Information()
     .Enrich.FromLogContext()
     .Enrich.WithExceptionDetails()
     .WriteTo.Console()
     .WriteTo.File(
         "Logs/log-.txt",
         rollingInterval: RollingInterval.Day,
-        restrictedToMinimumLevel: LogEventLevel.Debug)
+        restrictedToMinimumLevel: LogEventLevel.Information)
     .WriteTo.File(
         "Logs/exceptions-.txt",
         rollingInterval: RollingInterval.Day,
