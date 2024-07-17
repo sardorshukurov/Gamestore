@@ -25,9 +25,9 @@ public class PlatformsController(IPlatformService platformService, IGameService 
 
             return Ok(games);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -39,9 +39,9 @@ public class PlatformsController(IPlatformService platformService, IGameService 
             await _platformService.CreateAsync(request.AsDto());
             return Ok();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -55,9 +55,9 @@ public class PlatformsController(IPlatformService platformService, IGameService 
 
             return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.AsShortResponse());
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -72,9 +72,9 @@ public class PlatformsController(IPlatformService platformService, IGameService 
 
             return Ok(platforms);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -91,9 +91,9 @@ public class PlatformsController(IPlatformService platformService, IGameService 
         {
             return NotFound(nex.Message);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -110,9 +110,9 @@ public class PlatformsController(IPlatformService platformService, IGameService 
         {
             return NotFound($"Platform with id {id} not found");
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 }

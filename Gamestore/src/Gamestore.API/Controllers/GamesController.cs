@@ -27,9 +27,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
             await _gameService.CreateAsync(request.AsDto());
             return Ok();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -43,9 +43,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
 
             return game is null ? NotFound($"Game with key {key} not found") : Ok(game.AsResponse());
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -59,9 +59,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
 
             return game is null ? NotFound($"Game with id {id} not found") : Ok(game.AsResponse());
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -75,9 +75,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
                 .Select(g => g.AsResponse());
             return Ok(games);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -95,9 +95,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         {
             return NotFound(nex.Message);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -113,9 +113,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         {
             return NotFound($"Game with key {key} not found");
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -136,9 +136,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
             var serializedGame = JsonConvert.SerializeObject(game);
             return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -157,9 +157,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         {
             return NotFound(nex.Message);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -178,9 +178,9 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         {
             return NotFound(nex.Message);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 }

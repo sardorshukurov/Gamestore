@@ -25,9 +25,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
 
             return Ok(games);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -39,9 +39,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
             await _genreService.CreateAsync(request.AsDto());
             return Ok();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -55,9 +55,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
 
             return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre.AsShortResponse());
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -72,9 +72,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
 
             return Ok(genres);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -89,9 +89,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
 
             return Ok(genres);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -108,9 +108,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
         {
             return NotFound(nex.Message);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -126,9 +126,9 @@ public class GenresController(IGenreService genreService, IGameService gameServi
         {
             return NotFound($"Genre with id {id} not found");
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, "An internal server error has occured");
         }
     }
 }
