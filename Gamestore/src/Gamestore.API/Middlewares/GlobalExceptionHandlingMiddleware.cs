@@ -4,16 +4,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Middlewares;
 
-public class GlobalExceptionHandlingMiddleware : IMiddleware
+public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger) : IMiddleware
 {
+    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger = logger;
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
         {
             await next(context);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            LogException(ex);
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             ProblemDetails problem = new()
@@ -29,6 +33,18 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
             await context.Response.WriteAsync(json);
 
             context.Response.ContentType = "application/json";
+        }
+    }
+
+    private void LogException(Exception ex)
+    {
+        var exception = ex;
+
+        while (exception != null)
+        {
+            _logger.LogError("{Type}: {Message} {StackTrace}", exception.GetType().Name, exception.Message, exception.StackTrace);
+
+            exception = exception.InnerException;
         }
     }
 }

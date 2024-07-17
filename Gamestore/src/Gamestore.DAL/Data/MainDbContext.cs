@@ -20,9 +20,9 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
     {
         modelBuilder.ConfigureGames();
         modelBuilder.ConfigureGenres();
-        modelBuilder.ConfigureGenres();
         modelBuilder.ConfigureGameGenres();
         modelBuilder.ConfigureGamePlatforms();
+        modelBuilder.ConfigurePlatforms();
 
         base.OnModelCreating(modelBuilder);
     }
