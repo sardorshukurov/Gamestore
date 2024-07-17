@@ -48,7 +48,7 @@ public class PlatformsControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _gameServiceMock.Setup(x => x.GetByPlatformAsync(id)).ThrowsAsync(new Exception("Something went wrong"));
+        _gameServiceMock.Setup(x => x.GetByPlatformAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetAllGames(id);
@@ -57,7 +57,7 @@ public class PlatformsControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class PlatformsControllerTests
     {
         // Arrange
         var request = _fixture.Create<CreatePlatformRequest>();
-        _platformService.Setup(x => x.CreateAsync(request.AsDto())).ThrowsAsync(new Exception("Something went wrong"));
+        _platformService.Setup(x => x.CreateAsync(request.AsDto())).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Create(request);
@@ -89,7 +89,7 @@ public class PlatformsControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class PlatformsControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _platformService.Setup(x => x.GetByIdAsync(id)).ThrowsAsync(new Exception("Something went wrong"));
+        _platformService.Setup(x => x.GetByIdAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetById(id);
@@ -140,7 +140,7 @@ public class PlatformsControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class PlatformsControllerTests
     public async Task GetAllReturns500WhenExceptionThrown()
     {
         // Arrange
-        _platformService.Setup(x => x.GetAllAsync()).ThrowsAsync(new Exception("Something went wrong"));
+        _platformService.Setup(x => x.GetAllAsync()).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetAll();
@@ -172,7 +172,7 @@ public class PlatformsControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class PlatformsControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdatePlatformRequest>();
-        _platformService.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new Exception("Something went wrong"));
+        _platformService.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Update(request);
@@ -219,7 +219,7 @@ public class PlatformsControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class PlatformsControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _platformService.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new Exception("Something went wrong"));
+        _platformService.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Delete(id);
@@ -266,6 +266,6 @@ public class PlatformsControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 }

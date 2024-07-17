@@ -48,7 +48,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _gameServiceMock.Setup(x => x.GetByGenreAsync(id)).ThrowsAsync(new Exception("Something went wrong"));
+        _gameServiceMock.Setup(x => x.GetByGenreAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetAllGames(id);
@@ -57,7 +57,7 @@ public class GenresControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class GenresControllerTests
     {
         // Arrange
         var request = _fixture.Create<CreateGenreRequest>();
-        _genreServiceMock.Setup(x => x.CreateAsync(request.AsDto())).ThrowsAsync(new Exception("Something went wrong"));
+        _genreServiceMock.Setup(x => x.CreateAsync(request.AsDto())).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Create(request);
@@ -89,7 +89,7 @@ public class GenresControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ThrowsAsync(new Exception("Something went wrong"));
+        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetGenre(id);
@@ -140,7 +140,7 @@ public class GenresControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class GenresControllerTests
     public async Task GetAllReturns500WhenExceptionThrown()
     {
         // Arrange
-        _genreServiceMock.Setup(x => x.GetAllAsync()).ThrowsAsync(new Exception("Something went wrong"));
+        _genreServiceMock.Setup(x => x.GetAllAsync()).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetAll();
@@ -172,7 +172,7 @@ public class GenresControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class GenresControllerTests
     {
         // Arrange
         var parentId = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.GetSubGenresAsync(parentId)).ThrowsAsync(new Exception("Something went wrong"));
+        _genreServiceMock.Setup(x => x.GetSubGenresAsync(parentId)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetSubGenres(parentId);
@@ -206,7 +206,7 @@ public class GenresControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -244,7 +244,7 @@ public class GenresControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdateGenreRequest>();
-        _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new Exception("Something went wrong"));
+        _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Update(request);
@@ -253,7 +253,7 @@ public class GenresControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new Exception("Something went wrong"));
+        _genreServiceMock.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Delete(id);
@@ -300,6 +300,6 @@ public class GenresControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 }

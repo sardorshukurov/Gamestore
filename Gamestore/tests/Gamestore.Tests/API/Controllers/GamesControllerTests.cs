@@ -275,7 +275,7 @@ public class GamesControllerTests
         var request = _fixture.Create<UpdateGameRequest>();
         _gameServiceMock
             .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameDto>()))
-            .ThrowsAsync(new Exception("Something went wrong"));
+            .ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Update(request);
@@ -284,7 +284,7 @@ public class GamesControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -335,7 +335,7 @@ public class GamesControllerTests
 
         _gameServiceMock
             .Setup(x => x.DeleteByKeyAsync(key))
-            .ThrowsAsync(new Exception("Something went wrong"));
+            .ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.Delete(key);
@@ -344,7 +344,7 @@ public class GamesControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -387,7 +387,7 @@ public class GamesControllerTests
     {
         // Arrange
         var key = _fixture.Create<string>();
-        _gameServiceMock.Setup(x => x.GetByKeyAsync(key)).ThrowsAsync(new Exception("Something went wrong"));
+        _gameServiceMock.Setup(x => x.GetByKeyAsync(key)).ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetFile(key);
@@ -396,7 +396,7 @@ public class GamesControllerTests
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -443,7 +443,7 @@ public class GamesControllerTests
         var key = _fixture.Create<string>();
         _genreServiceMock
             .Setup(x => x.GetAllByGameKeyAsync(key))
-            .ThrowsAsync(new Exception("Something went wrong"));
+            .ThrowsAsync(new Exception("An internal server error has occured"));
 
         // Act
         var result = await _controller.GetGenresByKey(key);
@@ -452,7 +452,7 @@ public class GamesControllerTests
         result.Result.Should().BeOfType<ObjectResult>();
         var objectResult = result.Result as ObjectResult;
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Something went wrong");
+        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
