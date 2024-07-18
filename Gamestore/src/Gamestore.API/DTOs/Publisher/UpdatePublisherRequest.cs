@@ -4,6 +4,9 @@ using Gamestore.DAL.Data;
 namespace Gamestore.API.DTOs.Publisher;
 
 public record UpdatePublisherRequest(
+    UpdatePublisher Publisher);
+
+public record UpdatePublisher(
     Guid Id,
     string CompanyName,
     string HomePage,
@@ -17,17 +20,17 @@ public class UpdatePublisherValidator : AbstractValidator<UpdatePublisherRequest
     {
         _dbContext = dbContext;
 
-        RuleFor(p => p.CompanyName)
+        RuleFor(p => p.Publisher.CompanyName)
             .NotEmpty()
             .WithMessage("Company name is required")
             .Must(BeUniqueCompanyName)
             .WithMessage("Company name must be unique");
 
-        RuleFor(p => p.HomePage)
+        RuleFor(p => p.Publisher.HomePage)
             .NotEmpty()
             .WithMessage("Home page is required");
 
-        RuleFor(p => p.Description)
+        RuleFor(p => p.Publisher.Description)
             .NotEmpty()
             .WithMessage("Description is required");
     }

@@ -30,15 +30,15 @@ public static class PlatformMappingExtensions
     public static CreatePlatformDto AsDto(this CreatePlatformRequest request)
     {
         return new CreatePlatformDto(
-            request.Type,
+            request.Platform.Type,
             null);
     }
 
     public static UpdatePlatformDto AsDto(this UpdatePlatformRequest request)
     {
         return new UpdatePlatformDto(
-            request.Id,
-            request.Type,
+            request.Platform.Id,
+            request.Platform.Type,
             null);
     }
 }

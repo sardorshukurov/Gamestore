@@ -29,17 +29,17 @@ public static class GenreMappingExtensions
     public static CreateGenreDto AsDto(this CreateGenreRequest request)
     {
         return new CreateGenreDto(
-            request.Name,
-            request.ParentGenreId,
+            request.Genre.Name,
+            request.Genre.ParentGenreId,
             null);
     }
 
     public static UpdateGenreDto AsDto(this UpdateGenreRequest request)
     {
         return new UpdateGenreDto(
-            request.Id,
-            request.Name,
-            request.ParentGenreId,
+            request.Genre.Id,
+            request.Genre.Name,
+            request.Genre.ParentGenreId,
             null);
     }
 }

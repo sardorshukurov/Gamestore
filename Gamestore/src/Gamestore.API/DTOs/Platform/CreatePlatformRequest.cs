@@ -4,6 +4,9 @@ using Gamestore.DAL.Data;
 namespace Gamestore.API.DTOs.Platform;
 
 public record CreatePlatformRequest(
+    CreatePlatform Platform);
+
+public record CreatePlatform(
     string Type);
 
 public class CreatePlatformValidator : AbstractValidator<CreatePlatformRequest>
@@ -14,7 +17,7 @@ public class CreatePlatformValidator : AbstractValidator<CreatePlatformRequest>
     {
         _dbContext = dbContext;
 
-        RuleFor(p => p.Type)
+        RuleFor(p => p.Platform.Type)
             .NotEmpty()
             .WithMessage("Platform type is required")
             .Must(BeUniqueType)

@@ -4,6 +4,9 @@ using Gamestore.DAL.Data;
 namespace Gamestore.API.DTOs.Platform;
 
 public record UpdatePlatformRequest(
+    UpdatePlatform Platform);
+
+public record UpdatePlatform(
     Guid Id,
     string Type);
 
@@ -15,7 +18,7 @@ public class UpdatePlatformValidator : AbstractValidator<UpdatePlatformRequest>
     {
         _dbContext = dbContext;
 
-        RuleFor(p => p.Type)
+        RuleFor(p => p.Platform.Type)
             .NotEmpty()
             .WithMessage("Platform type is required")
             .Must(BeUniqueType)

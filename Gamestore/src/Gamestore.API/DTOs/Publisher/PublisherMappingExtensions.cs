@@ -30,17 +30,17 @@ public static class PublisherMappingExtensions
     public static CreatePublisherDto AsDto(this CreatePublisherRequest request)
     {
         return new CreatePublisherDto(
-            request.CompanyName,
-            request.HomePage,
-            request.Description);
+            request.Publisher.CompanyName,
+            request.Publisher.HomePage,
+            request.Publisher.Description);
     }
 
     public static UpdatePublisherDto AsDto(this UpdatePublisherRequest request)
     {
         return new UpdatePublisherDto(
-            request.Id,
-            request.CompanyName,
-            request.HomePage,
-            request.Description);
+            request.Publisher.Id,
+            request.Publisher.CompanyName,
+            request.Publisher.HomePage,
+            request.Publisher.Description);
     }
 }

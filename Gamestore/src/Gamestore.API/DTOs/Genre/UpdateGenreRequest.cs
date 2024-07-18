@@ -4,6 +4,9 @@ using Gamestore.DAL.Data;
 namespace Gamestore.API.DTOs.Genre;
 
 public record UpdateGenreRequest(
+    UpdateGenre Genre);
+
+public record UpdateGenre(
     Guid Id,
     string Name,
     Guid? ParentGenreId);
@@ -16,13 +19,13 @@ public class UpdateGenreValidator : AbstractValidator<UpdateGenreRequest>
     {
         _dbContext = dbContext;
 
-        RuleFor(g => g.Name)
+        RuleFor(g => g.Genre.Name)
             .NotEmpty()
             .WithMessage("Genre name is required")
             .Must(BeUniqueGenreName)
             .WithMessage("Genre name must be unique");
 
-        RuleFor(g => g.ParentGenreId)
+        RuleFor(g => g.Genre.ParentGenreId)
             .Must(ContainExistingParentGenre)
             .WithMessage("Parent genre must exist");
     }
