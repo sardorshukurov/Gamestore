@@ -23,7 +23,9 @@ public class GenreMappingsTests
         var response = dto.AsResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
+        response.ParentGenreId.Should().Be(dto.ParentGenreId);
     }
 
     [Fact]
@@ -36,7 +38,8 @@ public class GenreMappingsTests
         var response = dto.AsShortResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
     }
 
     [Fact]
@@ -49,7 +52,8 @@ public class GenreMappingsTests
         var response = dto.AsShortResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
     }
 
     [Fact]
@@ -62,7 +66,8 @@ public class GenreMappingsTests
         var dto = request.AsDto();
 
         // Assert
-        dto.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+        request.Genre.Name.Should().Be(dto.Name);
+        request.Genre.ParentGenreId.Should().Be(dto.ParentGenreId);
     }
 
     [Fact]
@@ -75,6 +80,8 @@ public class GenreMappingsTests
         var dto = request.AsDto();
 
         // Assert
-        dto.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+        request.Genre.Id.Should().Be(dto.Id);
+        request.Genre.Name.Should().Be(dto.Name);
+        request.Genre.ParentGenreId.Should().Be(dto.ParentGenreId);
     }
 }

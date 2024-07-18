@@ -23,7 +23,13 @@ public class GameMappingsTests
         var response = dto.AsResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
+        response.Key.Should().Be(dto.Key);
+        response.Description.Should().Be(dto.Description);
+        response.Price.Should().Be(dto.Price);
+        response.Discount.Should().Be(dto.Discount);
+        response.UnitInStock.Should().Be(dto.UnitInStock);
     }
 
     [Fact]
@@ -36,7 +42,8 @@ public class GameMappingsTests
         var response = dto.AsShortResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
     }
 
     [Fact]
@@ -49,7 +56,15 @@ public class GameMappingsTests
         var dto = request.AsDto();
 
         // Assert
-        dto.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+        request.Game.Name.Should().Be(dto.Name);
+        request.Game.Key.Should().Be(dto.Key);
+        request.Game.Description.Should().Be(dto.Description);
+        request.Game.Price.Should().Be(dto.Price);
+        request.Game.Discount.Should().Be(dto.Discount);
+        request.Game.UnitInStock.Should().Be(dto.UnitInStock);
+        request.Publisher.Should().Be(dto.PublisherId);
+        request.Platforms.Should().BeEquivalentTo(dto.PlatformsIds);
+        request.Genres.Should().BeEquivalentTo(dto.GenresIds);
     }
 
     [Fact]
@@ -62,6 +77,14 @@ public class GameMappingsTests
         var dto = request.AsDto();
 
         // Assert
-        dto.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+        request.Game.Name.Should().Be(dto.Name);
+        request.Game.Key.Should().Be(dto.Key);
+        request.Game.Description.Should().Be(dto.Description);
+        request.Game.Price.Should().Be(dto.Price);
+        request.Game.Discount.Should().Be(dto.Discount);
+        request.Game.UnitInStock.Should().Be(dto.UnitInStock);
+        request.Publisher.Should().Be(dto.PublisherId);
+        request.Platforms.Should().BeEquivalentTo(dto.PlatformsIds);
+        request.Genres.Should().BeEquivalentTo(dto.GenresIds);
     }
 }

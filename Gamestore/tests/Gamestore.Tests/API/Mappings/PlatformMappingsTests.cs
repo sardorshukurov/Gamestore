@@ -15,7 +15,7 @@ public class PlatformMappingsTests
     }
 
     [Fact]
-    public void AsResponseShouldReturnMappedPlatformResponse()
+    public void AsResponseMapsCorrectly()
     {
         // Arrange
         var dto = _fixture.Create<PlatformDto>();
@@ -31,7 +31,7 @@ public class PlatformMappingsTests
     }
 
     [Fact]
-    public void AsShortResponseFromDtoShouldReturnMappedPlatformShortResponse()
+    public void AsShortResponseFromDtoMapsCorrectly()
     {
         // Arrange
         var dto = _fixture.Create<PlatformDto>();
@@ -40,11 +40,12 @@ public class PlatformMappingsTests
         var response = dto.AsShortResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Type.Should().Be(dto.Type);
     }
 
     [Fact]
-    public void AsShortResponseFromShortDtoShouldReturnMappedPlatformShortResponse()
+    public void AsShortResponseFromShortDtoMapsCorrectly()
     {
         // Arrange
         var dto = _fixture.Create<PlatformShortDto>();
@@ -53,11 +54,12 @@ public class PlatformMappingsTests
         var response = dto.AsShortResponse();
 
         // Assert
-        response.Should().BeEquivalentTo(dto, options => options.ExcludingMissingMembers());
+        response.Id.Should().Be(dto.Id);
+        response.Type.Should().Be(dto.Type);
     }
 
     [Fact]
-    public void AsCreatePlatformDtoShouldReturnMappedDtoFromRequest()
+    public void AsCreatePlatformDtoMapsCorrectly()
     {
         // Arrange
         var request = _fixture.Create<CreatePlatformRequest>();
@@ -66,11 +68,11 @@ public class PlatformMappingsTests
         var dto = request.AsDto();
 
         // Assert
-        dto.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+        dto.Type.Should().Be(request.Platform.Type);
     }
 
     [Fact]
-    public void AsUpdatePlatformDtoShouldReturnMappedDtoFromRequest()
+    public void AsUpdatePlatformDtoMapsCorrectly()
     {
         // Arrange
         var request = _fixture.Create<UpdatePlatformRequest>();
@@ -79,6 +81,7 @@ public class PlatformMappingsTests
         var dto = request.AsDto();
 
         // Assert
-        dto.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
+        dto.Id.Should().Be(request.Platform.Id);
+        dto.Type.Should().Be(request.Platform.Type);
     }
 }
