@@ -9,10 +9,13 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GenresController(IGenreService genreService, IGameService gameService) : ControllerBase
+public class GenresController(IGenreService genreService, IGameService gameService, CreateGenreValidator createValidator, UpdateGenreValidator updateValidator) : ControllerBase
 {
     private readonly IGenreService _genreService = genreService;
     private readonly IGameService _gameService = gameService;
+
+    private readonly CreateGenreValidator _createValidator = createValidator;
+    private readonly UpdateGenreValidator _updateValidator = updateValidator;
 
     [HttpGet("{id}/games")]
     [ResponseCache(Duration = 60)]
@@ -36,6 +39,17 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
+            var result = await _createValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                });
+            }
+
             await _genreService.CreateAsync(request.AsDto());
             return Ok();
         }
@@ -100,6 +114,17 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
+            var result = await _updateValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                });
+            }
+
             await _genreService.UpdateAsync(request.AsDto());
 
             return NoContent();

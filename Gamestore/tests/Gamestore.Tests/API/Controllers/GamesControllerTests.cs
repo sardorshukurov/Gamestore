@@ -1,4 +1,5 @@
 using System.Text;
+using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Genre;
@@ -181,6 +182,10 @@ public class GamesControllerTests
             request.Platforms,
             request.Publisher);
 
+        _createValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreateGameRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _gameServiceMock
             .Setup(x => x.CreateAsync(It.Is<CreateGameDto>(dto =>
                     dto.Name == expectedDto.Name &&
@@ -196,8 +201,8 @@ public class GamesControllerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeAssignableTo<IActionResult>();
-        result.Should().BeAssignableTo<OkResult>();
 
+        result.Should().BeAssignableTo<OkResult>();
         _gameServiceMock.Verify(
             x => x.CreateAsync(It.Is<CreateGameDto>(dto =>
             dto.Name == expectedDto.Name &&
@@ -247,6 +252,10 @@ public class GamesControllerTests
             request.Platforms,
             request.Publisher);
 
+        _updateValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGameRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _gameServiceMock
             .Setup(x => x.UpdateAsync(It.Is<UpdateGameDto>(dto =>
                 dto.Id == expectedDto.Id &&
@@ -281,6 +290,11 @@ public class GamesControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdateGameRequest>();
+
+        _updateValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGameRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _gameServiceMock
             .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameDto>()))
             .ThrowsAsync(new NotFoundException("Game not found"));

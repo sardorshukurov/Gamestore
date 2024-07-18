@@ -1,3 +1,4 @@
+using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Genre;
@@ -17,13 +18,23 @@ public class GenresControllerTests
     private readonly Mock<IGenreService> _genreServiceMock;
     private readonly GenresController _controller;
 
+    private readonly Mock<CreateGenreValidator> _createValidator;
+    private readonly Mock<UpdateGenreValidator> _updateValidator;
+
     public GenresControllerTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
         _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
         _genreServiceMock = _fixture.Freeze<Mock<IGenreService>>();
-        _controller =
-            new GenresController(_genreServiceMock.Object, _gameServiceMock.Object);
+
+        _createValidator = _fixture.Freeze<Mock<CreateGenreValidator>>();
+        _updateValidator = _fixture.Freeze<Mock<UpdateGenreValidator>>();
+
+        _controller = new GenresController(
+            _genreServiceMock.Object,
+            _gameServiceMock.Object,
+            _createValidator.Object,
+            _updateValidator.Object);
     }
 
     [Fact]
@@ -65,6 +76,11 @@ public class GenresControllerTests
     {
         // Arrange
         var request = _fixture.Create<CreateGenreRequest>();
+
+        _createValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreateGenreRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _genreServiceMock.Setup(x => x.CreateAsync(request.AsDto())).Returns(Task.CompletedTask);
 
         // Act
@@ -214,6 +230,11 @@ public class GenresControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdateGenreRequest>();
+
+        _updateValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).Returns(Task.CompletedTask);
 
         // Act
@@ -228,6 +249,11 @@ public class GenresControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdateGenreRequest>();
+
+        _updateValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new NotFoundException("Genre not found"));
 
         // Act

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Platform;
@@ -15,15 +16,27 @@ public class PlatformsControllerTests
     private readonly IFixture _fixture;
     private readonly Mock<IGameService> _gameServiceMock;
     private readonly Mock<IPlatformService> _platformService;
+
+    private readonly Mock<CreatePlatformValidator> _createValidator;
+    private readonly Mock<UpdatePlatformValidator> _updateValidator;
+
     private readonly PlatformsController _controller;
 
     public PlatformsControllerTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
         _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
         _platformService = _fixture.Freeze<Mock<IPlatformService>>();
-        _controller =
-            new PlatformsController(_platformService.Object, _gameServiceMock.Object);
+
+        _createValidator = _fixture.Freeze<Mock<CreatePlatformValidator>>();
+        _updateValidator = _fixture.Freeze<Mock<UpdatePlatformValidator>>();
+
+        _controller = new PlatformsController(
+            _platformService.Object,
+            _gameServiceMock.Object,
+            _createValidator.Object,
+            _updateValidator.Object);
     }
 
     [Fact]
@@ -65,6 +78,11 @@ public class PlatformsControllerTests
     {
         // Arrange
         var request = _fixture.Create<CreatePlatformRequest>();
+
+        _createValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreatePlatformRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _platformService.Setup(x => x.CreateAsync(request.AsDto())).Returns(Task.CompletedTask);
 
         // Act
@@ -180,6 +198,11 @@ public class PlatformsControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdatePlatformRequest>();
+
+        _updateValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdatePlatformRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _platformService.Setup(x => x.UpdateAsync(request.AsDto())).Returns(Task.CompletedTask);
 
         // Act
@@ -194,6 +217,11 @@ public class PlatformsControllerTests
     {
         // Arrange
         var request = _fixture.Create<UpdatePlatformRequest>();
+
+        _updateValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdatePlatformRequest>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
         _platformService.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new NotFoundException("Platform not found"));
 
         // Act

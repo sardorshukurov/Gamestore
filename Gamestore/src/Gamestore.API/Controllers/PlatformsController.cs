@@ -9,10 +9,13 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class PlatformsController(IPlatformService platformService, IGameService gameService) : ControllerBase
+public class PlatformsController(IPlatformService platformService, IGameService gameService, CreatePlatformValidator createValidator, UpdatePlatformValidator updateValidator) : ControllerBase
 {
     private readonly IPlatformService _platformService = platformService;
     private readonly IGameService _gameService = gameService;
+
+    private readonly CreatePlatformValidator _createValidator = createValidator;
+    private readonly UpdatePlatformValidator _updateValidator = updateValidator;
 
     [HttpGet("{id}/games")]
     [ResponseCache(Duration = 60)]
@@ -36,6 +39,17 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
+            var result = await _createValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                });
+            }
+
             await _platformService.CreateAsync(request.AsDto());
             return Ok();
         }
@@ -83,6 +97,17 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
+            var result = await _updateValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                });
+            }
+
             await _platformService.UpdateAsync(request.AsDto());
 
             return NoContent();
