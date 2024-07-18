@@ -13,6 +13,8 @@ public class GameServiceTests
     private readonly Mock<IRepository<Game>> _gameRepositoryMock;
     private readonly Mock<IRepository<GameGenre>> _gameGenreRepositoryMock;
     private readonly Mock<IRepository<GamePlatform>> _gamePlatformRepositoryMock;
+    private readonly Mock<IRepository<Publisher>> _publisherRepositoryMock;
+
     private readonly GameService _service;
 
     public GameServiceTests()
@@ -21,8 +23,13 @@ public class GameServiceTests
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
+        _publisherRepositoryMock = _fixture.Freeze<Mock<IRepository<Publisher>>>();
 
-        _service = new GameService(_gameRepositoryMock.Object, _gameGenreRepositoryMock.Object, _gamePlatformRepositoryMock.Object);
+        _service = new GameService(
+            _gameRepositoryMock.Object,
+            _gameGenreRepositoryMock.Object,
+            _gamePlatformRepositoryMock.Object,
+            _publisherRepositoryMock.Object);
     }
 
     [Fact]

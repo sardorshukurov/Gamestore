@@ -5,11 +5,12 @@ using Gamestore.DAL.Repository;
 
 namespace Gamestore.BLL.Services.GameService;
 
-public class GameService(IRepository<Game> repository, IRepository<GameGenre> gameGenreRepository, IRepository<GamePlatform> gamePlatformRepository) : IGameService
+public class GameService(IRepository<Game> repository, IRepository<GameGenre> gameGenreRepository, IRepository<GamePlatform> gamePlatformRepository, IRepository<Publisher> publisherRepository) : IGameService
 {
     private readonly IRepository<Game> _repository = repository;
     private readonly IRepository<GameGenre> _gameGenreRepository = gameGenreRepository;
     private readonly IRepository<GamePlatform> _gamePlatformRepository = gamePlatformRepository;
+    private readonly IRepository<Publisher> _publisherRepository = publisherRepository;
 
     public async Task<ICollection<GameDto>> GetAllAsync()
     {
@@ -49,6 +50,18 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
 
         var games = (await _repository
                 .GetAllByFilterAsync(g => gameIds.Contains(g.Id)))
+            .Select(g => g.AsDto())
+            .ToList();
+
+        return games;
+    }
+
+    public async Task<ICollection<GameDto>> GetByPublisherAsync(string companyName)
+    {
+        var publisher = await _publisherRepository.GetOneAsync(p => p.CompanyName == companyName);
+
+        var games = (await _repository
+                .GetAllByFilterAsync(g => g.PublisherId == publisher.Id))
             .Select(g => g.AsDto())
             .ToList();
 

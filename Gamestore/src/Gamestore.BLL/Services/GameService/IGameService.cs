@@ -12,6 +12,8 @@ public interface IGameService
 
     Task<ICollection<GameDto>> GetByPlatformAsync(Guid platformId);
 
+    Task<ICollection<GameDto>> GetByPublisherAsync(string companyName);
+
     Task<GameDto?> GetByIdAsync(Guid id);
 
     Task UpdateAsync(UpdateGameDto dto);
