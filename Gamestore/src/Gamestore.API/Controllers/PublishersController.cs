@@ -113,6 +113,10 @@ public class PublishersController(IPublisherService publisherService, IGameServi
 
             return Ok(games);
         }
+        catch (NotFoundException nex)
+        {
+            return NotFound(nex.Message);
+        }
         catch (Exception)
         {
             return StatusCode(500, "An internal server error has occured");

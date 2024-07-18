@@ -58,8 +58,7 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
 
     public async Task<ICollection<GameDto>> GetByPublisherAsync(string companyName)
     {
-        var publisher = await _publisherRepository.GetOneAsync(p => p.CompanyName == companyName);
-
+        var publisher = await _publisherRepository.GetOneAsync(p => p.CompanyName == companyName) ?? throw new PublisherNotFoundException(companyName);
         var games = (await _repository
                 .GetAllByFilterAsync(g => g.PublisherId == publisher.Id))
             .Select(g => g.AsDto())
