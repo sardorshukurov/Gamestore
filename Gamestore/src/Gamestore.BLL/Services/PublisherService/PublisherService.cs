@@ -50,17 +50,15 @@ public class PublisherService(IRepository<Publisher> repository, IRepository<Gam
         await _repository.SaveChangesAsync();
     }
 
-    public async Task<ICollection<PublisherDto>> GetByCompanyNameAsync(string companyName)
+    public async Task<PublisherDto?> GetByCompanyNameAsync(string companyName)
     {
-        var publishers = (await _repository
-            .GetAllByFilterAsync(p => p.CompanyName == companyName))
-            .Select(p => p.AsDto())
-            .ToList();
+        var publisher = await _repository
+            .GetOneAsync(p => p.CompanyName == companyName);
 
-        return publishers;
+        return publisher?.AsDto();
     }
 
-    public async Task<PublisherDto?> GetAllByGameKeyAsync(string gameKey)
+    public async Task<PublisherDto?> GetByGameKeyAsync(string gameKey)
     {
         var game = await _gameRepository.GetOneAsync(g => g.Key == gameKey) ?? throw new GameNotFoundException(gameKey);
 

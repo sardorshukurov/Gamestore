@@ -9,6 +9,7 @@ using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.PlatformService;
+using Gamestore.BLL.Services.PublisherService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,16 +22,24 @@ public class GamesControllerTests
     private readonly Mock<IGameService> _gameServiceMock;
     private readonly Mock<IGenreService> _genreServiceMock;
     private readonly Mock<IPlatformService> _platformServiceMock;
+    private readonly Mock<IPublisherService> _publisherServiceMock;
+
     private readonly GamesController _controller;
 
     public GamesControllerTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
         _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
         _genreServiceMock = _fixture.Freeze<Mock<IGenreService>>();
         _platformServiceMock = _fixture.Freeze<Mock<IPlatformService>>();
-        _controller =
-            new GamesController(_gameServiceMock.Object, _genreServiceMock.Object, _platformServiceMock.Object);
+        _publisherServiceMock = _fixture.Freeze<Mock<IPublisherService>>();
+
+        _controller = new GamesController(
+            _gameServiceMock.Object,
+            _genreServiceMock.Object,
+            _platformServiceMock.Object,
+            _publisherServiceMock.Object);
     }
 
     [Fact]

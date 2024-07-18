@@ -14,7 +14,7 @@ public interface IPublisherService
 
     Task CreateAsync(CreatePublisherDto dto);
 
-    Task<ICollection<PublisherDto>> GetByCompanyNameAsync(string companyName);
+    Task<PublisherDto?> GetByCompanyNameAsync(string companyName);
 
-    Task<PublisherDto?> GetAllByGameKeyAsync(string gameKey);
+    Task<PublisherDto?> GetByGameKeyAsync(string gameKey);
 }

@@ -2,9 +2,11 @@ using System.Text;
 using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Genre;
 using Gamestore.API.DTOs.Platform;
+using Gamestore.API.DTOs.Publisher;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.PlatformService;
+using Gamestore.BLL.Services.PublisherService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,11 +15,12 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GamesController(IGameService gameService, IGenreService genreService, IPlatformService platformService) : ControllerBase
+public class GamesController(IGameService gameService, IGenreService genreService, IPlatformService platformService, IPublisherService publisherService) : ControllerBase
 {
     private readonly IGameService _gameService = gameService;
     private readonly IGenreService _genreService = genreService;
     private readonly IPlatformService _platformService = platformService;
+    private readonly IPublisherService _publisherService = publisherService;
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
@@ -34,7 +37,6 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet("{key}")]
-    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetByKey(string key)
     {
         try
@@ -66,7 +68,6 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     }
 
     [HttpGet]
-    [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
     {
         try
@@ -173,6 +174,28 @@ public class GamesController(IGameService gameService, IGenreService genreServic
                 .Select(p => p.AsShortResponse());
 
             return Ok(platforms);
+        }
+        catch (NotFoundException nex)
+        {
+            return NotFound(nex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An internal server error has occured");
+        }
+    }
+
+    [HttpGet("{key}/publisher")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<PublisherResponse>> GetPublisherByKey(string key)
+    {
+        try
+        {
+            var publisher = await _publisherService.GetByGameKeyAsync(key);
+
+            return publisher is null
+                ? NotFound($"Publisher for the game with game key {key} not found")
+                : Ok(publisher.AsResponse());
         }
         catch (NotFoundException nex)
         {
