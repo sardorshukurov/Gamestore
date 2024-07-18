@@ -18,5 +18,21 @@ public static class GameContextConfiguration
         modelBuilder.Entity<Game>()
             .Property(g => g.Description)
             .IsRequired(false);
+        modelBuilder.Entity<Game>()
+            .Property(g => g.Price)
+            .IsRequired();
+        modelBuilder.Entity<Game>()
+            .Property(g => g.UnitInStock)
+            .IsRequired();
+        modelBuilder.Entity<Game>()
+            .Property(g => g.Discount)
+            .IsRequired();
+        modelBuilder.Entity<Game>()
+            .Property(g => g.PublisherId)
+            .IsRequired();
+        modelBuilder.Entity<Game>()
+            .HasOne<Publisher>()
+            .WithMany()
+            .HasForeignKey(g => g.PublisherId);
     }
 }

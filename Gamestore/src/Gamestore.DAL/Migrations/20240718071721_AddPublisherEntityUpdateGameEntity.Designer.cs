@@ -4,6 +4,7 @@ using Gamestore.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gamestore.DAL.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240718071721_AddPublisherEntityUpdateGameEntity")]
+    partial class AddPublisherEntityUpdateGameEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,8 +58,6 @@ namespace Gamestore.DAL.Migrations
 
                     b.HasIndex("Key")
                         .IsUnique();
-
-                    b.HasIndex("PublisherId");
 
                     b.ToTable("Games");
                 });
@@ -151,16 +152,7 @@ namespace Gamestore.DAL.Migrations
                     b.HasIndex("CompanyName")
                         .IsUnique();
 
-                    b.ToTable("Publishers");
-                });
-
-            modelBuilder.Entity("Gamestore.DAL.Entities.Game", b =>
-                {
-                    b.HasOne("Gamestore.DAL.Entities.Publisher", null)
-                        .WithMany()
-                        .HasForeignKey("PublisherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("Publisher");
                 });
 
             modelBuilder.Entity("Gamestore.DAL.Entities.GameGenre", b =>

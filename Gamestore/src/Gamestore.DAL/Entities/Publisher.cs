@@ -3,12 +3,14 @@ using Gamestore.DAL.Common;
 
 namespace Gamestore.DAL.Entities;
 
-public class Genre : IBaseEntity
+public class Publisher : IBaseEntity
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public string Name { get; set; }
+    public string CompanyName { get; set; }
 
-    public Guid? ParentGenreId { get; set; }
+    public string? HomePage { get; set; }
+
+    public string? Description { get; set; }
 }

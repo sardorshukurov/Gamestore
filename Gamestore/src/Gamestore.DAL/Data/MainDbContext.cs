@@ -12,6 +12,8 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 
     public DbSet<Platform> Platforms { get; set; }
 
+    public DbSet<Publisher> Publishers { get; set; }
+
     public DbSet<GameGenre> GamesGenres { get; set; }
 
     public DbSet<GamePlatform> GamesPlatforms { get; set; }
@@ -23,6 +25,7 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
         modelBuilder.ConfigureGameGenres();
         modelBuilder.ConfigureGamePlatforms();
         modelBuilder.ConfigurePlatforms();
+        modelBuilder.ConfigurePublishers();
 
         base.OnModelCreating(modelBuilder);
     }
