@@ -70,7 +70,7 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
         await _gameGenreRepository.DeleteByFilterAsync(gg => gg.GameId == dto.Id);
         await _gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == dto.Id);
 
-        if (dto.GenresIds is not null && dto.GenresIds.Count != 0)
+        if (dto.GenresIds.Count != 0)
         {
             foreach (var genreId in dto.GenresIds)
             {
@@ -79,7 +79,7 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
             }
         }
 
-        if (dto.PlatformsIds is not null && dto.PlatformsIds.Count != 0)
+        if (dto.PlatformsIds.Count != 0)
         {
             foreach (var platformId in dto.PlatformsIds)
             {
@@ -97,7 +97,7 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
 
         await _repository.CreateAsync(game);
 
-        if (dto.GenresIds is not null && dto.GenresIds.Count != 0)
+        if (dto.GenresIds.Count != 0)
         {
             foreach (var genreId in dto.GenresIds)
             {
@@ -106,7 +106,7 @@ public class GameService(IRepository<Game> repository, IRepository<GameGenre> ga
             }
         }
 
-        if (dto.PlatformsIds is not null && dto.PlatformsIds.Count != 0)
+        if (dto.PlatformsIds.Count != 0)
         {
             foreach (var platformId in dto.PlatformsIds)
             {

@@ -10,7 +10,10 @@ public static class GameMappingExtensions
             dto.Id,
             dto.Name,
             dto.Key,
-            dto.Description);
+            dto.Description,
+            dto.Price,
+            dto.Discount,
+            dto.UnitInStock);
     }
 
     public static GameShortResponse AsShortResponse(this GameDto dto)
@@ -26,8 +29,12 @@ public static class GameMappingExtensions
             request.Game.Name,
             request.Game.Key,
             request.Game.Description,
+            request.Game.Price,
+            request.Game.UnitInStock,
+            request.Game.Discount,
             request.Genres,
-            request.Platforms);
+            request.Platforms,
+            request.Publisher);
     }
 
     public static UpdateGameDto AsDto(this UpdateGameRequest request)
@@ -37,7 +44,11 @@ public static class GameMappingExtensions
             request.Game.Name,
             request.Game.Key,
             request.Game.Description,
-            request.GenresIds,
-            request.PlatformsIds);
+            request.Game.Price,
+            request.Game.UnitInStock,
+            request.Game.Discount,
+            request.Genres,
+            request.Platforms,
+            request.Publisher);
     }
 }

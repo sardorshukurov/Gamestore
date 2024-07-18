@@ -4,4 +4,7 @@ public record GameResponse(
     Guid Id,
     string Name,
     string Key,
-    string? Description);
+    string? Description,
+    double Price,
+    int Discount,
+    int UnitInStock);

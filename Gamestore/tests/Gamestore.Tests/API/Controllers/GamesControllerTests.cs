@@ -156,8 +156,12 @@ public class GamesControllerTests
             request.Game.Name,
             request.Game.Key,
             request.Game.Description,
+            request.Game.Price,
+            request.Game.UnitInStock,
+            request.Game.Discount,
             request.Genres,
-            request.Platforms);
+            request.Platforms,
+            request.Publisher);
 
         _gameServiceMock
             .Setup(x => x.CreateAsync(It.Is<CreateGameDto>(dto =>
@@ -218,8 +222,12 @@ public class GamesControllerTests
             request.Game.Name,
             request.Game.Key,
             request.Game.Description,
-            request.GenresIds,
-            request.PlatformsIds);
+            request.Game.Price,
+            request.Game.UnitInStock,
+            request.Game.Discount,
+            request.Genres,
+            request.Platforms,
+            request.Publisher);
 
         _gameServiceMock
             .Setup(x => x.UpdateAsync(It.Is<UpdateGameDto>(dto =>
@@ -227,8 +235,8 @@ public class GamesControllerTests
                 dto.Name == expectedDto.Name &&
                 dto.Description == expectedDto.Description &&
                 dto.Key == expectedDto.Key &&
-                CompareNullableCollections(dto.GenresIds, request.GenresIds) &&
-                CompareNullableCollections(dto.PlatformsIds, request.PlatformsIds))))
+                CompareNullableCollections(dto.GenresIds, request.Genres) &&
+                CompareNullableCollections(dto.PlatformsIds, request.Platforms))))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -245,8 +253,8 @@ public class GamesControllerTests
                 dto.Name == expectedDto.Name &&
                 dto.Description == expectedDto.Description &&
                 dto.Key == expectedDto.Key &&
-                CompareNullableCollections(dto.GenresIds, request.GenresIds) &&
-                CompareNullableCollections(dto.PlatformsIds, request.PlatformsIds))),
+                CompareNullableCollections(dto.GenresIds, request.Genres) &&
+                CompareNullableCollections(dto.PlatformsIds, request.Platforms))),
             Times.Once);
     }
 

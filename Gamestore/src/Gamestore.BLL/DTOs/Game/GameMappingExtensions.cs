@@ -10,7 +10,10 @@ public static class GameMappingExtensions
             game.Id,
             game.Name,
             game.Key,
-            game.Description);
+            game.Description,
+            game.Price,
+            game.Discount,
+            game.UnitInStock);
     }
 
     public static GameShortDto AsShortDto(this GameEntity game)
@@ -27,6 +30,10 @@ public static class GameMappingExtensions
             Name = dto.Name,
             Key = dto.Key ?? dto.Name,
             Description = dto.Description,
+            Price = dto.Price,
+            UnitInStock = dto.UnitInStock,
+            Discount = dto.Discount,
+            PublisherId = dto.PublisherId,
         };
     }
 
@@ -35,5 +42,9 @@ public static class GameMappingExtensions
         game.Name = dto.Name;
         game.Key = dto.Key ?? dto.Name;
         game.Description = dto.Description;
+        game.Price = dto.Price;
+        game.UnitInStock = dto.UnitInStock;
+        game.Discount = dto.Discount;
+        game.PublisherId = dto.PublisherId;
     }
 }

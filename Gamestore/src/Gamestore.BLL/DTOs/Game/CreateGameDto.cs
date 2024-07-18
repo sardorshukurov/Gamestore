@@ -4,5 +4,9 @@ public record CreateGameDto(
     string Name,
     string? Key,
     string? Description,
-    ICollection<Guid>? GenresIds,
-    ICollection<Guid>? PlatformsIds);
+    double Price,
+    int UnitInStock,
+    int Discount,
+    ICollection<Guid> GenresIds,
+    ICollection<Guid> PlatformsIds,
+    Guid PublisherId);
