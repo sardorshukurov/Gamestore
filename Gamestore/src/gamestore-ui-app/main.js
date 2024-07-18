@@ -4436,8 +4436,8 @@ class GameService extends _base_service__WEBPACK_IMPORTED_MODULE_2__.BaseService
     getGamesByPlatfrom(platformId) {
         return this.get(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.gamesByPlatformApiUrl.replace(src_environments_environment__WEBPACK_IMPORTED_MODULE_0__.environment.routeIdIdentifier, platformId));
     }
-    getGamesByPublisher(publisherId) {
-        return this.get(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.gamesByPublisherApiUrl.replace(src_environments_environment__WEBPACK_IMPORTED_MODULE_0__.environment.routeIdIdentifier, publisherId));
+    getGamesByPublisher(companyName) {
+        return this.get(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.gamesByPublisherApiUrl.replace(src_environments_environment__WEBPACK_IMPORTED_MODULE_0__.environment.routeCompanyNameIdentifier, companyName));
     }
     getGameFile(key) {
         return this.getFile(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.getGameFile.replace(src_environments_environment__WEBPACK_IMPORTED_MODULE_0__.environment.routeKeyIdentifier, key));
@@ -4489,9 +4489,15 @@ class GenreService extends _base_service__WEBPACK_IMPORTED_MODULE_2__.BaseServic
         return this.get(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.genresByParentApiUrl.replace(src_environments_environment__WEBPACK_IMPORTED_MODULE_0__.environment.routeIdIdentifier, id));
     }
     addGenre(genre) {
+        if (genre.parentGenreId == "") {
+            genre.parentGenreId = null;
+        }
         return this.post(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.addGenreApiUrl, { genre });
     }
     updateGenre(genre) {
+        if (genre.parentGenreId == "") {
+            genre.parentGenreId = null;
+        }
         return this.put(_configuration_configuration_resolver__WEBPACK_IMPORTED_MODULE_1__.appConfiguration.updateGenreApiUrl, { genre });
     }
     deleteGenre(id) {
