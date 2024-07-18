@@ -15,18 +15,32 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GamesController(IGameService gameService, IGenreService genreService, IPlatformService platformService, IPublisherService publisherService) : ControllerBase
+public class GamesController(IGameService gameService, IGenreService genreService, IPlatformService platformService, IPublisherService publisherService, CreateGameValidator createValidator, UpdateGameValidator updateValidator) : ControllerBase
 {
     private readonly IGameService _gameService = gameService;
     private readonly IGenreService _genreService = genreService;
     private readonly IPlatformService _platformService = platformService;
     private readonly IPublisherService _publisherService = publisherService;
 
+    private readonly CreateGameValidator _createValidator = createValidator;
+    private readonly UpdateGameValidator _updateValidator = updateValidator;
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {
         try
         {
+            var result = await _createValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                });
+            }
+
             await _gameService.CreateAsync(request.AsDto());
             return Ok();
         }
@@ -87,6 +101,17 @@ public class GamesController(IGameService gameService, IGenreService genreServic
     {
         try
         {
+            var result = await _updateValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+                });
+            }
+
             var gameDto = request.AsDto();
 
             await _gameService.UpdateAsync(gameDto);

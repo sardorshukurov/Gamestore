@@ -19,10 +19,14 @@ namespace Gamestore.Tests.API.Controllers;
 public class GamesControllerTests
 {
     private readonly IFixture _fixture;
+
     private readonly Mock<IGameService> _gameServiceMock;
     private readonly Mock<IGenreService> _genreServiceMock;
     private readonly Mock<IPlatformService> _platformServiceMock;
     private readonly Mock<IPublisherService> _publisherServiceMock;
+
+    private readonly Mock<CreateGameValidator> _createValidator;
+    private readonly Mock<UpdateGameValidator> _updateValidator;
 
     private readonly GamesController _controller;
 
@@ -35,11 +39,16 @@ public class GamesControllerTests
         _platformServiceMock = _fixture.Freeze<Mock<IPlatformService>>();
         _publisherServiceMock = _fixture.Freeze<Mock<IPublisherService>>();
 
+        _createValidator = _fixture.Freeze<Mock<CreateGameValidator>>();
+        _updateValidator = _fixture.Freeze<Mock<UpdateGameValidator>>();
+
         _controller = new GamesController(
             _gameServiceMock.Object,
             _genreServiceMock.Object,
             _platformServiceMock.Object,
-            _publisherServiceMock.Object);
+            _publisherServiceMock.Object,
+            _createValidator.Object,
+            _updateValidator.Object);
     }
 
     [Fact]

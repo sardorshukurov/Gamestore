@@ -1,5 +1,7 @@
+using FluentValidation.AspNetCore;
 using Gamestore.API.Middlewares;
 using Gamestore.BLL;
+using Gamestore.Common.Helpers;
 using Gamestore.DAL;
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Data.Seeder;
@@ -35,8 +37,9 @@ builder.Services.AddTransient<RequestLoggingMiddleware>();
 // adding cache
 builder.Services.AddMemoryCache();
 
-// adding controllers, endpoints, and swagger
+// adding controllers, fluent validation, endpoints, and swagger
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -44,6 +47,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAppDbContext(builder.Configuration);
 builder.Services.AddRepositories();
 builder.Services.AddBusinessLogicServices();
+
+// adding validators
+builder.Services.RegisterValidators();
 
 // adding cors configurations
 builder.Services.AddCors(options =>
