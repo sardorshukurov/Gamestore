@@ -129,7 +129,7 @@ public class OrderService(
 
         var sumTotal =
             (await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
-            .Select(og => og.Price * og.Quantity)
+            .Select(og => og.Price * ((100 - og.Discount) / 100.0) * og.Quantity)
             .Sum();
 
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
@@ -163,7 +163,7 @@ public class OrderService(
         var order = await GetOrderOrElseThrow(customerId);
         var gamesSum =
             (await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
-            .Select(o => o.Quantity * o.Price)
+            .Select(og => og.Price * ((100 - og.Discount) / 100.0) * og.Quantity)
             .Sum();
 
         return gamesSum;
