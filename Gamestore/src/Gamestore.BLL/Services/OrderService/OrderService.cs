@@ -11,7 +11,7 @@ public class OrderService(IRepository<Order> orderRepository, IRepository<OrderG
     private readonly IRepository<OrderGame> _orderGameRepository = orderGameRepository;
     private readonly IRepository<Game> _gameRepository = gameRepository;
 
-    public async Task AddGameInTheCart(Guid customerId, string gameKey)
+    public async Task AddGameInTheCartAsync(Guid customerId, string gameKey)
     {
         var game = await GetGameOrElseThrow(gameKey);
         EnsureGameIsInStock(game);
@@ -24,7 +24,7 @@ public class OrderService(IRepository<Order> orderRepository, IRepository<OrderG
         await _orderRepository.SaveChangesAsync();
     }
 
-    public async Task RemoveGameFromTheCart(Guid customerId, string gameKey)
+    public async Task RemoveGameFromTheCartAsync(Guid customerId, string gameKey)
     {
         var game = await GetGameOrElseThrow(gameKey);
         var order = await GetOrderOrElseThrow(customerId);
@@ -41,25 +41,24 @@ public class OrderService(IRepository<Order> orderRepository, IRepository<OrderG
         await DeleteOrderIfNoGamesLeft(order.Id);
     }
 
-    public async Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrders(Guid customerId)
+    public async Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrdersAsync()
     {
         var orders =
             (await _orderRepository.GetAllByFilterAsync(o =>
-                (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Cancelled)
-                && o.CustomerId == customerId))
+                o.Status == OrderStatus.Paid || o.Status == OrderStatus.Cancelled))
             .Select(o => o.AsDto());
 
         return orders;
     }
 
-    public async Task<OrderDto?> GetById(Guid orderId)
+    public async Task<OrderDto?> GetByIdAsync(Guid orderId)
     {
         var order = await _orderRepository.GetOneAsync(o => o.Id == orderId);
 
         return order?.AsDto();
     }
 
-    public async Task<IEnumerable<OrderDetailsDto>> GetOrderDetails(Guid orderId)
+    public async Task<IEnumerable<OrderDetailsDto>> GetOrderDetailsAsync(Guid orderId)
     {
         var orderGames =
             (await _orderGameRepository.GetAllByFilterAsync(og =>
@@ -69,16 +68,26 @@ public class OrderService(IRepository<Order> orderRepository, IRepository<OrderG
         return orderGames;
     }
 
-    public async Task<IEnumerable<OrderDetailsDto>> GetCart(Guid customerId)
+    public async Task<IEnumerable<OrderDetailsDto>> GetCartAsync(Guid customerId)
     {
         var order = await _orderRepository.GetOneAsync(o =>
-            o.CustomerId == customerId && o.Status == OrderStatus.Open);
+            o.CustomerId == customerId && o.Status == OrderStatus.Open)
+                    ?? throw new NotFoundException("You do not have products in your cart");
 
         var orderGames = (await _orderGameRepository.GetAllByFilterAsync(
             og => og.OrderId == order.Id))
             .Select(og => og.AsDto());
 
         return orderGames;
+    }
+
+    public async Task CancelOrderAsync(Guid orderId)
+    {
+        var order = await _orderRepository.GetOneAsync(o => o.Id == orderId);
+
+        order.Status = OrderStatus.Cancelled;
+
+        await _orderRepository.SaveChangesAsync();
     }
 
     private async Task<Game> GetGameOrElseThrow(string gameKey)

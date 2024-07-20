@@ -33,7 +33,7 @@ public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
         RuleFor(g => g.Game.Key)
             .NotEmpty()
             .WithMessage("Key is required")
-            .Must(BeUniqueKey)
+            .Must((game, key) => BeUniqueKey(key, game.Game.Id))
             .WithMessage("Key must be unique");
 
         RuleFor(g => g.Game.Description)
@@ -100,8 +100,8 @@ public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
         return publisherId != Guid.Empty && _dbContext.Publishers.Any(p => p.Id == publisherId);
     }
 
-    private bool BeUniqueKey(string key)
+    private bool BeUniqueKey(string key, Guid gameId)
     {
-        return !_dbContext.Games.Any(g => g.Key == key);
+        return !_dbContext.Games.Any(g => g.Key == key && g.Id != gameId);
     }
 }

@@ -5,6 +5,7 @@ using Gamestore.API.DTOs.Platform;
 using Gamestore.API.DTOs.Publisher;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
+using Gamestore.BLL.Services.OrderService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.BLL.Services.PublisherService;
 using Gamestore.Common.Exceptions;
@@ -15,15 +16,25 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GamesController(IGameService gameService, IGenreService genreService, IPlatformService platformService, IPublisherService publisherService, CreateGameValidator createValidator, UpdateGameValidator updateValidator) : ControllerBase
+public class GamesController(
+    IGameService gameService,
+    IGenreService genreService,
+    IPlatformService platformService,
+    IPublisherService publisherService,
+    CreateGameValidator createValidator,
+    UpdateGameValidator updateValidator,
+    IOrderService orderService) : ControllerBase
 {
     private readonly IGameService _gameService = gameService;
     private readonly IGenreService _genreService = genreService;
     private readonly IPlatformService _platformService = platformService;
     private readonly IPublisherService _publisherService = publisherService;
+    private readonly IOrderService _orderService = orderService;
 
     private readonly CreateGameValidator _createValidator = createValidator;
     private readonly UpdateGameValidator _updateValidator = updateValidator;
+
+    private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
@@ -225,6 +236,28 @@ public class GamesController(IGameService gameService, IGenreService genreServic
         catch (NotFoundException nex)
         {
             return NotFound(nex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An internal server error has occured");
+        }
+    }
+
+    [HttpPost("{key}/buy")]
+    public async Task<IActionResult> BuyGame(string key)
+    {
+        try
+        {
+            await _orderService.AddGameInTheCartAsync(_customerId, key);
+            return Ok();
+        }
+        catch (NotFoundException nex)
+        {
+            return NotFound(nex.Message);
+        }
+        catch (NotEnoughGamesInStockException negex)
+        {
+            return BadRequest(negex.Message);
         }
         catch (Exception)
         {

@@ -4,15 +4,17 @@ namespace Gamestore.BLL.Services.OrderService;
 
 public interface IOrderService
 {
-    Task AddGameInTheCart(Guid customerId, string gameKey);
+    Task AddGameInTheCartAsync(Guid customerId, string gameKey);
 
-    Task RemoveGameFromTheCart(Guid customerId, string gameKey);
+    Task RemoveGameFromTheCartAsync(Guid customerId, string gameKey);
 
-    Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrders(Guid customerId);
+    Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrdersAsync();
 
-    Task<OrderDto?> GetById(Guid orderId);
+    Task<OrderDto?> GetByIdAsync(Guid orderId);
 
-    Task<IEnumerable<OrderDetailsDto>> GetOrderDetails(Guid orderId);
+    Task<IEnumerable<OrderDetailsDto>> GetOrderDetailsAsync(Guid orderId);
 
-    Task<IEnumerable<OrderDetailsDto>> GetCart(Guid customerId);
+    Task<IEnumerable<OrderDetailsDto>> GetCartAsync(Guid customerId);
+
+    Task CancelOrderAsync(Guid orderId);
 }

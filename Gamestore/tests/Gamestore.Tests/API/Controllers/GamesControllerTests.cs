@@ -9,6 +9,7 @@ using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
+using Gamestore.BLL.Services.OrderService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.BLL.Services.PublisherService;
 using Gamestore.Common.Exceptions;
@@ -25,6 +26,7 @@ public class GamesControllerTests
     private readonly Mock<IGenreService> _genreServiceMock;
     private readonly Mock<IPlatformService> _platformServiceMock;
     private readonly Mock<IPublisherService> _publisherServiceMock;
+    private readonly Mock<IOrderService> _orderServiceMock;
 
     private readonly Mock<CreateGameValidator> _createValidator;
     private readonly Mock<UpdateGameValidator> _updateValidator;
@@ -39,6 +41,7 @@ public class GamesControllerTests
         _genreServiceMock = _fixture.Freeze<Mock<IGenreService>>();
         _platformServiceMock = _fixture.Freeze<Mock<IPlatformService>>();
         _publisherServiceMock = _fixture.Freeze<Mock<IPublisherService>>();
+        _orderServiceMock = _fixture.Freeze<Mock<IOrderService>>();
 
         _createValidator = _fixture.Freeze<Mock<CreateGameValidator>>();
         _updateValidator = _fixture.Freeze<Mock<UpdateGameValidator>>();
@@ -49,7 +52,8 @@ public class GamesControllerTests
             _platformServiceMock.Object,
             _publisherServiceMock.Object,
             _createValidator.Object,
-            _updateValidator.Object);
+            _updateValidator.Object,
+            _orderServiceMock.Object);
     }
 
     [Fact]
