@@ -2,10 +2,17 @@ using Gamestore.BLL.DTOs.Order;
 using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Microsoft.Extensions.Configuration;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 
 namespace Gamestore.BLL.Services.OrderService;
 
-public class OrderService(IRepository<Order> orderRepository, IRepository<OrderGame> orderGameRepository, IRepository<Game> gameRepository) : IOrderService
+public class OrderService(
+    IRepository<Order> orderRepository,
+    IRepository<OrderGame> orderGameRepository,
+    IRepository<Game> gameRepository,
+    IConfiguration configuration) : IOrderService
 {
     private readonly IRepository<Order> _orderRepository = orderRepository;
     private readonly IRepository<OrderGame> _orderGameRepository = orderGameRepository;
@@ -88,6 +95,71 @@ public class OrderService(IRepository<Order> orderRepository, IRepository<OrderG
         order.Status = OrderStatus.Cancelled;
 
         await _orderRepository.SaveChangesAsync();
+    }
+
+    public async Task PayOrderAsync(Guid orderId)
+    {
+        var order = await _orderRepository.GetOneAsync(o => o.Id == orderId);
+
+        order.Status = OrderStatus.Paid;
+
+        await _orderRepository.SaveChangesAsync();
+    }
+
+    // TODO: Make the invoice prettier
+    public async Task<byte[]> GenerateInvoicePdfAsync(Guid customerId)
+    {
+        var order = await _orderRepository.GetOneAsync(o => o.CustomerId == customerId
+                                                            && o.Status == OrderStatus.Open) ??
+                    throw new OrderNotFoundException(customerId);
+
+        int invoiceValidityInDays = Convert.ToInt32(configuration.GetSection("InvoiceValidity").Value);
+
+        var sumTotal =
+            (await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
+            .Select(og => og.Price * og.Quantity)
+            .Sum();
+
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
+        var document = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+
+                page.Header().Text("Invoice");
+
+                page.Content().Column(column =>
+                {
+                    column.Spacing(20);
+
+                    column.Item().Text($"User ID: {customerId}");
+                    column.Item().Text($"Order ID: {order.Id}");
+                    column.Item().Text($"Creation date: {DateTime.Now}");
+                    column.Item().Text($"Invoice valid until: {DateTime.Now.AddDays(invoiceValidityInDays)}");
+                    column.Item().Text($"Sum: ${sumTotal}");
+                });
+            });
+        });
+
+        return document.GeneratePdf();
+    }
+
+    public async Task<double> GetCartSumAsync(Guid customerId)
+    {
+        var order = await GetOrderOrElseThrow(customerId);
+        var gamesSum =
+            (await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
+            .Select(o => o.Quantity * o.Price)
+            .Sum();
+
+        return gamesSum;
+    }
+
+    public async Task<Guid> GetCartIdAsync(Guid customerId)
+    {
+        return (await GetOrderOrElseThrow(customerId)).Id;
     }
 
     private async Task<Game> GetGameOrElseThrow(string gameKey)

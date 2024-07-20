@@ -1,15 +1,18 @@
+using System.Text;
 using Gamestore.API.DTOs.Order;
+using Gamestore.API.DTOs.Order.Payment;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class OrdersController(IOrderService orderService) : ControllerBase
+public class OrdersController(IOrderService orderService, IHttpClientFactory httpClientFactory) : ControllerBase
 {
-    // private const string PAYMENTAPI = "http://localhost:5000/api/payments";
+    private readonly HttpClient _paymentClient = httpClientFactory.CreateClient("PaymentAPI");
     private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     private readonly IOrderService _orderService = orderService;
@@ -105,12 +108,70 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(PaymentMethodsHelper.PaymentMethods);
     }
 
-    // [HttpPost("payment")]
-    // public async Task<IActionResult> MakePayment([FromBody] string method)
-    // {
-    //     if (method == "Bank")
-    //     {
-    //
-    //     }
-    // }
+    [HttpPost("payment")]
+    public async Task<IActionResult> MakePayment(PaymentRequest request)
+    {
+        if (request.Method == "Bank")
+        {
+            return File(
+                await _orderService.GenerateInvoicePdfAsync(_customerId),
+                "application/pdf",
+                "invoice.pdf");
+        }
+
+        if (request.Method == "IBox terminal")
+        {
+            var orderId = await _orderService.GetCartIdAsync(_customerId);
+            var cartSum = await _orderService.GetCartSumAsync(_customerId);
+
+            var requestToPaymentApi = new IBoxRequest(cartSum, _customerId, orderId);
+
+            var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
+
+            StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
+
+            var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
+
+            if (result.Result.IsSuccessStatusCode)
+            {
+                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
+                await _orderService.PayOrderAsync(orderId);
+                return Ok(response);
+            }
+
+            await _orderService.CancelOrderAsync(orderId);
+            return BadRequest($"Payment failed: {result.Result.Content}");
+        }
+
+        if (request.Method == "Visa")
+        {
+            var orderId = await _orderService.GetCartIdAsync(_customerId);
+            var cartSum = await _orderService.GetCartSumAsync(_customerId);
+
+            var requestToPaymentApi = new VisaRequest(
+                cartSum,
+                request.Model.Holder,
+                request.Model.CardNumber,
+                request.Model.MonthExpire,
+                request.Model.Cvv2,
+                request.Model.YearExpire);
+
+            var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
+            StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
+
+            var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
+
+            if (result.Result.IsSuccessStatusCode)
+            {
+                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
+                await _orderService.PayOrderAsync(orderId);
+                return Ok(response);
+            }
+
+            await _orderService.CancelOrderAsync(orderId);
+            return BadRequest($"Payment failed: {result.Result.Content}");
+        }
+
+        return BadRequest();
+    }
 }

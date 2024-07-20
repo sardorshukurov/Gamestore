@@ -1,4 +1,4 @@
-namespace Gamestore.API.DTOs.Order;
+namespace Gamestore.API.DTOs.Order.Payment;
 
 public record PaymentMethodResponse(
     string ImageUrl,

@@ -29,6 +29,12 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+builder.Services.AddHttpClient("PaymentAPI", client =>
+{
+    var uriString = builder.Configuration.GetSection("PaymentMicroservice").Value;
+    client.BaseAddress = new Uri(uriString!);
+});
+
 // adding middlewares
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddTransient<AddTotalGamesInHeaderMiddleware>();
