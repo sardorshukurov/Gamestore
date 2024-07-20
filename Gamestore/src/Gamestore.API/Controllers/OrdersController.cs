@@ -142,7 +142,7 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
                 }
 
                 await _orderService.CancelOrderAsync(orderId);
-                return BadRequest($"Payment failed: {result.Result.Content.ReadAsStringAsync()}");
+                return BadRequest($"Payment failed: {await result.Result.Content.ReadAsStringAsync()}");
             }
 
             if (request.Method == "Visa")
@@ -171,7 +171,7 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
                 }
 
                 await _orderService.CancelOrderAsync(orderId);
-                return BadRequest($"Payment failed: {result.Result.Content.ReadAsStringAsync()}");
+                return BadRequest($"Payment failed: {await result.Result.Content.ReadAsStringAsync()}");
             }
 
             return BadRequest();
