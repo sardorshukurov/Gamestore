@@ -8,6 +8,8 @@ public interface IRepository<T>
 
     Task DeleteByIdAsync(Guid id);
 
+    Task DeleteOneAsync(Expression<Func<T, bool>> filter);
+
     Task DeleteByFilterAsync(Expression<Func<T, bool>> filter);
 
     Task UpdateAsync(Guid id, T entity);
@@ -23,4 +25,6 @@ public interface IRepository<T>
     Task SaveChangesAsync();
 
     Task<int> CountAsync();
+
+    Task<int> CountByFilterAsync(Expression<Func<T, bool>> filter);
 }

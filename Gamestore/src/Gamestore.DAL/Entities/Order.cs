@@ -12,7 +12,7 @@ public enum OrderStatus
 
 public class Order : IBaseEntity
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public DateTime? Date { get; set; }
 

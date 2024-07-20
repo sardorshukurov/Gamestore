@@ -1,5 +1,6 @@
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
+using Gamestore.BLL.Services.OrderService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.BLL.Services.PublisherService;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ public static class Injection
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IPlatformService, PlatformService>();
         services.AddScoped<IPublisherService, PublisherService>();
+        services.AddScoped<IOrderService, OrderService>();
 
         return services;
     }

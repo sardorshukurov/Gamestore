@@ -8,7 +8,7 @@ public interface IOrderService
 
     Task RemoveGameFromTheCart(Guid customerId, string gameKey);
 
-    Task<IEnumerable<OrderDto>> GetAll(Guid customerId);
+    Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrders(Guid customerId);
 
     Task<OrderDto?> GetById(Guid orderId);
 

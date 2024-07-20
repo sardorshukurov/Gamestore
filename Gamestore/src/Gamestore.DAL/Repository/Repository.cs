@@ -35,6 +35,19 @@ public class Repository<T> : IRepository<T>
         }
     }
 
+    public async Task DeleteOneAsync(Expression<Func<T, bool>> filter)
+    {
+        var entity = await _dbSet.Where(filter).FirstOrDefaultAsync();
+        if (entity is not null)
+        {
+            _dbSet.Remove(entity);
+        }
+        else
+        {
+            throw new NotFoundException($"Entity of type {typeof(T)} not found");
+        }
+    }
+
     public async Task DeleteByFilterAsync(Expression<Func<T, bool>> filter)
     {
         var entities = await _dbSet.Where(filter).ToListAsync();
@@ -89,5 +102,10 @@ public class Repository<T> : IRepository<T>
     public async Task<int> CountAsync()
     {
         return await _dbSet.CountAsync();
+    }
+
+    public async Task<int> CountByFilterAsync(Expression<Func<T, bool>> filter)
+    {
+        return await _dbSet.Where(filter).CountAsync();
     }
 }
