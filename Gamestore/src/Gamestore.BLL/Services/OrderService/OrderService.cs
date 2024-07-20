@@ -123,7 +123,7 @@ public class OrderService(
     {
         var order = await _orderRepository.GetOneAsync(o => o.CustomerId == customerId
                                                             && o.Status == OrderStatus.Open) ??
-                    throw new OrderNotFoundException(customerId);
+                    throw new OrderNotFoundException($"Open order for customer with id {customerId} not found");
 
         int invoiceValidityInDays = Convert.ToInt32(configuration.GetSection("InvoiceValidity").Value);
 
@@ -229,14 +229,14 @@ public class OrderService(
     private async Task<Order> GetOrderOrElseThrow(Guid customerId)
     {
         return await _orderRepository.GetOneAsync(o => o.Status == OrderStatus.Open && o.CustomerId == customerId)
-               ?? throw new OrderNotFoundException(customerId);
+               ?? throw new OrderNotFoundException($"Open order for customer with id: {customerId} not found");
     }
 
     private async Task<OrderGame> GetOrderGameOrElseThrow(Guid gameId, Guid orderId)
     {
         return await _orderGameRepository.GetOneAsync(og => og.OrderId == orderId
                                                             && og.ProductId == gameId)
-               ?? throw new OrderNotFoundException(gameId);
+               ?? throw new OrderNotFoundException($"Game with id {gameId} in order with id {orderId} not found");
     }
 
     private async Task DeleteOrderIfNoGamesLeft(Guid orderId)
