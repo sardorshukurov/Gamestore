@@ -18,6 +18,8 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 
     public DbSet<GamePlatform> GamesPlatforms { get; set; }
 
+    public DbSet<OrderGame> OrdersGames { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ConfigureGames();
@@ -26,6 +28,8 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
         modelBuilder.ConfigureGamePlatforms();
         modelBuilder.ConfigurePlatforms();
         modelBuilder.ConfigurePublishers();
+        modelBuilder.ConfigureOrders();
+        modelBuilder.ConfigureOrderGame();
 
         base.OnModelCreating(modelBuilder);
     }
