@@ -1,5 +1,5 @@
 {
-  "Game": "/game/",
+  "Game": "/game",
   "UpdateGame": "/update-game",
   "DeleteGame": "/delete-game",
   "AddGame": "/add-game",
@@ -21,5 +21,10 @@
   "Publisher": "/publisher",
   "UpdatePublisher": "/update-publisher",
   "DeletePublisher": "/delete-publisher",
-  "AddPublisher": "/add-publisher"
+  "AddPublisher": "/add-publisher",
+
+  "Order": "/order",
+  "Orders": "/orders",
+  "Basket": "/basket",
+  "MakeOrder": "/order"
 }
