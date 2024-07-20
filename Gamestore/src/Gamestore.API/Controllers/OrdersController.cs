@@ -111,67 +111,78 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
     [HttpPost("payment")]
     public async Task<IActionResult> MakePayment(PaymentRequest request)
     {
-        if (request.Method == "Bank")
+        try
         {
-            return File(
-                await _orderService.GenerateInvoicePdfAsync(_customerId),
-                "application/pdf",
-                "invoice.pdf");
-        }
-
-        if (request.Method == "IBox terminal")
-        {
-            var orderId = await _orderService.GetCartIdAsync(_customerId);
-            var cartSum = await _orderService.GetCartSumAsync(_customerId);
-
-            var requestToPaymentApi = new IBoxRequest(cartSum, _customerId, orderId);
-
-            var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
-
-            StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
-
-            var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
-
-            if (result.Result.IsSuccessStatusCode)
+            if (request.Method == "Bank")
             {
-                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
-                await _orderService.PayOrderAsync(orderId);
-                return Ok(response);
+                return File(
+                    await _orderService.GenerateInvoicePdfAsync(_customerId),
+                    "application/pdf",
+                    "invoice.pdf");
             }
 
-            await _orderService.CancelOrderAsync(orderId);
-            return BadRequest($"Payment failed: {result.Result.Content}");
-        }
-
-        if (request.Method == "Visa")
-        {
-            var orderId = await _orderService.GetCartIdAsync(_customerId);
-            var cartSum = await _orderService.GetCartSumAsync(_customerId);
-
-            var requestToPaymentApi = new VisaRequest(
-                cartSum,
-                request.Model.Holder,
-                request.Model.CardNumber,
-                request.Model.MonthExpire,
-                request.Model.Cvv2,
-                request.Model.YearExpire);
-
-            var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
-            StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
-
-            var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
-
-            if (result.Result.IsSuccessStatusCode)
+            if (request.Method == "IBox terminal")
             {
-                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
-                await _orderService.PayOrderAsync(orderId);
-                return Ok(response);
+                var orderId = await _orderService.GetCartIdAsync(_customerId);
+                var cartSum = await _orderService.GetCartSumAsync(_customerId);
+
+                var requestToPaymentApi = new IBoxRequest(cartSum, _customerId, orderId);
+
+                var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
+
+                StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
+
+                var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
+
+                if (result.Result.IsSuccessStatusCode)
+                {
+                    var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
+                    await _orderService.PayOrderAsync(orderId);
+                    return Ok(response);
+                }
+
+                await _orderService.CancelOrderAsync(orderId);
+                return BadRequest($"Payment failed: {result.Result.Content}");
             }
 
-            await _orderService.CancelOrderAsync(orderId);
-            return BadRequest($"Payment failed: {result.Result.Content}");
-        }
+            if (request.Method == "Visa")
+            {
+                var orderId = await _orderService.GetCartIdAsync(_customerId);
+                var cartSum = await _orderService.GetCartSumAsync(_customerId);
 
-        return BadRequest();
+                var requestToPaymentApi = new VisaRequest(
+                    cartSum,
+                    request.Model.Holder,
+                    request.Model.CardNumber,
+                    request.Model.MonthExpire,
+                    request.Model.Cvv2,
+                    request.Model.YearExpire);
+
+                var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
+                StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
+
+                var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
+
+                if (result.Result.IsSuccessStatusCode)
+                {
+                    var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
+                    await _orderService.PayOrderAsync(orderId);
+                    return Ok(response);
+                }
+
+                await _orderService.CancelOrderAsync(orderId);
+                return BadRequest($"Payment failed: {result.Result.Content}");
+            }
+
+            return BadRequest();
+        }
+        catch (NotFoundException nex)
+        {
+            return NotFound(nex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An internal server error has occured");
+        }
     }
 }

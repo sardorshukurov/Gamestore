@@ -94,6 +94,18 @@ public class OrderService(
 
         order.Status = OrderStatus.Cancelled;
 
+        var orderGames = await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == orderId);
+
+        foreach (var orderGame in orderGames)
+        {
+            var game = await _gameRepository.GetByIdAsync(orderGame.ProductId);
+
+            if (game is not null)
+            {
+                game.UnitInStock += orderGame.Quantity;
+            }
+        }
+
         await _orderRepository.SaveChangesAsync();
     }
 
