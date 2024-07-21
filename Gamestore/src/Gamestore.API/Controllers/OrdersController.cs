@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using Gamestore.API.DTOs.Order;
 using Gamestore.API.DTOs.Order.Payment;
@@ -12,14 +13,15 @@ namespace Gamestore.API.Controllers;
 [ApiController]
 public class OrdersController(
     IOrderService orderService,
-    IHttpClientFactory httpClientFactory) : ControllerBase
+    IHttpClientFactory httpClientFactory,
+    ILogger<OrdersController> logger) : ControllerBase
 {
     private const int MaxRetryAttempts = 3;
 
     // httpclient to make calls to payment microservice
     private readonly HttpClient _paymentClient = httpClientFactory.CreateClient("PaymentAPI");
 
-    private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private readonly Guid _customerId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
     [HttpDelete("cart/{key}")]
     public async Task<IActionResult> RemoveGameFromCart(string key)
@@ -155,10 +157,12 @@ public class OrdersController(
 
         var attempt = 0;
 
+        var result = new HttpResponseMessage();
+
         while (attempt < MaxRetryAttempts)
         {
             // make the request
-            var result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
+            result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
 
             // if successful make the order paid and return ok response
             if (result.IsSuccessStatusCode)
@@ -169,11 +173,24 @@ public class OrdersController(
             }
 
             attempt++;
+
+            logger.LogWarning($"Attempt for payment number {attempt}. Result: {await result.Content.ReadAsStringAsync()}");
+
+            // wait before retrying
+            await Task.Delay(TimeSpan.FromSeconds(attempt * 2));
         }
 
-        // else cancel the order and return bad request with error from microservice api
         await orderService.CancelOrderAsync(orderId);
-        return BadRequest($"Payment failed after: {attempt} attempts");
+
+        var message = new StringBuilder();
+        message.Append($"Payment failed after: {attempt} attempts. ");
+
+        if (result.StatusCode == HttpStatusCode.BadRequest)
+        {
+            message.Append(await result.Content.ReadAsStringAsync());
+        }
+
+        return BadRequest(message.ToString());
     }
 
     private async Task<IActionResult> ProcessIBoxPayment()
@@ -188,11 +205,12 @@ public class OrdersController(
         StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
 
         var attempt = 0;
+        var result = new HttpResponseMessage();
 
         while (attempt < MaxRetryAttempts)
         {
             // make the request
-            var result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
+            result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
 
             if (result.IsSuccessStatusCode)
             {
@@ -202,10 +220,24 @@ public class OrdersController(
             }
 
             attempt++;
+
+            logger.LogWarning($"Attempt for payment number {attempt}. Result: {await result.Content.ReadAsStringAsync()}");
+
+            // wait before retrying
+            await Task.Delay(TimeSpan.FromSeconds(attempt * 2));
         }
 
         await orderService.CancelOrderAsync(orderId);
-        return BadRequest($"Payment failed after: {attempt} attempts");
+
+        var message = new StringBuilder();
+        message.Append($"Payment failed after: {attempt} attempts. ");
+
+        if (result.StatusCode == HttpStatusCode.BadRequest)
+        {
+            message.Append(await result.Content.ReadAsStringAsync());
+        }
+
+        return BadRequest(message.ToString());
     }
 
     private async Task<FileContentResult> ProcessBankPayment()
