@@ -10,19 +10,23 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class OrdersController(IOrderService orderService, IHttpClientFactory httpClientFactory) : ControllerBase
+public class OrdersController(
+    IOrderService orderService,
+    IHttpClientFactory httpClientFactory) : ControllerBase
 {
-    private readonly HttpClient _paymentClient = httpClientFactory.CreateClient("PaymentAPI");
-    private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private const int MaxRetryAttempts = 3;
 
-    private readonly IOrderService _orderService = orderService;
+    // httpclient to make calls to payment microservice
+    private readonly HttpClient _paymentClient = httpClientFactory.CreateClient("PaymentAPI");
+
+    private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     [HttpDelete("cart/{key}")]
     public async Task<IActionResult> RemoveGameFromCart(string key)
     {
         try
         {
-            await _orderService.RemoveGameFromTheCartAsync(_customerId, key);
+            await orderService.RemoveGameFromTheCartAsync(_customerId, key);
             return Ok();
         }
         catch (NotFoundException nex)
@@ -40,7 +44,7 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
     {
         try
         {
-            var orders = (await _orderService.GetPaidAndCancelledOrdersAsync())
+            var orders = (await orderService.GetPaidAndCancelledOrdersAsync())
                 .Select(o => o.AsResponse());
 
             return Ok(orders);
@@ -56,7 +60,7 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
     {
         try
         {
-            var order = await _orderService.GetByIdAsync(id);
+            var order = await orderService.GetByIdAsync(id);
 
             return order is null ? NotFound($"Order with id {id} not found") : order.AsResponse();
         }
@@ -71,7 +75,7 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
     {
         try
         {
-            var orderDetails = (await _orderService.GetOrderDetailsAsync(id))
+            var orderDetails = (await orderService.GetOrderDetailsAsync(id))
                 .Select(od => od.AsResponse());
 
             return Ok(orderDetails);
@@ -87,7 +91,7 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
     {
         try
         {
-            var orderDetails = (await _orderService.GetCartAsync(_customerId))
+            var orderDetails = (await orderService.GetCartAsync(_customerId))
                 .Select(od => od.AsResponse());
 
             return Ok(orderDetails);
@@ -133,9 +137,10 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
 
     private async Task<IActionResult> ProcessVisaPayment(PaymentRequest request)
     {
-        var orderId = await _orderService.GetCartIdAsync(_customerId);
-        var cartSum = await _orderService.GetCartSumAsync(_customerId);
+        var orderId = await orderService.GetCartIdAsync(_customerId);
+        var cartSum = await orderService.GetCartSumAsync(_customerId);
 
+        // create request for the payment api
         var requestToPaymentApi = new VisaRequest(
             cartSum,
             request.Model.Holder,
@@ -144,50 +149,69 @@ public class OrdersController(IOrderService orderService, IHttpClientFactory htt
             request.Model.Cvv2,
             request.Model.YearExpire);
 
+        // serialize the request
         var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
         StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
 
-        var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
+        var attempt = 0;
 
-        if (result.Result.IsSuccessStatusCode)
+        while (attempt < MaxRetryAttempts)
         {
-            var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
-            await _orderService.PayOrderAsync(orderId);
-            return Ok(response);
+            // make the request
+            var result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
+
+            // if successful make the order paid and return ok response
+            if (result.IsSuccessStatusCode)
+            {
+                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
+                await orderService.PayOrderAsync(orderId);
+                return Ok(response);
+            }
+
+            attempt++;
         }
 
-        await _orderService.CancelOrderAsync(orderId);
-        return BadRequest($"Payment failed: {await result.Result.Content.ReadAsStringAsync()}");
+        // else cancel the order and return bad request with error from microservice api
+        await orderService.CancelOrderAsync(orderId);
+        return BadRequest($"Payment failed after: {attempt} attempts");
     }
 
     private async Task<IActionResult> ProcessIBoxPayment()
     {
-        var orderId = await _orderService.GetCartIdAsync(_customerId);
-        var cartSum = await _orderService.GetCartSumAsync(_customerId);
+        var orderId = await orderService.GetCartIdAsync(_customerId);
+        var cartSum = await orderService.GetCartSumAsync(_customerId);
 
         var requestToPaymentApi = new IBoxRequest(cartSum, _customerId, orderId);
 
+        // serialize the request
         var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
-
         StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
 
-        var result = _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
+        var attempt = 0;
 
-        if (result.Result.IsSuccessStatusCode)
+        while (attempt < MaxRetryAttempts)
         {
-            var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
-            await _orderService.PayOrderAsync(orderId);
-            return Ok(response);
+            // make the request
+            var result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
+                await orderService.PayOrderAsync(orderId);
+                return Ok(response);
+            }
+
+            attempt++;
         }
 
-        await _orderService.CancelOrderAsync(orderId);
-        return BadRequest($"Payment failed: {await result.Result.Content.ReadAsStringAsync()}");
+        await orderService.CancelOrderAsync(orderId);
+        return BadRequest($"Payment failed after: {attempt} attempts");
     }
 
     private async Task<FileContentResult> ProcessBankPayment()
     {
         return File(
-            await _orderService.GenerateInvoicePdfAsync(_customerId),
+            await orderService.GenerateInvoicePdfAsync(_customerId),
             "application/pdf",
             "invoice.pdf");
     }

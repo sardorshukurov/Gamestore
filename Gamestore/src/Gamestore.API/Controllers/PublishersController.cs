@@ -9,20 +9,18 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class PublishersController(IPublisherService publisherService, IGameService gameService, CreatePublisherValidator createValidator, UpdatePublisherValidator updateValidator) : ControllerBase
+public class PublishersController(
+    IPublisherService publisherService,
+    IGameService gameService,
+    CreatePublisherValidator createValidator,
+    UpdatePublisherValidator updateValidator) : ControllerBase
 {
-    private readonly IPublisherService _publisherService = publisherService;
-    private readonly IGameService _gameService = gameService;
-
-    private readonly CreatePublisherValidator _createValidator = createValidator;
-    private readonly UpdatePublisherValidator _updateValidator = updateValidator;
-
     [HttpPost]
     public async Task<IActionResult> Create(CreatePublisherRequest request)
     {
         try
         {
-            var result = await _createValidator.ValidateAsync(request);
+            var result = await createValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -33,7 +31,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
                 });
             }
 
-            await _publisherService.CreateAsync(request.AsDto());
+            await publisherService.CreateAsync(request.AsDto());
             return Ok();
         }
         catch (Exception)
@@ -48,7 +46,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
     {
         try
         {
-            var publisher = await _publisherService.GetByCompanyNameAsync(companyName);
+            var publisher = await publisherService.GetByCompanyNameAsync(companyName);
 
             return publisher is null
                 ? NotFound($"Publisher with company name: {companyName} not found.")
@@ -66,7 +64,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
     {
         try
         {
-            var publishers = (await _publisherService.GetAllAsync())
+            var publishers = (await publisherService.GetAllAsync())
                 .Select(p => p.AsResponse());
 
             return Ok(publishers);
@@ -82,7 +80,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
     {
         try
         {
-            var result = await _updateValidator.ValidateAsync(request);
+            var result = await updateValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -93,7 +91,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
                 });
             }
 
-            await _publisherService.UpdateAsync(request.AsDto());
+            await publisherService.UpdateAsync(request.AsDto());
 
             return NoContent();
         }
@@ -112,7 +110,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
     {
         try
         {
-            await _publisherService.DeleteAsync(id);
+            await publisherService.DeleteAsync(id);
 
             return NoContent();
         }
@@ -132,7 +130,7 @@ public class PublishersController(IPublisherService publisherService, IGameServi
     {
         try
         {
-            var games = (await _gameService.GetByPublisherAsync(companyName))
+            var games = (await gameService.GetByPublisherAsync(companyName))
                 .Select(g => g.AsResponse())
                 .ToList();
 

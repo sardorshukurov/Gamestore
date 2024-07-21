@@ -25,15 +25,6 @@ public class GamesController(
     UpdateGameValidator updateValidator,
     IOrderService orderService) : ControllerBase
 {
-    private readonly IGameService _gameService = gameService;
-    private readonly IGenreService _genreService = genreService;
-    private readonly IPlatformService _platformService = platformService;
-    private readonly IPublisherService _publisherService = publisherService;
-    private readonly IOrderService _orderService = orderService;
-
-    private readonly CreateGameValidator _createValidator = createValidator;
-    private readonly UpdateGameValidator _updateValidator = updateValidator;
-
     private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     [HttpPost]
@@ -41,7 +32,7 @@ public class GamesController(
     {
         try
         {
-            var result = await _createValidator.ValidateAsync(request);
+            var result = await createValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -52,7 +43,7 @@ public class GamesController(
                 });
             }
 
-            await _gameService.CreateAsync(request.AsDto());
+            await gameService.CreateAsync(request.AsDto());
             return Ok();
         }
         catch (Exception)
@@ -66,7 +57,7 @@ public class GamesController(
     {
         try
         {
-            var game = await _gameService.GetByKeyAsync(key);
+            var game = await gameService.GetByKeyAsync(key);
 
             return game is null ? NotFound($"Game with key {key} not found") : Ok(game.AsResponse());
         }
@@ -82,7 +73,7 @@ public class GamesController(
     {
         try
         {
-            var game = await _gameService.GetByIdAsync(id);
+            var game = await gameService.GetByIdAsync(id);
 
             return game is null ? NotFound($"Game with id {id} not found") : Ok(game.AsResponse());
         }
@@ -97,7 +88,7 @@ public class GamesController(
     {
         try
         {
-            var games = (await _gameService.GetAllAsync())
+            var games = (await gameService.GetAllAsync())
                 .Select(g => g.AsResponse());
             return Ok(games);
         }
@@ -112,7 +103,7 @@ public class GamesController(
     {
         try
         {
-            var result = await _updateValidator.ValidateAsync(request);
+            var result = await updateValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -125,7 +116,7 @@ public class GamesController(
 
             var gameDto = request.AsDto();
 
-            await _gameService.UpdateAsync(gameDto);
+            await gameService.UpdateAsync(gameDto);
             return NoContent();
         }
         catch (NotFoundException nex)
@@ -143,7 +134,7 @@ public class GamesController(
     {
         try
         {
-            await _gameService.DeleteByKeyAsync(key);
+            await gameService.DeleteByKeyAsync(key);
             return NoContent();
         }
         catch (NotFoundException)
@@ -162,7 +153,7 @@ public class GamesController(
     {
         try
         {
-            var game = await _gameService.GetByKeyAsync(key);
+            var game = await gameService.GetByKeyAsync(key);
 
             if (game is null)
             {
@@ -170,7 +161,10 @@ public class GamesController(
             }
 
             var fileName = $"{game.Name}_{DateTime.Now:yyyyMMddHHmmss}.txt";
+
+            // serialize game object to return as txt file
             var serializedGame = JsonConvert.SerializeObject(game);
+
             return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
         }
         catch (Exception)
@@ -185,7 +179,7 @@ public class GamesController(
     {
         try
         {
-            var genres = (await _genreService.GetAllByGameKeyAsync(key))
+            var genres = (await genreService.GetAllByGameKeyAsync(key))
                 .Select(g => g.AsShortResponse());
 
             return Ok(genres);
@@ -206,7 +200,7 @@ public class GamesController(
     {
         try
         {
-            var platforms = (await _platformService.GetAllByGameKeyAsync(key))
+            var platforms = (await platformService.GetAllByGameKeyAsync(key))
                 .Select(p => p.AsShortResponse());
 
             return Ok(platforms);
@@ -227,7 +221,7 @@ public class GamesController(
     {
         try
         {
-            var publisher = await _publisherService.GetByGameKeyAsync(key);
+            var publisher = await publisherService.GetByGameKeyAsync(key);
 
             return publisher is null
                 ? NotFound($"Publisher for the game with game key {key} not found")
@@ -248,7 +242,7 @@ public class GamesController(
     {
         try
         {
-            await _orderService.AddGameInTheCartAsync(_customerId, key);
+            await orderService.AddGameInTheCartAsync(_customerId, key);
             return Ok();
         }
         catch (NotFoundException nex)

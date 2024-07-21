@@ -9,21 +9,19 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class PlatformsController(IPlatformService platformService, IGameService gameService, CreatePlatformValidator createValidator, UpdatePlatformValidator updateValidator) : ControllerBase
+public class PlatformsController(
+    IPlatformService platformService,
+    IGameService gameService,
+    CreatePlatformValidator createValidator,
+    UpdatePlatformValidator updateValidator) : ControllerBase
 {
-    private readonly IPlatformService _platformService = platformService;
-    private readonly IGameService _gameService = gameService;
-
-    private readonly CreatePlatformValidator _createValidator = createValidator;
-    private readonly UpdatePlatformValidator _updateValidator = updateValidator;
-
     [HttpGet("{id}/games")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
     {
         try
         {
-            var games = (await _gameService.GetByPlatformAsync(id))
+            var games = (await gameService.GetByPlatformAsync(id))
                 .Select(g => g.AsResponse());
 
             return Ok(games);
@@ -39,7 +37,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
-            var result = await _createValidator.ValidateAsync(request);
+            var result = await createValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -50,7 +48,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
                 });
             }
 
-            await _platformService.CreateAsync(request.AsDto());
+            await platformService.CreateAsync(request.AsDto());
             return Ok();
         }
         catch (Exception)
@@ -65,7 +63,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
-            var platform = await _platformService.GetByIdAsync(id);
+            var platform = await platformService.GetByIdAsync(id);
 
             return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.AsShortResponse());
         }
@@ -81,7 +79,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
-            var platforms = (await _platformService.GetAllAsync())
+            var platforms = (await platformService.GetAllAsync())
                 .Select(p => p.AsShortResponse());
 
             return Ok(platforms);
@@ -97,7 +95,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
-            var result = await _updateValidator.ValidateAsync(request);
+            var result = await updateValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -108,7 +106,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
                 });
             }
 
-            await _platformService.UpdateAsync(request.AsDto());
+            await platformService.UpdateAsync(request.AsDto());
 
             return NoContent();
         }
@@ -127,7 +125,7 @@ public class PlatformsController(IPlatformService platformService, IGameService 
     {
         try
         {
-            await _platformService.DeleteAsync(id);
+            await platformService.DeleteAsync(id);
 
             return NoContent();
         }

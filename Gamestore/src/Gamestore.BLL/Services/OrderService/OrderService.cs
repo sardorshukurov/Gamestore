@@ -14,10 +14,6 @@ public class OrderService(
     IRepository<Game> gameRepository,
     IConfiguration configuration) : IOrderService
 {
-    private readonly IRepository<Order> _orderRepository = orderRepository;
-    private readonly IRepository<OrderGame> _orderGameRepository = orderGameRepository;
-    private readonly IRepository<Game> _gameRepository = gameRepository;
-
     public async Task AddGameInTheCartAsync(Guid customerId, string gameKey)
     {
         var game = await GetGameOrElseThrow(gameKey);
@@ -28,22 +24,22 @@ public class OrderService(
         await AddGameToOrder(game, order);
         game.UnitInStock--;
 
-        await _orderRepository.SaveChangesAsync();
+        await orderRepository.SaveChangesAsync();
     }
 
     public async Task RemoveGameFromTheCartAsync(Guid customerId, string gameKey)
     {
         var game = await GetGameOrElseThrow(gameKey);
-        var order = await GetOrderOrElseThrow(customerId);
+        var order = await GetOpenOrderByCustomerIdOrElseThrow(customerId);
         var orderGame = await GetOrderGameOrElseThrow(game.Id, order.Id);
 
-        await _orderGameRepository.DeleteOneAsync(og =>
+        await orderGameRepository.DeleteOneAsync(og =>
             og.OrderId == orderGame.OrderId
             && og.ProductId == orderGame.ProductId);
 
         game.UnitInStock += orderGame.Quantity;
 
-        await _orderRepository.SaveChangesAsync();
+        await orderRepository.SaveChangesAsync();
 
         await DeleteOrderIfNoGamesLeft(order.Id);
     }
@@ -51,7 +47,7 @@ public class OrderService(
     public async Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrdersAsync()
     {
         var orders =
-            (await _orderRepository.GetAllByFilterAsync(o =>
+            (await orderRepository.GetAllByFilterAsync(o =>
                 o.Status == OrderStatus.Paid || o.Status == OrderStatus.Cancelled))
             .Select(o => o.AsDto());
 
@@ -60,7 +56,7 @@ public class OrderService(
 
     public async Task<OrderDto?> GetByIdAsync(Guid orderId)
     {
-        var order = await _orderRepository.GetOneAsync(o => o.Id == orderId);
+        var order = await orderRepository.GetOneAsync(o => o.Id == orderId);
 
         return order?.AsDto();
     }
@@ -68,7 +64,7 @@ public class OrderService(
     public async Task<IEnumerable<OrderDetailsDto>> GetOrderDetailsAsync(Guid orderId)
     {
         var orderGames =
-            (await _orderGameRepository.GetAllByFilterAsync(og =>
+            (await orderGameRepository.GetAllByFilterAsync(og =>
                 og.OrderId == orderId))
             .Select(og => og.AsDto());
 
@@ -77,11 +73,9 @@ public class OrderService(
 
     public async Task<IEnumerable<OrderDetailsDto>> GetCartAsync(Guid customerId)
     {
-        var order = await _orderRepository.GetOneAsync(o =>
-            o.CustomerId == customerId && o.Status == OrderStatus.Open)
-                    ?? throw new NotFoundException("You do not have products in your cart");
+        var order = await GetOpenOrderByCustomerIdOrElseThrow(customerId);
 
-        var orderGames = (await _orderGameRepository.GetAllByFilterAsync(
+        var orderGames = (await orderGameRepository.GetAllByFilterAsync(
             og => og.OrderId == order.Id))
             .Select(og => og.AsDto());
 
@@ -90,15 +84,16 @@ public class OrderService(
 
     public async Task CancelOrderAsync(Guid orderId)
     {
-        var order = await _orderRepository.GetOneAsync(o => o.Id == orderId);
+        var order = await orderRepository.GetOneAsync(o => o.Id == orderId);
 
         order.Status = OrderStatus.Cancelled;
 
-        var orderGames = await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == orderId);
+        var orderGames = await orderGameRepository.GetAllByFilterAsync(og => og.OrderId == orderId);
 
+        // adds back quantity of taken games to the stock
         foreach (var orderGame in orderGames)
         {
-            var game = await _gameRepository.GetByIdAsync(orderGame.ProductId);
+            var game = await gameRepository.GetByIdAsync(orderGame.ProductId);
 
             if (game is not null)
             {
@@ -106,32 +101,33 @@ public class OrderService(
             }
         }
 
-        await _orderRepository.SaveChangesAsync();
+        await orderRepository.SaveChangesAsync();
     }
 
     public async Task PayOrderAsync(Guid orderId)
     {
-        var order = await _orderRepository.GetOneAsync(o => o.Id == orderId);
+        var order = await orderRepository.GetOneAsync(o => o.Id == orderId);
 
         order.Status = OrderStatus.Paid;
 
-        await _orderRepository.SaveChangesAsync();
+        await orderRepository.SaveChangesAsync();
     }
 
-    // TODO: Make the invoice prettier
+    // TODO: Make the invoice prettier (someday I will :P)
     public async Task<byte[]> GenerateInvoicePdfAsync(Guid customerId)
     {
-        var order = await _orderRepository.GetOneAsync(o => o.CustomerId == customerId
-                                                            && o.Status == OrderStatus.Open) ??
-                    throw new OrderNotFoundException($"Open order for customer with id {customerId} not found");
+        var order = await GetOpenOrderByCustomerIdOrElseThrow(customerId);
 
+        // gets invoice validity in days from app settings
         int invoiceValidityInDays = Convert.ToInt32(configuration.GetSection("InvoiceValidity").Value);
 
+        // calculates total sum of the products
         var sumTotal =
-            (await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
+            (await orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
             .Select(og => og.Price * ((100 - og.Discount) / 100.0) * og.Quantity)
             .Sum();
 
+        // TODO: probably move this to somewhere else
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
         var document = Document.Create(container =>
@@ -160,9 +156,9 @@ public class OrderService(
 
     public async Task<double> GetCartSumAsync(Guid customerId)
     {
-        var order = await GetOrderOrElseThrow(customerId);
+        var order = await GetOpenOrderByCustomerIdOrElseThrow(customerId);
         var gamesSum =
-            (await _orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
+            (await orderGameRepository.GetAllByFilterAsync(og => og.OrderId == order.Id))
             .Select(og => og.Price * ((100 - og.Discount) / 100.0) * og.Quantity)
             .Sum();
 
@@ -171,14 +167,25 @@ public class OrderService(
 
     public async Task<Guid> GetCartIdAsync(Guid customerId)
     {
-        return (await GetOrderOrElseThrow(customerId)).Id;
+        return (await GetOpenOrderByCustomerIdOrElseThrow(customerId)).Id;
     }
 
+    /// <summary>
+    /// Gets the game by game key or throws an exception.
+    /// </summary>
+    /// <param name="gameKey">The game key.</param>
+    /// <returns>Game.</returns>
+    /// <exception cref="GameNotFoundException">Exception is thrown when the game is not found.</exception>
     private async Task<Game> GetGameOrElseThrow(string gameKey)
     {
-        return await _gameRepository.GetOneAsync(g => g.Key == gameKey) ?? throw new GameNotFoundException(gameKey);
+        return await gameRepository.GetOneAsync(g => g.Key == gameKey) ?? throw new GameNotFoundException(gameKey);
     }
 
+    /// <summary>
+    /// Checks whether the game has enough units in stock.
+    /// </summary>
+    /// <param name="game">The game.</param>
+    /// <exception cref="NotEnoughGamesInStockException">Exception is thrown when there is not enough units (less than 1).</exception>
     private static void EnsureGameIsInStock(Game game)
     {
         if (game.UnitInStock < 1)
@@ -187,9 +194,14 @@ public class OrderService(
         }
     }
 
+    /// <summary>
+    /// Returns order if there is open order for chosen customer otherwise creates a new open order.
+    /// </summary>
+    /// <param name="customerId">Id of the customer.</param>
+    /// <returns>Open order.</returns>
     private async Task<Order> GetOrCreateOpenOrder(Guid customerId)
     {
-        var order = await _orderRepository.GetOneAsync(o => o.Status == OrderStatus.Open
+        var order = await orderRepository.GetOneAsync(o => o.Status == OrderStatus.Open
                                                             && o.CustomerId == customerId);
         if (order is null)
         {
@@ -199,15 +211,21 @@ public class OrderService(
                 Date = DateTime.Now,
                 Status = OrderStatus.Open,
             };
-            await _orderRepository.CreateAsync(order);
+            await orderRepository.CreateAsync(order);
         }
 
         return order;
     }
 
+    /// <summary>
+    /// Adds game to the cart (order).
+    /// </summary>
+    /// <param name="game">Game, which needs to be added.</param>
+    /// <param name="order">Cart (order) to where the game is being added.</param>
     private async Task AddGameToOrder(Game game, Order order)
     {
-        var orderGame = await _orderGameRepository.GetOneAsync(og => og.OrderId == order.Id && og.ProductId == game.Id);
+        var orderGame = await orderGameRepository.GetOneAsync(og => og.OrderId == order.Id && og.ProductId == game.Id);
+
         if (orderGame is null)
         {
             orderGame = new OrderGame
@@ -218,33 +236,51 @@ public class OrderService(
                 Quantity = 1,
                 Discount = game.Discount,
             };
-            await _orderGameRepository.CreateAsync(orderGame);
+            await orderGameRepository.CreateAsync(orderGame);
         }
         else
         {
+            // if the game is already in the cart, the quantity is incremented
             orderGame.Quantity++;
         }
     }
 
-    private async Task<Order> GetOrderOrElseThrow(Guid customerId)
+    /// <summary>
+    /// Returns open order for the customer or throws exception if order doest not exist.
+    /// </summary>
+    /// <param name="customerId">Id of the customer.</param>
+    /// <returns>Open order.</returns>
+    /// <exception cref="OrderNotFoundException">Exception is thrown when open order for the customer is not found.</exception>
+    private async Task<Order> GetOpenOrderByCustomerIdOrElseThrow(Guid customerId)
     {
-        return await _orderRepository.GetOneAsync(o => o.Status == OrderStatus.Open && o.CustomerId == customerId)
+        return await orderRepository.GetOneAsync(o => o.Status == OrderStatus.Open && o.CustomerId == customerId)
                ?? throw new OrderNotFoundException($"Open order for customer with id: {customerId} not found");
     }
 
+    /// <summary>
+    /// Returns order game by gameId and orderId or throws exception if not found.
+    /// </summary>
+    /// <param name="gameId">Id of the game.</param>
+    /// <param name="orderId">Id of the order.</param>
+    /// <returns>Order game.</returns>
+    /// <exception cref="OrderNotFoundException">Exception is thrown when the order game is not found.</exception>
     private async Task<OrderGame> GetOrderGameOrElseThrow(Guid gameId, Guid orderId)
     {
-        return await _orderGameRepository.GetOneAsync(og => og.OrderId == orderId
+        return await orderGameRepository.GetOneAsync(og => og.OrderId == orderId
                                                             && og.ProductId == gameId)
                ?? throw new OrderNotFoundException($"Game with id {gameId} in order with id {orderId} not found");
     }
 
+    /// <summary>
+    /// Deletes order if there are no games left in it.
+    /// </summary>
+    /// <param name="orderId">Order Id.</param>
     private async Task DeleteOrderIfNoGamesLeft(Guid orderId)
     {
-        if (await _orderGameRepository.CountByFilterAsync(og => og.OrderId == orderId) == 0)
+        if (await orderGameRepository.CountByFilterAsync(og => og.OrderId == orderId) == 0)
         {
-            await _orderRepository.DeleteByIdAsync(orderId);
-            await _orderRepository.SaveChangesAsync();
+            await orderRepository.DeleteByIdAsync(orderId);
+            await orderRepository.SaveChangesAsync();
         }
     }
 }

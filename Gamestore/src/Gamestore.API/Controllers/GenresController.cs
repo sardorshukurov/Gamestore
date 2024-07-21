@@ -9,21 +9,19 @@ namespace Gamestore.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GenresController(IGenreService genreService, IGameService gameService, CreateGenreValidator createValidator, UpdateGenreValidator updateValidator) : ControllerBase
+public class GenresController(
+    IGenreService genreService,
+    IGameService gameService,
+    CreateGenreValidator createValidator,
+    UpdateGenreValidator updateValidator) : ControllerBase
 {
-    private readonly IGenreService _genreService = genreService;
-    private readonly IGameService _gameService = gameService;
-
-    private readonly CreateGenreValidator _createValidator = createValidator;
-    private readonly UpdateGenreValidator _updateValidator = updateValidator;
-
     [HttpGet("{id}/games")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
     {
         try
         {
-            var games = (await _gameService.GetByGenreAsync(id))
+            var games = (await gameService.GetByGenreAsync(id))
                 .Select(g => g.AsResponse());
 
             return Ok(games);
@@ -39,7 +37,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
-            var result = await _createValidator.ValidateAsync(request);
+            var result = await createValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -50,7 +48,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
                 });
             }
 
-            await _genreService.CreateAsync(request.AsDto());
+            await genreService.CreateAsync(request.AsDto());
             return Ok();
         }
         catch (Exception)
@@ -65,7 +63,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
-            var genre = await _genreService.GetByIdAsync(id);
+            var genre = await genreService.GetByIdAsync(id);
 
             return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre.AsShortResponse());
         }
@@ -81,7 +79,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
-            var genres = (await _genreService.GetAllAsync())
+            var genres = (await genreService.GetAllAsync())
                 .Select(g => g.AsShortResponse());
 
             return Ok(genres);
@@ -98,7 +96,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
-            var genres = (await _genreService.GetSubGenresAsync(parentId))
+            var genres = (await genreService.GetSubGenresAsync(parentId))
                 .Select(g => g.AsShortResponse());
 
             return Ok(genres);
@@ -114,7 +112,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
-            var result = await _updateValidator.ValidateAsync(request);
+            var result = await updateValidator.ValidateAsync(request);
 
             if (!result.IsValid)
             {
@@ -125,7 +123,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
                 });
             }
 
-            await _genreService.UpdateAsync(request.AsDto());
+            await genreService.UpdateAsync(request.AsDto());
 
             return NoContent();
         }
@@ -144,7 +142,7 @@ public class GenresController(IGenreService genreService, IGameService gameServi
     {
         try
         {
-            await _genreService.DeleteAsync(id);
+            await genreService.DeleteAsync(id);
             return NoContent();
         }
         catch (NotFoundException)
