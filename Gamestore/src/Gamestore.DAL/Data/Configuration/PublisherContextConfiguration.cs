@@ -1,24 +1,25 @@
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class PublisherContextConfiguration
+public class PublisherContextConfiguration : IEntityTypeConfiguration<Publisher>
 {
-    public static void ConfigurePublishers(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<Publisher> builder)
     {
-        modelBuilder.Entity<Publisher>()
+        builder
             .HasKey(p => p.Id);
-        modelBuilder.Entity<Publisher>()
+        builder
             .Property(p => p.CompanyName)
             .IsRequired();
-        modelBuilder.Entity<Publisher>()
+        builder
             .HasIndex(p => p.CompanyName)
             .IsUnique();
-        modelBuilder.Entity<Publisher>()
+        builder
             .Property(p => p.HomePage)
             .IsRequired(false);
-        modelBuilder.Entity<Publisher>()
+        builder
             .Property(p => p.Description)
             .IsRequired(false);
     }

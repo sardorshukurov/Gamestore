@@ -5,7 +5,7 @@ namespace Gamestore.API.DTOs.Platform;
 
 public static class PlatformMappingExtensions
 {
-    public static PlatformResponse AsResponse(this PlatformDto dto, ICollection<GameShortResponse> games)
+    public static PlatformResponse ToResponse(this PlatformDto dto, ICollection<GameShortResponse> games)
     {
         return new PlatformResponse(
             dto.Id,
@@ -13,28 +13,28 @@ public static class PlatformMappingExtensions
             games);
     }
 
-    public static PlatformShortResponse AsShortResponse(this PlatformDto dto)
+    public static PlatformShortResponse ToShortResponse(this PlatformDto dto)
     {
         return new PlatformShortResponse(
             dto.Id,
             dto.Type);
     }
 
-    public static PlatformShortResponse AsShortResponse(this PlatformShortDto dto)
+    public static PlatformShortResponse ToShortResponse(this PlatformShortDto dto)
     {
         return new PlatformShortResponse(
             dto.Id,
             dto.Type);
     }
 
-    public static CreatePlatformDto AsDto(this CreatePlatformRequest request)
+    public static CreatePlatformDto ToDto(this CreatePlatformRequest request)
     {
         return new CreatePlatformDto(
             request.Platform.Type,
             null);
     }
 
-    public static UpdatePlatformDto AsDto(this UpdatePlatformRequest request)
+    public static UpdatePlatformDto ToDto(this UpdatePlatformRequest request)
     {
         return new UpdatePlatformDto(
             request.Platform.Id,

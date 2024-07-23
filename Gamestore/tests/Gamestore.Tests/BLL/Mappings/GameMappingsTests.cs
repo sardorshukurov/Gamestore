@@ -20,7 +20,7 @@ public class GameMappingsTests
         var game = _fixture.Create<Game>();
 
         // Act
-        var dto = game.AsDto();
+        var dto = game.ToDto();
 
         // Assert
         dto.Id.Should().Be(game.Id);
@@ -36,7 +36,7 @@ public class GameMappingsTests
         var game = _fixture.Create<Game>();
 
         // Act
-        var shortDto = game.AsShortDto();
+        var shortDto = game.ToShortDto();
 
         // Assert
         shortDto.Id.Should().Be(game.Id);
@@ -50,7 +50,7 @@ public class GameMappingsTests
         var dto = _fixture.Create<CreateGameDto>();
 
         // Act
-        var game = dto.AsEntity();
+        var game = dto.ToEntity();
 
         // Assert
         game.Name.Should().Be(dto.Name);

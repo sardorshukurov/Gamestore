@@ -5,7 +5,7 @@ namespace Gamestore.BLL.DTOs.Genre;
 
 public static class GenreMappingExtensions
 {
-    public static GenreDto AsDto(this GenreEntity genre, ICollection<GameShortDto> games, GenreShortDto? parentGenre)
+    public static GenreDto ToDto(this GenreEntity genre, ICollection<GameShortDto> games, GenreShortDto? parentGenre)
     {
         return new GenreDto(
             genre.Id,
@@ -15,7 +15,7 @@ public static class GenreMappingExtensions
             games);
     }
 
-    public static GenreShortDto AsShortDto(this GenreEntity genre)
+    public static GenreShortDto ToShortDto(this GenreEntity genre)
     {
         return new GenreShortDto(
             genre.Id,
@@ -23,7 +23,7 @@ public static class GenreMappingExtensions
             genre.ParentGenreId);
     }
 
-    public static GenreEntity AsEntity(this CreateGenreDto dto)
+    public static GenreEntity ToEntity(this CreateGenreDto dto)
     {
         return new GenreEntity
         {

@@ -22,7 +22,7 @@ public class PlatformMappingsTests
         var games = _fixture.Create<ICollection<GameShortResponse>>();
 
         // Act
-        var response = dto.AsResponse(games);
+        var response = dto.ToResponse(games);
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -37,7 +37,7 @@ public class PlatformMappingsTests
         var dto = _fixture.Create<PlatformDto>();
 
         // Act
-        var response = dto.AsShortResponse();
+        var response = dto.ToShortResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -51,7 +51,7 @@ public class PlatformMappingsTests
         var dto = _fixture.Create<PlatformShortDto>();
 
         // Act
-        var response = dto.AsShortResponse();
+        var response = dto.ToShortResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -65,7 +65,7 @@ public class PlatformMappingsTests
         var request = _fixture.Create<CreatePlatformRequest>();
 
         // Act
-        var dto = request.AsDto();
+        var dto = request.ToDto();
 
         // Assert
         dto.Type.Should().Be(request.Platform.Type);
@@ -78,7 +78,7 @@ public class PlatformMappingsTests
         var request = _fixture.Create<UpdatePlatformRequest>();
 
         // Act
-        var dto = request.AsDto();
+        var dto = request.ToDto();
 
         // Assert
         dto.Id.Should().Be(request.Platform.Id);

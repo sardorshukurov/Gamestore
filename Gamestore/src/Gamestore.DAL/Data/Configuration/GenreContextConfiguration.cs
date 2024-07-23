@@ -1,18 +1,19 @@
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class GenreContextConfiguration
+public class GenreContextConfiguration : IEntityTypeConfiguration<Genre>
 {
-    public static void ConfigureGenres(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<Genre> builder)
     {
-        modelBuilder.Entity<Genre>()
+        builder
             .HasKey(g => g.Id);
-        modelBuilder.Entity<Genre>()
+        builder
             .Property(g => g.Name)
             .IsRequired();
-        modelBuilder.Entity<Genre>()
+        builder
             .HasIndex(g => g.Name)
             .IsUnique();
     }

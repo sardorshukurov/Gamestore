@@ -4,7 +4,7 @@ namespace Gamestore.API.DTOs.Game;
 
 public static class GameMappingExtensions
 {
-    public static GameResponse AsResponse(this GameDto dto)
+    public static GameResponse ToResponse(this GameDto dto)
     {
         return new GameResponse(
             dto.Id,
@@ -16,15 +16,14 @@ public static class GameMappingExtensions
             dto.UnitInStock);
     }
 
-    public static GameShortResponse AsShortResponse(this GameDto dto)
+    public static GameShortResponse ToShortResponse(this GameDto dto)
     {
         return new GameShortResponse(
             dto.Id,
             dto.Name);
     }
 
-    // TODO: better naming `ToDto`
-    public static CreateGameDto AsDto(this CreateGameRequest request)
+    public static CreateGameDto ToDto(this CreateGameRequest request)
     {
         return new CreateGameDto(
             request.Game.Name,
@@ -38,7 +37,7 @@ public static class GameMappingExtensions
             request.Publisher);
     }
 
-    public static UpdateGameDto AsDto(this UpdateGameRequest request)
+    public static UpdateGameDto ToDto(this UpdateGameRequest request)
     {
         return new UpdateGameDto(
             request.Game.Id,

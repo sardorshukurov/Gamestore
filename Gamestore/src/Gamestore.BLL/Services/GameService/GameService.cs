@@ -14,7 +14,7 @@ public class GameService(
     public async Task<ICollection<GameDto>> GetAllAsync()
     {
         var games = (await repository.GetAllAsync())
-            .Select(g => g.AsDto())
+            .Select(g => g.ToDto())
             .ToList();
 
         return games;
@@ -24,7 +24,7 @@ public class GameService(
     {
         var game = await repository.GetOneAsync(g => g.Key == key);
 
-        return game?.AsDto();
+        return game?.ToDto();
     }
 
     public async Task<ICollection<GameDto>> GetByGenreAsync(Guid genreId)
@@ -37,7 +37,7 @@ public class GameService(
         // get all games from ids
         var games = (await repository
             .GetAllByFilterAsync(g => gameIds.Contains(g.Id)))
-            .Select(g => g.AsDto())
+            .Select(g => g.ToDto())
             .ToList();
 
         return games;
@@ -53,7 +53,7 @@ public class GameService(
         // get all games from ids
         var games = (await repository
                 .GetAllByFilterAsync(g => gameIds.Contains(g.Id)))
-            .Select(g => g.AsDto())
+            .Select(g => g.ToDto())
             .ToList();
 
         return games;
@@ -66,7 +66,7 @@ public class GameService(
 
         var games = (await repository
                 .GetAllByFilterAsync(g => g.PublisherId == publisher.Id))
-            .Select(g => g.AsDto())
+            .Select(g => g.ToDto())
             .ToList();
 
         return games;
@@ -76,7 +76,7 @@ public class GameService(
     {
         var game = await repository.GetByIdAsync(id);
 
-        return game?.AsDto();
+        return game?.ToDto();
     }
 
     public async Task UpdateAsync(UpdateGameDto dto)
@@ -118,7 +118,7 @@ public class GameService(
 
     public async Task CreateAsync(CreateGameDto dto)
     {
-        var game = dto.AsEntity();
+        var game = dto.ToEntity();
 
         await repository.CreateAsync(game);
 

@@ -95,7 +95,7 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.AsResponse()));
+        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.ToResponse()));
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.AsResponse()));
+        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.ToResponse()));
     }
 
     [Fact]
@@ -400,7 +400,7 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.AsShortResponse()));
+        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.ToShortResponse()));
     }
 
     [Fact]
@@ -437,7 +437,7 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(platforms.Select(p => p.AsShortResponse()));
+        okResult.Value.Should().BeEquivalentTo(platforms.Select(p => p.ToShortResponse()));
     }
 
     private static bool CompareNullableCollections(ICollection<Guid>? list1, ICollection<Guid>? list2)

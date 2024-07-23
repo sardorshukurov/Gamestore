@@ -4,7 +4,7 @@ namespace Gamestore.BLL.DTOs.Game;
 
 public static class GameMappingExtensions
 {
-    public static GameDto AsDto(this GameEntity game)
+    public static GameDto ToDto(this GameEntity game)
     {
         return new GameDto(
             game.Id,
@@ -16,15 +16,14 @@ public static class GameMappingExtensions
             game.UnitInStock);
     }
 
-    public static GameShortDto AsShortDto(this GameEntity game)
+    public static GameShortDto ToShortDto(this GameEntity game)
     {
         return new GameShortDto(
             game.Id,
             game.Name);
     }
 
-    // the same here better to name `ToEntity`
-    public static GameEntity AsEntity(this CreateGameDto dto)
+    public static GameEntity ToEntity(this CreateGameDto dto)
     {
         return new GameEntity
         {

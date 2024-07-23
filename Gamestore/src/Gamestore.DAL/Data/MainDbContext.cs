@@ -1,4 +1,3 @@
-using Gamestore.DAL.Data.Configuration;
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,16 +21,7 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // TODO: better way to configure entities via IEntityTypeConfiguration
-        // and assembly scanning to avoid manual configuration calling it multiple times
-        modelBuilder.ConfigureGames();
-        modelBuilder.ConfigureGenres();
-        modelBuilder.ConfigureGameGenres();
-        modelBuilder.ConfigureGamePlatforms();
-        modelBuilder.ConfigurePlatforms();
-        modelBuilder.ConfigurePublishers();
-        modelBuilder.ConfigureOrders();
-        modelBuilder.ConfigureOrderGame();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MainDbContext).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

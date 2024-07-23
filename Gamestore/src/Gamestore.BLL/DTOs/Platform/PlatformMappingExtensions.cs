@@ -5,7 +5,7 @@ namespace Gamestore.BLL.DTOs.Platform;
 
 public static class PlatformMappingExtensions
 {
-    public static PlatformDto AsDto(this PlatformEntity platform, ICollection<GameShortDto> games)
+    public static PlatformDto ToDto(this PlatformEntity platform, ICollection<GameShortDto> games)
     {
         return new PlatformDto(
             platform.Id,
@@ -13,14 +13,14 @@ public static class PlatformMappingExtensions
             games);
     }
 
-    public static PlatformShortDto AsShortDto(this PlatformEntity platform)
+    public static PlatformShortDto ToShortDto(this PlatformEntity platform)
     {
         return new PlatformShortDto(
             platform.Id,
             platform.Type);
     }
 
-    public static PlatformEntity AsEntity(this CreatePlatformDto dto)
+    public static PlatformEntity ToEntity(this CreatePlatformDto dto)
     {
         return new PlatformEntity
         {

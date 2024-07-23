@@ -44,7 +44,7 @@ public class GenreServiceTests
         var result = await _service.GetAllAsync();
 
         // Assert
-        result.Should().BeEquivalentTo(genres.Select(g => g.AsShortDto()));
+        result.Should().BeEquivalentTo(genres.Select(g => g.ToShortDto()));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class GenreServiceTests
         var result = await _service.GetByIdAsync(id);
 
         // Assert
-        result.Should().BeEquivalentTo(genre.AsShortDto());
+        result.Should().BeEquivalentTo(genre.ToShortDto());
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class GenreServiceTests
         var result = await _service.GetSubGenresAsync(parentId);
 
         // Assert
-        result.Should().BeEquivalentTo(subGenres.Select(g => g.AsShortDto()));
+        result.Should().BeEquivalentTo(subGenres.Select(g => g.ToShortDto()));
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class GenreServiceTests
     {
         // Arrange
         var createGenreDto = _fixture.Create<CreateGenreDto>();
-        var genre = createGenreDto.AsEntity();
+        var genre = createGenreDto.ToEntity();
 
         // Act
         await _service.CreateAsync(createGenreDto);
@@ -217,7 +217,7 @@ public class GenreServiceTests
         var result = await _service.GetAllByGameKeyAsync(gameKey);
 
         // Assert
-        result.Should().BeEquivalentTo(genres.Select(g => g.AsShortDto()));
+        result.Should().BeEquivalentTo(genres.Select(g => g.ToShortDto()));
     }
 
     [Fact]

@@ -1,19 +1,20 @@
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class OrderGameContextConfiguration
+public class OrderGameContextConfiguration : IEntityTypeConfiguration<OrderGame>
 {
-    public static void ConfigureOrderGame(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<OrderGame> builder)
     {
-        modelBuilder.Entity<OrderGame>()
+        builder
             .HasKey(og => new { og.OrderId, og.ProductId });
-        modelBuilder.Entity<OrderGame>()
+        builder
             .HasOne<Game>()
             .WithMany()
             .HasForeignKey(og => og.ProductId);
-        modelBuilder.Entity<OrderGame>()
+        builder
             .HasOne<Order>()
             .WithMany()
             .HasForeignKey(og => og.OrderId);

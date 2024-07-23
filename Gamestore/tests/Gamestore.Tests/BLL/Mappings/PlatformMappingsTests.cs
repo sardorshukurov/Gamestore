@@ -22,7 +22,7 @@ public class PlatformMappingsTests
         var games = _fixture.Create<ICollection<GameShortDto>>();
 
         // Act
-        var dto = platform.AsDto(games);
+        var dto = platform.ToDto(games);
 
         // Assert
         dto.Id.Should().Be(platform.Id);
@@ -37,7 +37,7 @@ public class PlatformMappingsTests
         var platform = _fixture.Create<Platform>();
 
         // Act
-        var shortDto = platform.AsShortDto();
+        var shortDto = platform.ToShortDto();
 
         // Assert
         shortDto.Id.Should().Be(platform.Id);
@@ -51,7 +51,7 @@ public class PlatformMappingsTests
         var dto = _fixture.Create<CreatePlatformDto>();
 
         // Act
-        var platform = dto.AsEntity();
+        var platform = dto.ToEntity();
 
         // Assert
         platform.Type.Should().Be(dto.Type);

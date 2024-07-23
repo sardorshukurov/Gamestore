@@ -20,7 +20,7 @@ public class GenreMappingsTests
         var dto = _fixture.Create<GenreDto>();
 
         // Act
-        var response = dto.AsResponse();
+        var response = dto.ToResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -35,7 +35,7 @@ public class GenreMappingsTests
         var dto = _fixture.Create<GenreDto>();
 
         // Act
-        var response = dto.AsShortResponse();
+        var response = dto.ToShortResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -49,7 +49,7 @@ public class GenreMappingsTests
         var dto = _fixture.Create<GenreShortDto>();
 
         // Act
-        var response = dto.AsShortResponse();
+        var response = dto.ToShortResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -63,7 +63,7 @@ public class GenreMappingsTests
         var request = _fixture.Create<CreateGenreRequest>();
 
         // Act
-        var dto = request.AsDto();
+        var dto = request.ToDto();
 
         // Assert
         request.Genre.Name.Should().Be(dto.Name);
@@ -77,7 +77,7 @@ public class GenreMappingsTests
         var request = _fixture.Create<UpdateGenreRequest>();
 
         // Act
-        var dto = request.AsDto();
+        var dto = request.ToDto();
 
         // Assert
         request.Genre.Id.Should().Be(dto.Id);

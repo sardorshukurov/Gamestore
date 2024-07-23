@@ -29,7 +29,7 @@ public class PublishersController(
             });
         }
 
-        await publisherService.CreateAsync(request.AsDto());
+        await publisherService.CreateAsync(request.ToDto());
         return Ok();
     }
 
@@ -41,7 +41,7 @@ public class PublishersController(
 
         return publisher is null
             ? NotFound($"Publisher with company name: {companyName} not found.")
-            : Ok(publisher.AsResponse());
+            : Ok(publisher.ToResponse());
     }
 
     [HttpGet]
@@ -49,7 +49,7 @@ public class PublishersController(
     public async Task<ActionResult<IEnumerable<PublisherResponse>>> GetAll()
     {
         var publishers = (await publisherService.GetAllAsync())
-            .Select(p => p.AsResponse());
+            .Select(p => p.ToResponse());
 
         return Ok(publishers);
     }
@@ -70,7 +70,7 @@ public class PublishersController(
                 });
             }
 
-            await publisherService.UpdateAsync(request.AsDto());
+            await publisherService.UpdateAsync(request.ToDto());
 
             return NoContent();
         }
@@ -102,7 +102,7 @@ public class PublishersController(
         try
         {
             var games = (await gameService.GetByPublisherAsync(companyName))
-                .Select(g => g.AsResponse())
+                .Select(g => g.ToResponse())
                 .ToList();
 
             return Ok(games);

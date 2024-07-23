@@ -31,7 +31,7 @@ public class PublisherServiceTests
         // Arrange
         var publisherList = _fixture.CreateMany<Publisher>();
         var publishers = publisherList.ToList();
-        var publisherDtoList = publishers.Select(p => p.AsDto()).ToList();
+        var publisherDtoList = publishers.Select(p => p.ToDto()).ToList();
 
         _publisherRepostioryMock
             .Setup(x => x.GetAllAsync())
@@ -60,7 +60,7 @@ public class PublisherServiceTests
         var actualPublisher = await _service.GetByIdAsync(id);
 
         // Assert
-        actualPublisher.Should().BeEquivalentTo(expectedPublisher.AsDto());
+        actualPublisher.Should().BeEquivalentTo(expectedPublisher.ToDto());
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class PublisherServiceTests
     {
         // Arrange
         var publisherDto = _fixture.Create<CreatePublisherDto>();
-        var publisher = publisherDto.AsEntity();
+        var publisher = publisherDto.ToEntity();
 
         _publisherRepostioryMock
             .Setup(r => r.CreateAsync(publisher))
@@ -140,7 +140,7 @@ public class PublisherServiceTests
         var result = await _service.GetByCompanyNameAsync(companyName);
 
         // Assert
-        result.Should().BeEquivalentTo(publisher.AsDto());
+        result.Should().BeEquivalentTo(publisher.ToDto());
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class PublisherServiceTests
         var result = await _service.GetByGameKeyAsync(gameKey);
 
         // Assert
-        result.Should().BeEquivalentTo(publisher.AsDto());
+        result.Should().BeEquivalentTo(publisher.ToDto());
     }
 
     [Fact]

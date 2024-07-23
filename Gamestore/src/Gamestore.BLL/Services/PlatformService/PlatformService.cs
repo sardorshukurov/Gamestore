@@ -13,7 +13,7 @@ public class PlatformService(
     public async Task<ICollection<PlatformShortDto>> GetAllAsync()
     {
         var platforms = (await repository.GetAllAsync())
-            .Select(p => p.AsShortDto())
+            .Select(p => p.ToShortDto())
             .ToList();
 
         return platforms;
@@ -23,7 +23,7 @@ public class PlatformService(
     {
         var platform = await repository.GetByIdAsync(id);
 
-        return platform?.AsShortDto();
+        return platform?.ToShortDto();
     }
 
     public async Task UpdateAsync(UpdatePlatformDto dto)
@@ -44,7 +44,7 @@ public class PlatformService(
 
     public async Task CreateAsync(CreatePlatformDto dto)
     {
-        var platformToAdd = dto.AsEntity();
+        var platformToAdd = dto.ToEntity();
 
         await repository.CreateAsync(platformToAdd);
         await repository.SaveChangesAsync();
@@ -59,7 +59,7 @@ public class PlatformService(
             .Select(p => p.PlatformId);
 
         var platforms = (await repository.GetAllByFilterAsync(p => platformIds.Contains(p.Id)))
-            .Select(p => p.AsShortDto())
+            .Select(p => p.ToShortDto())
             .ToList();
 
         return platforms;

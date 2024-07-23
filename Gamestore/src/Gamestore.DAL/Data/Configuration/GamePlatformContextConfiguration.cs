@@ -1,19 +1,20 @@
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class GamePlatformContextConfiguration
+public class GamePlatformContextConfiguration : IEntityTypeConfiguration<GamePlatform>
 {
-    public static void ConfigureGamePlatforms(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<GamePlatform> builder)
     {
-        modelBuilder.Entity<GamePlatform>()
+        builder
             .HasKey(gp => new { gp.GameId, gp.PlatformId });
-        modelBuilder.Entity<GamePlatform>()
+        builder
             .HasOne<Game>()
             .WithMany()
             .HasForeignKey(gp => gp.GameId);
-        modelBuilder.Entity<GamePlatform>()
+        builder
             .HasOne<Platform>()
             .WithMany()
             .HasForeignKey(gp => gp.PlatformId);

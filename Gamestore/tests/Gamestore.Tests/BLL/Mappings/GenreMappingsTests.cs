@@ -23,7 +23,7 @@ public class GenreMappingsTests
         var games = _fixture.Create<ICollection<GameShortDto>>();
 
         // Act
-        var dto = genre.AsDto(games, parentGenre);
+        var dto = genre.ToDto(games, parentGenre);
 
         // Assert
         dto.Id.Should().Be(genre.Id);
@@ -40,7 +40,7 @@ public class GenreMappingsTests
         var genre = _fixture.Create<Genre>();
 
         // Act
-        var shortDto = genre.AsShortDto();
+        var shortDto = genre.ToShortDto();
 
         // Assert
         shortDto.Id.Should().Be(genre.Id);
@@ -55,7 +55,7 @@ public class GenreMappingsTests
         var dto = _fixture.Create<CreateGenreDto>();
 
         // Act
-        var genre = dto.AsEntity();
+        var genre = dto.ToEntity();
 
         // Assert
         genre.Name.Should().Be(dto.Name);

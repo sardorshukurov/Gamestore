@@ -41,7 +41,7 @@ public class OrdersController(
     public async Task<ActionResult<IEnumerable<OrderResponse>>> GetPaidAndCancelledOrders()
     {
         var orders = (await orderService.GetPaidAndCancelledOrdersAsync())
-            .Select(o => o.AsResponse());
+            .Select(o => o.ToResponse());
 
         return Ok(orders);
     }
@@ -51,14 +51,14 @@ public class OrdersController(
     {
         var order = await orderService.GetByIdAsync(id);
 
-        return order is null ? NotFound($"Order with id {id} not found") : order.AsResponse();
+        return order is null ? NotFound($"Order with id {id} not found") : order.ToResponse();
     }
 
     [HttpGet("{id}/details")]
     public async Task<ActionResult<IEnumerable<OrderDetailsResponse>>> GetOrderDetails(Guid id)
     {
         var orderDetails = (await orderService.GetOrderDetailsAsync(id))
-            .Select(od => od.AsResponse());
+            .Select(od => od.ToResponse());
 
         return Ok(orderDetails);
     }
@@ -69,7 +69,7 @@ public class OrdersController(
         try
         {
             var orderDetails = (await orderService.GetCartAsync(_customerId))
-                .Select(od => od.AsResponse());
+                .Select(od => od.ToResponse());
 
             return Ok(orderDetails);
         }

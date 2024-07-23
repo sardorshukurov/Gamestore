@@ -26,7 +26,7 @@ public class GenresController(
             });
         }
 
-        await genreService.CreateAsync(request.AsDto());
+        await genreService.CreateAsync(request.ToDto());
         return Ok();
     }
 
@@ -36,7 +36,7 @@ public class GenresController(
     {
         var genre = await genreService.GetByIdAsync(id);
 
-        return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre.AsShortResponse());
+        return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre.ToShortResponse());
     }
 
     [HttpGet]
@@ -44,7 +44,7 @@ public class GenresController(
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetAll()
     {
         var genres = (await genreService.GetAllAsync())
-            .Select(g => g.AsShortResponse());
+            .Select(g => g.ToShortResponse());
 
         return Ok(genres);
     }
@@ -54,7 +54,7 @@ public class GenresController(
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetSubGenres(Guid parentId)
     {
         var genres = (await genreService.GetSubGenresAsync(parentId))
-            .Select(g => g.AsShortResponse());
+            .Select(g => g.ToShortResponse());
 
         return Ok(genres);
     }
@@ -75,7 +75,7 @@ public class GenresController(
                 });
             }
 
-            await genreService.UpdateAsync(request.AsDto());
+            await genreService.UpdateAsync(request.ToDto());
 
             return NoContent();
         }

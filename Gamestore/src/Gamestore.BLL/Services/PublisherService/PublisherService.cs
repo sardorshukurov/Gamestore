@@ -12,7 +12,7 @@ public class PublisherService(
     public async Task<ICollection<PublisherDto>> GetAllAsync()
     {
         var publishers = (await repository.GetAllAsync())
-            .Select(p => p.AsDto())
+            .Select(p => p.ToDto())
             .ToList();
 
         return publishers;
@@ -22,7 +22,7 @@ public class PublisherService(
     {
         var publisher = await repository.GetByIdAsync(id);
 
-        return publisher?.AsDto();
+        return publisher?.ToDto();
     }
 
     public async Task UpdateAsync(UpdatePublisherDto dto)
@@ -43,7 +43,7 @@ public class PublisherService(
 
     public async Task CreateAsync(CreatePublisherDto dto)
     {
-        var publisherToAdd = dto.AsEntity();
+        var publisherToAdd = dto.ToEntity();
 
         await repository.CreateAsync(publisherToAdd);
         await repository.SaveChangesAsync();
@@ -54,7 +54,7 @@ public class PublisherService(
         var publisher = await repository
             .GetOneAsync(p => p.CompanyName == companyName);
 
-        return publisher?.AsDto();
+        return publisher?.ToDto();
     }
 
     public async Task<PublisherDto?> GetByGameKeyAsync(string gameKey)
@@ -63,6 +63,6 @@ public class PublisherService(
 
         var publisher = await repository.GetByIdAsync(game.PublisherId);
 
-        return publisher?.AsDto();
+        return publisher?.ToDto();
     }
 }

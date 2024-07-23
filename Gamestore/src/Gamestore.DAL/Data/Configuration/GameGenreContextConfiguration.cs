@@ -1,19 +1,20 @@
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class GameGenreContextConfiguration
+public class GameGenreContextConfiguration : IEntityTypeConfiguration<GameGenre>
 {
-    public static void ConfigureGameGenres(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<GameGenre> builder)
     {
-        modelBuilder.Entity<GameGenre>()
+        builder
             .HasKey(gg => new { gg.GameId, gg.GenreId });
-        modelBuilder.Entity<GameGenre>()
+        builder
             .HasOne<Game>()
             .WithMany()
             .HasForeignKey(gg => gg.GameId);
-        modelBuilder.Entity<GameGenre>()
+        builder
             .HasOne<Genre>()
             .WithMany()
             .HasForeignKey(gg => gg.GenreId);

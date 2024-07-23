@@ -20,7 +20,7 @@ public class GameMappingsTests
         var dto = _fixture.Create<GameDto>();
 
         // Act
-        var response = dto.AsResponse();
+        var response = dto.ToResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -39,7 +39,7 @@ public class GameMappingsTests
         var dto = _fixture.Create<GameDto>();
 
         // Act
-        var response = dto.AsShortResponse();
+        var response = dto.ToShortResponse();
 
         // Assert
         response.Id.Should().Be(dto.Id);
@@ -53,7 +53,7 @@ public class GameMappingsTests
         var request = _fixture.Create<CreateGameRequest>();
 
         // Act
-        var dto = request.AsDto();
+        var dto = request.ToDto();
 
         // Assert
         request.Game.Name.Should().Be(dto.Name);
@@ -74,7 +74,7 @@ public class GameMappingsTests
         var request = _fixture.Create<UpdateGameRequest>();
 
         // Act
-        var dto = request.AsDto();
+        var dto = request.ToDto();
 
         // Assert
         request.Game.Name.Should().Be(dto.Name);

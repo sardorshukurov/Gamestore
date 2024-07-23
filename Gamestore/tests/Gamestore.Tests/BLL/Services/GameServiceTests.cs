@@ -44,7 +44,7 @@ public class GameServiceTests
 
         // Assert
         _gameRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
-        result.Should().BeEquivalentTo(games.Select(g => g.AsDto()));
+        result.Should().BeEquivalentTo(games.Select(g => g.ToDto()));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class GameServiceTests
         var result = await _service.GetByKeyAsync(key);
 
         // Assert
-        result.Should().BeEquivalentTo(game.AsDto());
+        result.Should().BeEquivalentTo(game.ToDto());
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class GameServiceTests
         var result = await _service.GetByGenreAsync(genreId);
 
         // Assert
-        result.Should().BeEquivalentTo(games.Select(g => g.AsDto()));
+        result.Should().BeEquivalentTo(games.Select(g => g.ToDto()));
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class GameServiceTests
         var result = await _service.GetByPlatformAsync(platformId);
 
         // Assert
-        result.Should().BeEquivalentTo(games.Select(g => g.AsDto()));
+        result.Should().BeEquivalentTo(games.Select(g => g.ToDto()));
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class GameServiceTests
         var result = await _service.GetByIdAsync(id);
 
         // Assert
-        result.Should().BeEquivalentTo(game.AsDto());
+        result.Should().BeEquivalentTo(game.ToDto());
     }
 
     [Fact]

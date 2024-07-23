@@ -43,14 +43,14 @@ public class PlatformsControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreatePlatformRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _platformService.Setup(x => x.CreateAsync(request.AsDto())).Returns(Task.CompletedTask);
+        _platformService.Setup(x => x.CreateAsync(request.ToDto())).Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Create(request);
 
         // Assert
         result.Should().BeOfType<OkResult>();
-        _platformService.Verify(x => x.CreateAsync(request.AsDto()), Times.Once);
+        _platformService.Verify(x => x.CreateAsync(request.ToDto()), Times.Once);
     }
 
     [Fact]
@@ -67,8 +67,8 @@ public class PlatformsControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(platform.AsShortResponse());
-        okResult.Value.Should().BeOfType(platform.AsShortResponse().GetType());
+        okResult.Value.Should().BeEquivalentTo(platform.ToShortResponse());
+        okResult.Value.Should().BeOfType(platform.ToShortResponse().GetType());
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class PlatformsControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(platforms.Select(g => g.AsShortResponse()));
+        okResult.Value.Should().BeEquivalentTo(platforms.Select(g => g.ToShortResponse()));
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class PlatformsControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdatePlatformRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _platformService.Setup(x => x.UpdateAsync(request.AsDto())).Returns(Task.CompletedTask);
+        _platformService.Setup(x => x.UpdateAsync(request.ToDto())).Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Update(request);
@@ -132,7 +132,7 @@ public class PlatformsControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdatePlatformRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _platformService.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new NotFoundException("Platform not found"));
+        _platformService.Setup(x => x.UpdateAsync(request.ToDto())).ThrowsAsync(new NotFoundException("Platform not found"));
 
         // Act
         var result = await _controller.Update(request);

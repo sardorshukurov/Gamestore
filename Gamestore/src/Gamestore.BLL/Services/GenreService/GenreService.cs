@@ -13,7 +13,7 @@ public class GenreService(
     public async Task<ICollection<GenreShortDto>> GetAllAsync()
     {
         var genres = (await repository.GetAllAsync())
-            .Select(g => g.AsShortDto())
+            .Select(g => g.ToShortDto())
             .ToList();
 
         return genres;
@@ -23,13 +23,13 @@ public class GenreService(
     {
         var genre = await repository.GetByIdAsync(id);
 
-        return genre?.AsShortDto();
+        return genre?.ToShortDto();
     }
 
     public async Task<ICollection<GenreShortDto>> GetSubGenresAsync(Guid parentId)
     {
         var subGenres = (await repository.GetAllByFilterAsync(g => g.ParentGenreId == parentId))
-            .Select(g => g.AsShortDto())
+            .Select(g => g.ToShortDto())
             .ToList();
 
         return subGenres;
@@ -63,14 +63,13 @@ public class GenreService(
         if (dto.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
-
-            // TODO: in such scenarios, it is better to use a separate method to check if the genre exists
-            // use `Any` instead of GetByIdAsync with empty variable assignment to make it more clear
-            _ = await repository.GetByIdAsync((Guid)dto.ParentGenreId)
-                ?? throw new GenreNotFoundException((Guid)dto.ParentGenreId);
+            if (!await repository.Exists(g => g.ParentGenreId == dto.ParentGenreId))
+            {
+                throw new GenreNotFoundException((Guid)dto.ParentGenreId);
+            }
         }
 
-        var genreToAdd = dto.AsEntity();
+        var genreToAdd = dto.ToEntity();
 
         await repository.CreateAsync(genreToAdd);
         await repository.SaveChangesAsync();
@@ -87,7 +86,7 @@ public class GenreService(
 
         // get genres from ids
         var genres = (await repository.GetAllByFilterAsync(g => genreIds.Contains(g.Id)))
-            .Select(g => g.AsShortDto())
+            .Select(g => g.ToShortDto())
             .ToList();
 
         return genres;

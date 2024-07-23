@@ -1,18 +1,19 @@
 using Gamestore.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class OrderContextConfiguration
+public class OrderContextConfiguration : IEntityTypeConfiguration<Order>
 {
-    public static void ConfigureOrders(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<Order> builder)
     {
-        modelBuilder.Entity<Order>()
+        builder
             .HasKey(o => o.Id);
-        modelBuilder.Entity<Order>()
+        builder
             .Property(o => o.CustomerId)
             .IsRequired();
-        modelBuilder.Entity<Order>()
+        builder
             .Property(o => o.Status)
             .IsRequired();
     }

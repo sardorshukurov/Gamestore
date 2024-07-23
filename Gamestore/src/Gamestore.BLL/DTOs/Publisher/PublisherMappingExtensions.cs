@@ -4,7 +4,7 @@ namespace Gamestore.BLL.DTOs.Publisher;
 
 public static class PublisherMappingExtensions
 {
-    public static PublisherDto AsDto(this PublisherEntity publisher)
+    public static PublisherDto ToDto(this PublisherEntity publisher)
     {
         return new PublisherDto(
             publisher.Id,
@@ -13,14 +13,14 @@ public static class PublisherMappingExtensions
             publisher.HomePage);
     }
 
-    public static PublisherShortDto AsShortDto(this PublisherEntity publisher)
+    public static PublisherShortDto ToShortDto(this PublisherEntity publisher)
     {
         return new PublisherShortDto(
             publisher.Id,
             publisher.CompanyName);
     }
 
-    public static PublisherEntity AsEntity(this CreatePublisherDto dto)
+    public static PublisherEntity ToEntity(this CreatePublisherDto dto)
     {
         return new PublisherEntity
         {

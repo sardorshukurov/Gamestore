@@ -26,7 +26,7 @@ public class PlatformsController(
             });
         }
 
-        await platformService.CreateAsync(request.AsDto());
+        await platformService.CreateAsync(request.ToDto());
         return Ok();
     }
 
@@ -36,7 +36,7 @@ public class PlatformsController(
     {
         var platform = await platformService.GetByIdAsync(id);
 
-        return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.AsShortResponse());
+        return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.ToShortResponse());
     }
 
     [HttpGet]
@@ -44,7 +44,7 @@ public class PlatformsController(
     public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetAll()
     {
         var platforms = (await platformService.GetAllAsync())
-            .Select(p => p.AsShortResponse());
+            .Select(p => p.ToShortResponse());
 
         return Ok(platforms);
     }
@@ -65,7 +65,7 @@ public class PlatformsController(
                 });
             }
 
-            await platformService.UpdateAsync(request.AsDto());
+            await platformService.UpdateAsync(request.ToDto());
 
             return NoContent();
         }

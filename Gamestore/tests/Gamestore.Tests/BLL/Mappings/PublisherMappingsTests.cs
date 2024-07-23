@@ -19,7 +19,7 @@ public class PublisherMappingsTests
         var publisher = _fixture.Create<Publisher>();
 
         // Act
-        var dto = publisher.AsDto();
+        var dto = publisher.ToDto();
 
         // Assert
         dto.Id.Should().Be(publisher.Id);
@@ -35,7 +35,7 @@ public class PublisherMappingsTests
         var publisher = _fixture.Create<Publisher>();
 
         // Act
-        var shortDto = publisher.AsShortDto();
+        var shortDto = publisher.ToShortDto();
 
         // Assert
         shortDto.Id.Should().Be(publisher.Id);
@@ -49,7 +49,7 @@ public class PublisherMappingsTests
         var dto = _fixture.Create<CreatePublisherDto>();
 
         // Act
-        var publisher = dto.AsEntity();
+        var publisher = dto.ToEntity();
 
         // Assert
         publisher.CompanyName.Should().Be(dto.CompanyName);

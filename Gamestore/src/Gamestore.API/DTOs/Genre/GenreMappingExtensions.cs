@@ -4,7 +4,7 @@ namespace Gamestore.API.DTOs.Genre;
 
 public static class GenreMappingExtensions
 {
-    public static GenreResponse AsResponse(this GenreDto dto)
+    public static GenreResponse ToResponse(this GenreDto dto)
     {
         return new GenreResponse(
             dto.Id,
@@ -12,21 +12,21 @@ public static class GenreMappingExtensions
             dto.ParentGenreId);
     }
 
-    public static GenreShortResponse AsShortResponse(this GenreDto dto)
+    public static GenreShortResponse ToShortResponse(this GenreDto dto)
     {
         return new GenreShortResponse(
             dto.Id,
             dto.Name);
     }
 
-    public static GenreShortResponse AsShortResponse(this GenreShortDto dto)
+    public static GenreShortResponse ToShortResponse(this GenreShortDto dto)
     {
         return new GenreShortResponse(
             dto.Id,
             dto.Name);
     }
 
-    public static CreateGenreDto AsDto(this CreateGenreRequest request)
+    public static CreateGenreDto ToDto(this CreateGenreRequest request)
     {
         return new CreateGenreDto(
             request.Genre.Name,
@@ -34,7 +34,7 @@ public static class GenreMappingExtensions
             null);
     }
 
-    public static UpdateGenreDto AsDto(this UpdateGenreRequest request)
+    public static UpdateGenreDto ToDto(this UpdateGenreRequest request)
     {
         return new UpdateGenreDto(
             request.Genre.Id,

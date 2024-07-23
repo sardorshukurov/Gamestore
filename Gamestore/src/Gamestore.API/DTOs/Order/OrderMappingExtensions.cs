@@ -4,7 +4,7 @@ namespace Gamestore.API.DTOs.Order;
 
 public static class OrderMappingExtensions
 {
-    public static OrderResponse AsResponse(this OrderDto dto)
+    public static OrderResponse ToResponse(this OrderDto dto)
     {
         return new OrderResponse(
             dto.Id,
@@ -12,7 +12,7 @@ public static class OrderMappingExtensions
             dto.Date);
     }
 
-    public static OrderDetailsResponse AsResponse(this OrderDetailsDto dto)
+    public static OrderDetailsResponse ToResponse(this OrderDetailsDto dto)
     {
         return new OrderDetailsResponse(
             dto.ProductId,

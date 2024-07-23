@@ -44,7 +44,7 @@ public class PlatformServiceTests
         var result = await _service.GetAllAsync();
 
         // Assert
-        result.Should().BeEquivalentTo(platforms.Select(p => p.AsShortDto()));
+        result.Should().BeEquivalentTo(platforms.Select(p => p.ToShortDto()));
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class PlatformServiceTests
         var result = await _service.GetByIdAsync(id);
 
         // Assert
-        result.Should().BeEquivalentTo(platform.AsShortDto());
+        result.Should().BeEquivalentTo(platform.ToShortDto());
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class PlatformServiceTests
         var result = await _service.GetAllByGameKeyAsync(gameKey);
 
         // Assert
-        result.Should().BeEquivalentTo(platforms.Select(p => p.AsShortDto()));
+        result.Should().BeEquivalentTo(platforms.Select(p => p.ToShortDto()));
     }
 
     [Fact]
