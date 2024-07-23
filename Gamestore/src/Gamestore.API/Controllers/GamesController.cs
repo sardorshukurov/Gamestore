@@ -26,49 +26,34 @@ public class GamesController(
     IOrderService orderService) : ControllerBase
 {
     // TODO: what is this used for?
-    // ethier use nullable types or generate new values, there should be no hardcoded values
-    private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    // either use nullable types or generate new values, there should be no hardcoded values
+    private readonly Guid _customerId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {
-        try
-        {
-            // TODO: you can use fillers to validate requests at one place 
-            var result = await createValidator.ValidateAsync(request);
+        // TODO: you can use fillers to validate requests at one place
+        var result = await createValidator.ValidateAsync(request);
 
-            if (!result.IsValid)
+        if (!result.IsValid)
+        {
+            return BadRequest(new
             {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
+                message = "Validation failed",
+                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+            });
+        }
 
-            await gameService.CreateAsync(request.AsDto());
-            return Ok();
-        }
-        // TODO: since you already have global exception handling middleware, you can remove this try-catch block
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        await gameService.CreateAsync(request.AsDto());
+        return Ok();
     }
 
     [HttpGet("{key}")]
     public async Task<ActionResult<GameResponse>> GetByKey(string key)
     {
-        try
-        {
-            var game = await gameService.GetByKeyAsync(key);
+        var game = await gameService.GetByKeyAsync(key);
 
-            return game is null ? NotFound($"Game with key {key} not found") : Ok(game.AsResponse());
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return game is null ? NotFound($"Game with key {key} not found") : Ok(game.AsResponse());
     }
 
     // TODO: we should use the nouns which represent the entity that the endpoint
@@ -78,31 +63,17 @@ public class GamesController(
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetById(Guid id)
     {
-        try
-        {
-            var game = await gameService.GetByIdAsync(id);
+        var game = await gameService.GetByIdAsync(id);
 
-            return game is null ? NotFound($"Game with id {id} not found") : Ok(game.AsResponse());
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return game is null ? NotFound($"Game with id {id} not found") : Ok(game.AsResponse());
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
     {
-        try
-        {
-            var games = (await gameService.GetAllAsync())
-                .Select(g => g.AsResponse());
-            return Ok(games);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        var games = (await gameService.GetAllAsync())
+            .Select(g => g.AsResponse());
+        return Ok(games);
     }
 
     [HttpPut]
@@ -130,10 +101,6 @@ public class GamesController(
         {
             return NotFound(nex.Message);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpDelete("{key}")]
@@ -148,36 +115,25 @@ public class GamesController(
         {
             return NotFound($"Game with key {key} not found");
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpGet("{key}/file")]
     [ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetFile(string key)
     {
-        try
+        var game = await gameService.GetByKeyAsync(key);
+
+        if (game is null)
         {
-            var game = await gameService.GetByKeyAsync(key);
-
-            if (game is null)
-            {
-                return NotFound($"Game with key {key} not found");
-            }
-
-            var fileName = $"{game.Name}_{DateTime.Now:yyyyMMddHHmmss}.txt";
-
-            // serialize game object to return as txt file
-            var serializedGame = JsonConvert.SerializeObject(game);
-
-            return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
+            return NotFound($"Game with key {key} not found");
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+
+        var fileName = $"{game.Name}_{DateTime.Now:yyyyMMddHHmmss}.txt";
+
+        // serialize game object to return as txt file
+        var serializedGame = JsonConvert.SerializeObject(game);
+
+        return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
     }
 
     [HttpGet("{key}/genres")]
@@ -195,10 +151,6 @@ public class GamesController(
         {
             return NotFound(nex.Message);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpGet("{key}/platforms")]
@@ -215,10 +167,6 @@ public class GamesController(
         catch (NotFoundException nex)
         {
             return NotFound(nex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -238,10 +186,6 @@ public class GamesController(
         {
             return NotFound(nex.Message);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpPost("{key}/buy")]
@@ -259,10 +203,6 @@ public class GamesController(
         catch (NotEnoughGamesInStockException negex)
         {
             return BadRequest(negex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
         }
     }
 }

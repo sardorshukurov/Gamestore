@@ -19,75 +19,47 @@ public class PlatformsController(
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
     {
-        try
-        {
-            var games = (await gameService.GetByPlatformAsync(id))
-                .Select(g => g.AsResponse());
+        var games = (await gameService.GetByPlatformAsync(id))
+            .Select(g => g.AsResponse());
 
-            return Ok(games);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return Ok(games);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreatePlatformRequest request)
     {
-        try
-        {
-            var result = await createValidator.ValidateAsync(request);
+        var result = await createValidator.ValidateAsync(request);
 
-            if (!result.IsValid)
+        if (!result.IsValid)
+        {
+            return BadRequest(new
             {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
+                message = "Validation failed",
+                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+            });
+        }
 
-            await platformService.CreateAsync(request.AsDto());
-            return Ok();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        await platformService.CreateAsync(request.AsDto());
+        return Ok();
     }
 
     [HttpGet("{id}")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<PlatformShortResponse>> GetById(Guid id)
     {
-        try
-        {
-            var platform = await platformService.GetByIdAsync(id);
+        var platform = await platformService.GetByIdAsync(id);
 
-            return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.AsShortResponse());
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.AsShortResponse());
     }
 
     [HttpGet]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetAll()
     {
-        try
-        {
-            var platforms = (await platformService.GetAllAsync())
-                .Select(p => p.AsShortResponse());
+        var platforms = (await platformService.GetAllAsync())
+            .Select(p => p.AsShortResponse());
 
-            return Ok(platforms);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return Ok(platforms);
     }
 
     [HttpPut]
@@ -114,10 +86,6 @@ public class PlatformsController(
         {
             return NotFound(nex.Message);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpDelete("{id}")]
@@ -132,10 +100,6 @@ public class PlatformsController(
         catch (NotFoundException)
         {
             return NotFound($"Platform with id {id} not found");
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
         }
     }
 }

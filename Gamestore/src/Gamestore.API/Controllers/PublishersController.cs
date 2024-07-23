@@ -18,61 +18,40 @@ public class PublishersController(
     [HttpPost]
     public async Task<IActionResult> Create(CreatePublisherRequest request)
     {
-        try
-        {
-            var result = await createValidator.ValidateAsync(request);
+        var result = await createValidator.ValidateAsync(request);
 
-            if (!result.IsValid)
+        if (!result.IsValid)
+        {
+            return BadRequest(new
             {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
+                message = "Validation failed",
+                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
+            });
+        }
 
-            await publisherService.CreateAsync(request.AsDto());
-            return Ok();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        await publisherService.CreateAsync(request.AsDto());
+        return Ok();
     }
 
     [HttpGet("{companyName}")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<PublisherResponse>> GetByCompanyName(string companyName)
     {
-        try
-        {
-            var publisher = await publisherService.GetByCompanyNameAsync(companyName);
+        var publisher = await publisherService.GetByCompanyNameAsync(companyName);
 
-            return publisher is null
-                ? NotFound($"Publisher with company name: {companyName} not found.")
-                : Ok(publisher.AsResponse());
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return publisher is null
+            ? NotFound($"Publisher with company name: {companyName} not found.")
+            : Ok(publisher.AsResponse());
     }
 
     [HttpGet]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PublisherResponse>>> GetAll()
     {
-        try
-        {
-            var publishers = (await publisherService.GetAllAsync())
-                .Select(p => p.AsResponse());
+        var publishers = (await publisherService.GetAllAsync())
+            .Select(p => p.AsResponse());
 
-            return Ok(publishers);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return Ok(publishers);
     }
 
     [HttpPut]
@@ -99,10 +78,6 @@ public class PublishersController(
         {
             return NotFound(nex.Message);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpDelete("{id}")]
@@ -117,10 +92,6 @@ public class PublishersController(
         catch (NotFoundException)
         {
             return NotFound($"Publisher with id {id} not found");
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -139,10 +110,6 @@ public class PublishersController(
         catch (NotFoundException nex)
         {
             return NotFound(nex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
         }
     }
 }

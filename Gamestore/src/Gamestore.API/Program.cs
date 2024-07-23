@@ -34,6 +34,7 @@ builder.Host.UseSerilog();
 builder.Services.AddHttpClient("PaymentAPI", client =>
 {
     var uriString = builder.Configuration.GetSection("PaymentMicroservice").Value;
+
     // TODO: add validation for uriString if (string.IsNullOrEmpty(uriString))
     client.BaseAddress = new Uri(uriString!);
 });
@@ -71,7 +72,7 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .WithExposedHeaders("x-total-number-of-games"));    
+            .WithExposedHeaders("x-total-number-of-games"));
 });
 
 var app = builder.Build();
