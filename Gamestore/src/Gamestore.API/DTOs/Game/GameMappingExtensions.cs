@@ -23,6 +23,7 @@ public static class GameMappingExtensions
             dto.Name);
     }
 
+    // TODO: better naming `ToDto`
     public static CreateGameDto AsDto(this CreateGameRequest request)
     {
         return new CreateGameDto(

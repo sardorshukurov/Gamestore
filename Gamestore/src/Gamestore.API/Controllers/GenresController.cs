@@ -15,6 +15,8 @@ public class GenresController(
     CreateGenreValidator createValidator,
     UpdateGenreValidator updateValidator) : ControllerBase
 {
+
+    // TODO: duplicate method it already exists in the GamesController
     [HttpGet("{id}/games")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)

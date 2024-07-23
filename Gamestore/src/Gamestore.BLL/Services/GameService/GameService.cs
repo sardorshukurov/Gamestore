@@ -92,6 +92,8 @@ public class GameService(
         await gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == dto.Id);
 
         // add all genres
+        // TODO: use `Any` instead of `Count` to check if the collection is not empty
+        // please make this change in all services
         if (dto.GenresIds.Count != 0)
         {
             foreach (var genreId in dto.GenresIds)
@@ -121,6 +123,7 @@ public class GameService(
         await repository.CreateAsync(game);
 
         // add all genres
+        // TODO: use `Any` instead of `Count` to check if the collection is not empty
         if (dto.GenresIds.Count != 0)
         {
             foreach (var genreId in dto.GenresIds)

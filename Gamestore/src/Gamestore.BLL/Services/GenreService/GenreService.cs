@@ -63,6 +63,9 @@ public class GenreService(
         if (dto.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
+
+            // TODO: in such scenarios, it is better to use a separate method to check if the genre exists
+            // use `Any` instead of GetByIdAsync with empty variable assignment to make it more clear
             _ = await repository.GetByIdAsync((Guid)dto.ParentGenreId)
                 ?? throw new GenreNotFoundException((Guid)dto.ParentGenreId);
         }

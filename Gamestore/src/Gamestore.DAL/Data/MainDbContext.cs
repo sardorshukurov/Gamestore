@@ -22,6 +22,8 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // TODO: better way to configure entities via IEntityTypeConfiguration
+        // and assembly scanning to avoid manual configuration calling it multiple times
         modelBuilder.ConfigureGames();
         modelBuilder.ConfigureGenres();
         modelBuilder.ConfigureGameGenres();

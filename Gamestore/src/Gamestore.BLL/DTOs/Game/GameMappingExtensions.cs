@@ -23,6 +23,7 @@ public static class GameMappingExtensions
             game.Name);
     }
 
+    // the same here better to name `ToEntity`
     public static GameEntity AsEntity(this CreateGameDto dto)
     {
         return new GameEntity

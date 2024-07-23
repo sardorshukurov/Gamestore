@@ -3,6 +3,7 @@ using Gamestore.DAL.Common;
 
 namespace Gamestore.DAL.Entities;
 
+// TODO: check my comment in the GameDto class
 public class Game : IBaseEntity
 {
     [Key]

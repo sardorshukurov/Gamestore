@@ -25,6 +25,8 @@ public class GamesController(
     UpdateGameValidator updateValidator,
     IOrderService orderService) : ControllerBase
 {
+    // TODO: what is this used for?
+    // ethier use nullable types or generate new values, there should be no hardcoded values
     private readonly Guid _customerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     [HttpPost]
@@ -32,6 +34,7 @@ public class GamesController(
     {
         try
         {
+            // TODO: you can use fillers to validate requests at one place 
             var result = await createValidator.ValidateAsync(request);
 
             if (!result.IsValid)
@@ -46,6 +49,7 @@ public class GamesController(
             await gameService.CreateAsync(request.AsDto());
             return Ok();
         }
+        // TODO: since you already have global exception handling middleware, you can remove this try-catch block
         catch (Exception)
         {
             return StatusCode(500, "An internal server error has occured");
@@ -67,6 +71,9 @@ public class GamesController(
         }
     }
 
+    // TODO: we should use the nouns which represent the entity that the endpoint
+    // that we're retrieving or manipulating as the pathname,
+    // in this case, it should be /games/{id}
     [HttpGet("find/{id}")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetById(Guid id)

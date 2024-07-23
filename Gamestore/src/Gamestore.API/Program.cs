@@ -12,6 +12,8 @@ using Serilog.Exceptions;
 var builder = WebApplication.CreateBuilder(args);
 
 // configuring logging
+
+// TODO: use the configuration file for better flexibility
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.FromLogContext()
@@ -32,10 +34,14 @@ builder.Host.UseSerilog();
 builder.Services.AddHttpClient("PaymentAPI", client =>
 {
     var uriString = builder.Configuration.GetSection("PaymentMicroservice").Value;
+    // TODO: add validation for uriString if (string.IsNullOrEmpty(uriString))
     client.BaseAddress = new Uri(uriString!);
 });
 
 // adding middlewares
+
+// TODO: Instead of registering middlewares as transient services, use them directly in the middleware pipeline.
+// just remove this registration
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddTransient<AddTotalGamesInHeaderMiddleware>();
 builder.Services.AddTransient<RequestLoggingMiddleware>();
@@ -65,7 +71,7 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .WithExposedHeaders("x-total-number-of-games"));
+            .WithExposedHeaders("x-total-number-of-games"));    
 });
 
 var app = builder.Build();

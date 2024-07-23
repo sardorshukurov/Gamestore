@@ -11,6 +11,7 @@ public class RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger) 
     {
         var request = context.Request;
 
+        // TODO: most of this logs Serilog has out of the box to Log API requests and responses
         _logger.LogInformation($"Processing request from IP: {request.HttpContext.Connection.RemoteIpAddress} to URL: {request.Path}");
         _logger.LogInformation($"Request content: {ReadRequestBody(request)}");
 
