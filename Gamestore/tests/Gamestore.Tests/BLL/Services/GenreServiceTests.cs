@@ -13,7 +13,6 @@ public class GenreServiceTests
     private readonly Mock<IRepository<Game>> _gameRepositoryMock;
     private readonly Mock<IRepository<GameGenre>> _gameGenreRepositoryMock;
     private readonly Mock<IRepository<Genre>> _genreRepositoryMock;
-    private readonly Mock<CreateGenreRequest> _createValidator;
     private readonly GenreService _service;
 
     public GenreServiceTests()
@@ -22,7 +21,6 @@ public class GenreServiceTests
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _genreRepositoryMock = _fixture.Freeze<Mock<IRepository<Genre>>>();
-        _createValidator = _fixture.Freeze<Mock<CreateGenreRequest>>();
         _service = new GenreService(_genreRepositoryMock.Object, _gameGenreRepositoryMock.Object, _gameRepositoryMock.Object);
     }
 
