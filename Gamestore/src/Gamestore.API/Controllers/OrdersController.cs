@@ -161,7 +161,7 @@ public class OrdersController(
             message.Append(await result.Content.ReadAsStringAsync());
         }
 
-        return BadRequest(message.ToString());
+        return StatusCode(500, message.ToString());
     }
 
     private async Task<IActionResult> ProcessIBoxPayment()
@@ -208,7 +208,7 @@ public class OrdersController(
             message.Append(await result.Content.ReadAsStringAsync());
         }
 
-        return BadRequest(message.ToString());
+        return StatusCode(500, message.ToString());
     }
 
     private async Task<FileContentResult> ProcessBankPayment()

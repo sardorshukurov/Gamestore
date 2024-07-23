@@ -1,6 +1,4 @@
-using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Platform;
-using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +9,9 @@ namespace Gamestore.API.Controllers;
 [ApiController]
 public class PlatformsController(
     IPlatformService platformService,
-    IGameService gameService,
     CreatePlatformValidator createValidator,
     UpdatePlatformValidator updateValidator) : ControllerBase
 {
-    [HttpGet("{id}/games")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
-    {
-        var games = (await gameService.GetByPlatformAsync(id))
-            .Select(g => g.AsResponse());
-
-        return Ok(games);
-    }
-
     [HttpPost]
     public async Task<IActionResult> Create(CreatePlatformRequest request)
     {

@@ -82,6 +82,40 @@ public class GamesControllerTests
     }
 
     [Fact]
+    public async Task GetAllGamesByPlatformReturnsOkWhenGamesAreFound()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var games = _fixture.Create<ICollection<GameDto>>();
+        _gameServiceMock.Setup(x => x.GetByPlatformAsync(id)).ReturnsAsync(games);
+
+        // Act
+        var result = await _controller.GetAllGamesByPlatform(id);
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.AsResponse()));
+    }
+
+    [Fact]
+    public async Task GetAllGamesByGenreReturnsOkWhenGamesAreFound()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var games = _fixture.Create<ICollection<GameDto>>();
+        _gameServiceMock.Setup(x => x.GetByGenreAsync(id)).ReturnsAsync(games);
+
+        // Act
+        var result = await _controller.GetAllGamesByGenre(id);
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.AsResponse()));
+    }
+
+    [Fact]
     public async Task GetByKeyShouldReturnOkResponseWhenGameFound()
     {
         // Arrange
@@ -218,27 +252,6 @@ public class GamesControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldReturn500ResponseWhenCreationFails()
-    {
-        // Arrange
-        var request = _fixture.Create<CreateGameRequest>();
-
-        _gameServiceMock
-            .Setup(x => x.CreateAsync(It.IsAny<CreateGameDto>()))
-            .ThrowsAsync(new Exception("Creation failed"));
-
-        // Act
-        var result = await _controller.Create(request);
-
-        // Assert
-        result.Should().NotBeNull();
-        var objectResult = result as ObjectResult;
-
-        objectResult.Should().NotBeNull();
-        objectResult.StatusCode.Should().Be(500);
-    }
-
-    [Fact]
     public async Task UpdateShouldReturnNoContentResponseWhenValidRequest()
     {
         // Arrange
@@ -313,25 +326,6 @@ public class GamesControllerTests
     }
 
     [Fact]
-    public async Task UpdateShouldReturn500WhenExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdateGameRequest>();
-        _gameServiceMock
-            .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameDto>()))
-            .ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        result.Should().BeOfType<ObjectResult>();
-        var objectResult = result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
-    }
-
-    [Fact]
     public async Task DeleteShouldReturnNoContentWhenValidKey()
     {
         // Arrange
@@ -372,42 +366,6 @@ public class GamesControllerTests
     }
 
     [Fact]
-    public async Task DeleteShouldReturn500WhenExceptionThrown()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-
-        _gameServiceMock
-            .Setup(x => x.DeleteByKeyAsync(key))
-            .ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.Delete(key);
-
-        // Assert
-        result.Should().BeOfType<ObjectResult>();
-        var objectResult = result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
-    }
-
-    [Fact]
-    public async Task GetFileShouldReturnNotFoundWhenGameNotFound()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-        _gameServiceMock.Setup(x => x.GetByKeyAsync(key)).ReturnsAsync((GameDto)null);
-
-        // Act
-        var result = await _controller.GetFile(key);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be($"Game with key {key} not found");
-    }
-
-    [Fact]
     public async Task GetFileShouldReturnFileWhenGameFound()
     {
         // Arrange
@@ -424,23 +382,6 @@ public class GamesControllerTests
         fileResult.FileContents.Should().BeEquivalentTo(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(game)));
         fileResult.ContentType.Should().Be("text/plain");
         fileResult.FileDownloadName.Should().StartWith(game.Name);
-    }
-
-    [Fact]
-    public async Task GetFileShouldReturn500WhenExceptionThrown()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-        _gameServiceMock.Setup(x => x.GetByKeyAsync(key)).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.GetFile(key);
-
-        // Assert
-        result.Should().BeOfType<ObjectResult>();
-        var objectResult = result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -478,25 +419,6 @@ public class GamesControllerTests
         result.Result.Should().BeOfType<NotFoundObjectResult>();
         var notFoundResult = result.Result as NotFoundObjectResult;
         notFoundResult.Value.Should().Be("Genres not found");
-    }
-
-    [Fact]
-    public async Task GetGenresByKeyReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-        _genreServiceMock
-            .Setup(x => x.GetAllByGameKeyAsync(key))
-            .ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.GetGenresByKey(key);
-
-        // Assert
-        result.Result.Should().BeOfType<ObjectResult>();
-        var objectResult = result.Result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]

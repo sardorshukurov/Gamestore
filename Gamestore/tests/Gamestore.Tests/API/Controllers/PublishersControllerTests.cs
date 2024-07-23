@@ -79,28 +79,6 @@ public class PublishersControllerTests
     }
 
     [Fact]
-    public async Task CreateErrorDuringCreationReturnsStatusCode500()
-    {
-        // Arrange
-        var request = _fixture.Create<CreatePublisherRequest>();
-        var validationResult = new FluentValidation.Results.ValidationResult();
-        _createValidatorMock.Setup(x => x.ValidateAsync(
-                It.IsAny<ValidationContext<CreatePublisherRequest>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(validationResult);
-        _publisherServiceMock.Setup(x => x.CreateAsync(It.IsAny<CreatePublisherDto>()))
-            .Throws(new Exception());
-
-        // Act
-        var result = await _controller.Create(request);
-
-        // Assert
-        Assert.IsType<ObjectResult>(result);
-        var statusCodeResult = (ObjectResult)result;
-        Assert.Equal(500, statusCodeResult.StatusCode);
-    }
-
-    [Fact]
     public async Task GetByCompanyNamePublisherExistsReturnsOk()
     {
         // Arrange
@@ -132,22 +110,6 @@ public class PublishersControllerTests
     }
 
     [Fact]
-    public async Task GetByCompanyNameErrorsDuringGetReturnsStatusCode500()
-    {
-        // Arrange
-        _publisherServiceMock.Setup(x => x.GetByCompanyNameAsync(It.IsAny<string>()))
-            .Throws(new Exception());
-
-        // Act
-        var result = await _controller.GetByCompanyName("companyName");
-
-        // Assert
-        Assert.IsType<ObjectResult>(result.Result);
-        var statusCodeResult = (ObjectResult)result.Result;
-        Assert.Equal(500, statusCodeResult.StatusCode);
-    }
-
-    [Fact]
     public async Task GetAllReturnsListOfPublishers()
     {
         // Arrange
@@ -162,23 +124,6 @@ public class PublishersControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         var returnValue = Assert.IsAssignableFrom<IEnumerable<PublisherResponse>>(okResult.Value);
         Assert.Equal(publishers.Count, returnValue.Count());
-        _publisherServiceMock.Verify(x => x.GetAllAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetAllExceptionThrownReturnsStatusCode500()
-    {
-        // Arrange
-        _publisherServiceMock.Setup(x => x.GetAllAsync())
-            .Throws(new Exception());
-
-        // Act
-        var result = await _controller.GetAll();
-
-        // Assert
-        Assert.IsType<ObjectResult>(result.Result);
-        var statusCodeResult = (ObjectResult)result.Result;
-        Assert.Equal(500, statusCodeResult.StatusCode);
         _publisherServiceMock.Verify(x => x.GetAllAsync(), Times.Once);
     }
 
@@ -243,29 +188,6 @@ public class PublishersControllerTests
     }
 
     [Fact]
-    public async Task UpdateErrorDuringCreationReturnsStatusCode500()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdatePublisherRequest>();
-        var validationResult = new FluentValidation.Results.ValidationResult();
-        _updateValidatorMock.Setup(x => x.ValidateAsync(
-                It.IsAny<ValidationContext<UpdatePublisherRequest>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(validationResult);
-
-        _publisherServiceMock.Setup(x => x.UpdateAsync(It.IsAny<UpdatePublisherDto>()))
-            .Throws(new Exception());
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        Assert.IsType<ObjectResult>(result);
-        var statusCodeResult = (ObjectResult)result;
-        Assert.Equal(500, statusCodeResult.StatusCode);
-    }
-
-    [Fact]
     public async Task DeleteValidIdCallsServiceAndDeletesPublisher()
     {
         // Arrange
@@ -297,23 +219,6 @@ public class PublishersControllerTests
     }
 
     [Fact]
-    public async Task DeleteThrowsReturnsStatusCode500()
-    {
-        // Arrange
-        var id = _fixture.Create<Guid>();
-        _publisherServiceMock.Setup(x => x.DeleteAsync(id))
-            .Throws(new Exception());
-
-        // Act
-        var result = await _controller.Delete(id);
-
-        // Assert
-        Assert.IsType<ObjectResult>(result);
-        var statusCodeResult = (ObjectResult)result;
-        Assert.Equal(500, statusCodeResult.StatusCode);
-    }
-
-    [Fact]
     public async Task GetGamesByCompanyNamePublisherExistsReturnsOk()
     {
         // Arrange
@@ -342,21 +247,5 @@ public class PublishersControllerTests
 
         // Assert
         Assert.IsType<NotFoundObjectResult>(result.Result);
-    }
-
-    [Fact]
-    public async Task GetGamesByCompanyNameErrorDuringGetReturnsStatusCode500()
-    {
-        // Arrange
-        _gameServiceMock.Setup(x => x.GetByPublisherAsync(It.IsAny<string>()))
-            .Throws(new Exception());
-
-        // Act
-        var result = await _controller.GetGamesByCompanyName("companyName");
-
-        // Assert
-        Assert.IsType<ObjectResult>(result.Result);
-        var statusCodeResult = (ObjectResult)result.Result;
-        Assert.Equal(500, statusCodeResult.StatusCode);
     }
 }

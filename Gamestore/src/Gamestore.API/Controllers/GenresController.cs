@@ -1,6 +1,4 @@
-using Gamestore.API.DTOs.Game;
 using Gamestore.API.DTOs.Genre;
-using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -11,21 +9,9 @@ namespace Gamestore.API.Controllers;
 [ApiController]
 public class GenresController(
     IGenreService genreService,
-    IGameService gameService,
     CreateGenreValidator createValidator,
     UpdateGenreValidator updateValidator) : ControllerBase
 {
-    // TODO: duplicate method it already exists in the GamesController
-    [HttpGet("{id}/games")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
-    {
-        var games = (await gameService.GetByGenreAsync(id))
-            .Select(g => g.AsResponse());
-
-        return Ok(games);
-    }
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateGenreRequest request)
     {

@@ -48,7 +48,7 @@ public class GamesController(
         return Ok();
     }
 
-    [HttpGet("{key}")]
+    [HttpGet("{key}/key")]
     public async Task<ActionResult<GameResponse>> GetByKey(string key)
     {
         var game = await gameService.GetByKeyAsync(key);
@@ -56,10 +56,27 @@ public class GamesController(
         return game is null ? NotFound($"Game with key {key} not found") : Ok(game.AsResponse());
     }
 
-    // TODO: we should use the nouns which represent the entity that the endpoint
-    // that we're retrieving or manipulating as the pathname,
-    // in this case, it should be /games/{id}
-    [HttpGet("find/{id}")]
+    [HttpGet("{genreId}/genre")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGamesByGenre(Guid genreId)
+    {
+        var games = (await gameService.GetByGenreAsync(genreId))
+            .Select(g => g.AsResponse());
+
+        return Ok(games);
+    }
+
+    [HttpGet("{platformId}/platform")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGamesByPlatform(Guid platformId)
+    {
+        var games = (await gameService.GetByPlatformAsync(platformId))
+            .Select(g => g.AsResponse());
+
+        return Ok(games);
+    }
+
+    [HttpGet("{id}")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetById(Guid id)
     {

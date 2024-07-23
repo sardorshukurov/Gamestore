@@ -6,8 +6,6 @@ namespace Gamestore.API.Middlewares;
 
 public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger) : IMiddleware
 {
-    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger = logger;
-
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
@@ -42,7 +40,7 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
 
         while (exception != null)
         {
-            _logger.LogError("{Type}: {Message} {StackTrace}", exception.GetType().Name, exception.Message, exception.StackTrace);
+            logger.LogError("{Type}: {Message} {StackTrace}", exception.GetType().Name, exception.Message, exception.StackTrace);
 
             exception = exception.InnerException;
         }
