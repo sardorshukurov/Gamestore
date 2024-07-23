@@ -11,24 +11,11 @@ namespace Gamestore.API.Controllers;
 [ApiController]
 public class PublishersController(
     IPublisherService publisherService,
-    IGameService gameService,
-    CreatePublisherValidator createValidator,
-    UpdatePublisherValidator updateValidator) : ControllerBase
+    IGameService gameService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create(CreatePublisherRequest request)
     {
-        var result = await createValidator.ValidateAsync(request);
-
-        if (!result.IsValid)
-        {
-            return BadRequest(new
-            {
-                message = "Validation failed",
-                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-            });
-        }
-
         await publisherService.CreateAsync(request.ToDto());
         return Ok();
     }
@@ -59,17 +46,6 @@ public class PublishersController(
     {
         try
         {
-            var result = await updateValidator.ValidateAsync(request);
-
-            if (!result.IsValid)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
-
             await publisherService.UpdateAsync(request.ToDto());
 
             return NoContent();

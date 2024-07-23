@@ -21,8 +21,6 @@ public class GamesController(
     IGenreService genreService,
     IPlatformService platformService,
     IPublisherService publisherService,
-    CreateGameValidator createValidator,
-    UpdateGameValidator updateValidator,
     IOrderService orderService) : ControllerBase
 {
     // TODO: what is this used for?
@@ -32,18 +30,6 @@ public class GamesController(
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {
-        // TODO: you can use fillers to validate requests at one place
-        var result = await createValidator.ValidateAsync(request);
-
-        if (!result.IsValid)
-        {
-            return BadRequest(new
-            {
-                message = "Validation failed",
-                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-            });
-        }
-
         await gameService.CreateAsync(request.ToDto());
         return Ok();
     }
@@ -98,17 +84,6 @@ public class GamesController(
     {
         try
         {
-            var result = await updateValidator.ValidateAsync(request);
-
-            if (!result.IsValid)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
-
             var gameDto = request.ToDto();
 
             await gameService.UpdateAsync(gameDto);

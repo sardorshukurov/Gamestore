@@ -28,9 +28,7 @@ public class PlatformsControllerTests
         _updateValidator = _fixture.Freeze<Mock<UpdatePlatformValidator>>();
 
         _controller = new PlatformsController(
-            _platformService.Object,
-            _createValidator.Object,
-            _updateValidator.Object);
+            _platformService.Object);
     }
 
     [Fact]

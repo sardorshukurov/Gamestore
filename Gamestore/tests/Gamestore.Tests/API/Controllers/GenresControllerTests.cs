@@ -26,9 +26,7 @@ public class GenresControllerTests
         _updateValidator = _fixture.Freeze<Mock<UpdateGenreValidator>>();
 
         _controller = new GenresController(
-            _genreServiceMock.Object,
-            _createValidator.Object,
-            _updateValidator.Object);
+            _genreServiceMock.Object);
     }
 
     [Fact]

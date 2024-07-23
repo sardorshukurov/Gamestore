@@ -8,24 +8,11 @@ namespace Gamestore.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class GenresController(
-    IGenreService genreService,
-    CreateGenreValidator createValidator,
-    UpdateGenreValidator updateValidator) : ControllerBase
+    IGenreService genreService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create(CreateGenreRequest request)
     {
-        var result = await createValidator.ValidateAsync(request);
-
-        if (!result.IsValid)
-        {
-            return BadRequest(new
-            {
-                message = "Validation failed",
-                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-            });
-        }
-
         await genreService.CreateAsync(request.ToDto());
         return Ok();
     }
@@ -64,17 +51,6 @@ public class GenresController(
     {
         try
         {
-            var result = await updateValidator.ValidateAsync(request);
-
-            if (!result.IsValid)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
-
             await genreService.UpdateAsync(request.ToDto());
 
             return NoContent();

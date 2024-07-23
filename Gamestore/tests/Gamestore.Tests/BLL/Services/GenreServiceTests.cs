@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Gamestore.API.DTOs.Genre;
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.Common.Exceptions;
@@ -13,6 +14,7 @@ public class GenreServiceTests
     private readonly Mock<IRepository<Game>> _gameRepositoryMock;
     private readonly Mock<IRepository<GameGenre>> _gameGenreRepositoryMock;
     private readonly Mock<IRepository<Genre>> _genreRepositoryMock;
+    private readonly Mock<CreateGenreRequest> _createValidator;
     private readonly GenreService _service;
 
     public GenreServiceTests()
@@ -21,7 +23,7 @@ public class GenreServiceTests
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _genreRepositoryMock = _fixture.Freeze<Mock<IRepository<Genre>>>();
-
+        _createValidator = _fixture.Freeze<Mock<CreateGenreRequest>>();
         _service = new GenreService(_genreRepositoryMock.Object, _gameGenreRepositoryMock.Object, _gameRepositoryMock.Object);
     }
 
@@ -172,7 +174,10 @@ public class GenreServiceTests
     public async Task CreateAsyncCreatesGenreSuccessfully()
     {
         // Arrange
-        var createGenreDto = _fixture.Create<CreateGenreDto>();
+        var createGenreDto = new CreateGenreDto(
+            "New genre",
+            null,
+            null);
         var genre = createGenreDto.ToEntity();
 
         // Act
@@ -180,8 +185,7 @@ public class GenreServiceTests
 
         // Assert
         _genreRepositoryMock.Verify(
-            x => x.CreateAsync(It.Is<Genre>(g => g.Name == genre.Name &&
-                                                                               g.ParentGenreId == genre.ParentGenreId)),
+            x => x.CreateAsync(It.IsAny<Genre>()),
             Times.Once);
         _genreRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }

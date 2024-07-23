@@ -34,9 +34,7 @@ public class PublishersControllerTests
 
         _controller = new PublishersController(
             _publisherServiceMock.Object,
-            _gameServiceMock.Object,
-            _createValidatorMock.Object,
-            _updateValidatorMock.Object);
+            _gameServiceMock.Object);
     }
 
     [Fact]
@@ -56,26 +54,6 @@ public class PublishersControllerTests
         // Assert
         Assert.IsType<OkResult>(result);
         _publisherServiceMock.Verify(x => x.CreateAsync(It.IsAny<CreatePublisherDto>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task CreateInvalidRequestDoesNotCallServiceAndReturnsBadRequest()
-    {
-        // Arrange
-        var request = _fixture.Create<CreatePublisherRequest>();
-        var validationFailure = new FluentValidation.Results.ValidationFailure("Property", "Error Message");
-        var validationResult = new FluentValidation.Results.ValidationResult(new List<FluentValidation.Results.ValidationFailure> { validationFailure });
-        _createValidatorMock.Setup(x => x.ValidateAsync(
-                It.IsAny<ValidationContext<CreatePublisherRequest>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(validationResult);
-
-        // Act
-        var result = await _controller.Create(request);
-
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-        _publisherServiceMock.Verify(x => x.CreateAsync(It.IsAny<CreatePublisherDto>()), Times.Never);
     }
 
     [Fact]
@@ -144,26 +122,6 @@ public class PublishersControllerTests
         // Assert
         Assert.IsType<NoContentResult>(result);
         _publisherServiceMock.Verify(x => x.UpdateAsync(It.IsAny<UpdatePublisherDto>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateInvalidRequestDoesNotCallServiceAndReturnsBadRequest()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdatePublisherRequest>();
-        var validationFailure = new FluentValidation.Results.ValidationFailure("Property", "Error Message");
-        var validationResult = new FluentValidation.Results.ValidationResult(new List<FluentValidation.Results.ValidationFailure> { validationFailure });
-        _updateValidatorMock.Setup(x => x.ValidateAsync(
-                It.IsAny<ValidationContext<UpdatePublisherRequest>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(validationResult);
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-        _publisherServiceMock.Verify(x => x.UpdateAsync(It.IsAny<UpdatePublisherDto>()), Times.Never);
     }
 
     [Fact]

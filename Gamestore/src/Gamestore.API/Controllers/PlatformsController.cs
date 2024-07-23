@@ -8,24 +8,11 @@ namespace Gamestore.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class PlatformsController(
-    IPlatformService platformService,
-    CreatePlatformValidator createValidator,
-    UpdatePlatformValidator updateValidator) : ControllerBase
+    IPlatformService platformService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create(CreatePlatformRequest request)
     {
-        var result = await createValidator.ValidateAsync(request);
-
-        if (!result.IsValid)
-        {
-            return BadRequest(new
-            {
-                message = "Validation failed",
-                errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-            });
-        }
-
         await platformService.CreateAsync(request.ToDto());
         return Ok();
     }
@@ -54,17 +41,6 @@ public class PlatformsController(
     {
         try
         {
-            var result = await updateValidator.ValidateAsync(request);
-
-            if (!result.IsValid)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
-
             await platformService.UpdateAsync(request.ToDto());
 
             return NoContent();

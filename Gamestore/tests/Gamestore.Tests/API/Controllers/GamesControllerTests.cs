@@ -51,8 +51,6 @@ public class GamesControllerTests
             _genreServiceMock.Object,
             _platformServiceMock.Object,
             _publisherServiceMock.Object,
-            _createValidator.Object,
-            _updateValidator.Object,
             _orderServiceMock.Object);
     }
 
