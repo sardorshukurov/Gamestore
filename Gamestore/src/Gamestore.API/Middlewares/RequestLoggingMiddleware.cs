@@ -2,16 +2,14 @@ using System.Text;
 
 namespace Gamestore.API.Middlewares;
 
-public class RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger) : IMiddleware
+public class RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger, RequestDelegate next)
 {
-    private readonly ILogger<RequestLoggingMiddleware> _logger = logger;
-
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
     {
         var request = context.Request;
 
-        _logger.LogInformation($"Processing request from IP: {request.HttpContext.Connection.RemoteIpAddress} to URL: {request.Path}");
-        _logger.LogInformation($"Request content: {ReadRequestBody(request)}");
+        logger.LogInformation($"Processing request from IP: {request.HttpContext.Connection.RemoteIpAddress} to URL: {request.Path}");
+        logger.LogInformation($"Request content: {ReadRequestBody(request)}");
 
         var buffer = new MemoryStream();
         var stream = context.Response.Body;
@@ -21,7 +19,7 @@ public class RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger) 
 
         buffer.Position = 0;
         var responseText = await new StreamReader(buffer).ReadToEndAsync();
-        _logger.LogInformation($"Response content: {responseText}");
+        logger.LogInformation($"Response content: {responseText}");
 
         buffer.Position = 0;
         await buffer.CopyToAsync(stream);

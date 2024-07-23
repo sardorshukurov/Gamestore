@@ -40,10 +40,6 @@ builder.Services.AddBusinessLogicServices();
 // adding validators
 builder.Services.RegisterValidators();
 
-builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
-builder.Services.AddTransient<AddTotalGamesInHeaderMiddleware>();
-builder.Services.AddTransient<RequestLoggingMiddleware>();
-
 // adding cors configurations
 builder.Services.AddCors(options =>
 {
