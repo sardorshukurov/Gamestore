@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 
 namespace Gamestore.API.Middlewares;
@@ -11,7 +10,6 @@ public class RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger) 
     {
         var request = context.Request;
 
-        // TODO: most of this logs Serilog has out of the box to Log API requests and responses
         _logger.LogInformation($"Processing request from IP: {request.HttpContext.Connection.RemoteIpAddress} to URL: {request.Path}");
         _logger.LogInformation($"Request content: {ReadRequestBody(request)}");
 
@@ -19,16 +17,11 @@ public class RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger) 
         var stream = context.Response.Body;
         context.Response.Body = buffer;
 
-        var stopWatch = Stopwatch.StartNew();
         await next(context);
-        stopWatch.Stop();
-
-        _logger.LogInformation($"Response status code: {context.Response.StatusCode}");
 
         buffer.Position = 0;
         var responseText = await new StreamReader(buffer).ReadToEndAsync();
         _logger.LogInformation($"Response content: {responseText}");
-        _logger.LogInformation($"Elapsed time: {stopWatch.Elapsed}");
 
         buffer.Position = 0;
         await buffer.CopyToAsync(stream);

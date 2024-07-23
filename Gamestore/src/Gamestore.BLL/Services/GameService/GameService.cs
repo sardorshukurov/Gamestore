@@ -92,9 +92,9 @@ public class GameService(
         await gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == dto.Id);
 
         // add all genres
-        // TODO: use `Any` instead of `Count` to check if the collection is not empty
-        // please make this change in all services
-        if (dto.GenresIds.Count != 0)
+#pragma warning disable CA1860
+        if (dto.GenresIds.Any())
+#pragma warning restore CA1860
         {
             foreach (var genreId in dto.GenresIds)
             {
@@ -104,7 +104,9 @@ public class GameService(
         }
 
         // add all platforms
-        if (dto.PlatformsIds.Count != 0)
+#pragma warning disable CA1860
+        if (dto.PlatformsIds.Any())
+#pragma warning restore CA1860
         {
             foreach (var platformId in dto.PlatformsIds)
             {
@@ -123,7 +125,6 @@ public class GameService(
         await repository.CreateAsync(game);
 
         // add all genres
-        // TODO: use `Any` instead of `Count` to check if the collection is not empty
 #pragma warning disable CA1860
         if (dto.GenresIds.Any())
 #pragma warning restore CA1860
@@ -136,7 +137,9 @@ public class GameService(
         }
 
         // add all platforms
-        if (dto.PlatformsIds.Count != 0)
+#pragma warning disable CA1860
+        if (dto.PlatformsIds.Any())
+#pragma warning restore CA1860
         {
             foreach (var platformId in dto.PlatformsIds)
             {
