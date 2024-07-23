@@ -2,7 +2,7 @@ using Gamestore.BLL.DTOs.Game;
 
 namespace Gamestore.BLL.DTOs.Platform;
 
-public record PlatformDto(
+public record PlatformResponse(
     Guid Id,
     string Type,
-    ICollection<GameShortDto> Games);
+    ICollection<GameShortResponse> Games);

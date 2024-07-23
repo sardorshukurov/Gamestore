@@ -1,7 +1,7 @@
 using FluentValidation;
 using Gamestore.DAL.Data;
 
-namespace Gamestore.API.DTOs.Publisher;
+namespace Gamestore.BLL.DTOs.Publisher;
 
 public record CreatePublisherRequest(
     CreatePublisher Publisher);

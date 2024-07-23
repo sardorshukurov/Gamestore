@@ -1,19 +1,20 @@
 using FluentValidation;
 using Gamestore.DAL.Data;
 
-namespace Gamestore.API.DTOs.Platform;
+namespace Gamestore.BLL.DTOs.Platform;
 
-public record CreatePlatformRequest(
-    CreatePlatform Platform);
+public record UpdatePlatformRequest(
+    UpdatePlatform Platform);
 
-public record CreatePlatform(
+public record UpdatePlatform(
+    Guid Id,
     string Type);
 
-public class CreatePlatformValidator : AbstractValidator<CreatePlatformRequest>
+public class UpdatePlatformValidator : AbstractValidator<UpdatePlatformRequest>
 {
     private readonly MainDbContext _dbContext;
 
-    public CreatePlatformValidator(MainDbContext dbContext)
+    public UpdatePlatformValidator(MainDbContext dbContext)
     {
         _dbContext = dbContext;
 

@@ -1,6 +1,6 @@
 namespace Gamestore.BLL.DTOs.Genre;
 
-public record GenreShortDto(
+public record GenreResponse(
     Guid Id,
     string Name,
     Guid? ParentGenreId);

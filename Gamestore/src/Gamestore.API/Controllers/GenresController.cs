@@ -1,4 +1,4 @@
-using Gamestore.API.DTOs.Genre;
+using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ public class GenresController(
     [HttpPost]
     public async Task<IActionResult> Create(CreateGenreRequest request)
     {
-        await genreService.CreateAsync(request.ToDto());
+        await genreService.CreateAsync(request);
         return Ok();
     }
 
@@ -23,15 +23,14 @@ public class GenresController(
     {
         var genre = await genreService.GetByIdAsync(id);
 
-        return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre.ToShortResponse());
+        return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre);
     }
 
     [HttpGet]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetAll()
     {
-        var genres = (await genreService.GetAllAsync())
-            .Select(g => g.ToShortResponse());
+        var genres = await genreService.GetAllAsync();
 
         return Ok(genres);
     }
@@ -40,8 +39,7 @@ public class GenresController(
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetSubGenres(Guid parentId)
     {
-        var genres = (await genreService.GetSubGenresAsync(parentId))
-            .Select(g => g.ToShortResponse());
+        var genres = await genreService.GetSubGenresAsync(parentId);
 
         return Ok(genres);
     }
@@ -51,7 +49,7 @@ public class GenresController(
     {
         try
         {
-            await genreService.UpdateAsync(request.ToDto());
+            await genreService.UpdateAsync(request);
 
             return NoContent();
         }

@@ -1,4 +1,4 @@
-using Gamestore.API.DTOs.Platform;
+using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ public class PlatformsController(
     [HttpPost]
     public async Task<IActionResult> Create(CreatePlatformRequest request)
     {
-        await platformService.CreateAsync(request.ToDto());
+        await platformService.CreateAsync(request);
         return Ok();
     }
 
@@ -23,15 +23,14 @@ public class PlatformsController(
     {
         var platform = await platformService.GetByIdAsync(id);
 
-        return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform.ToShortResponse());
+        return platform is null ? NotFound($"Platform with id {id} not found") : Ok(platform);
     }
 
     [HttpGet]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetAll()
     {
-        var platforms = (await platformService.GetAllAsync())
-            .Select(p => p.ToShortResponse());
+        var platforms = await platformService.GetAllAsync();
 
         return Ok(platforms);
     }
@@ -41,7 +40,7 @@ public class PlatformsController(
     {
         try
         {
-            await platformService.UpdateAsync(request.ToDto());
+            await platformService.UpdateAsync(request);
 
             return NoContent();
         }

@@ -44,40 +44,40 @@ public class OrderService(
         await DeleteOrderIfNoGamesLeft(order.Id);
     }
 
-    public async Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrdersAsync()
+    public async Task<IEnumerable<OrderResponse>> GetPaidAndCancelledOrdersAsync()
     {
         var orders =
             (await orderRepository.GetAllByFilterAsync(o =>
                 o.Status == OrderStatus.Paid || o.Status == OrderStatus.Cancelled))
-            .Select(o => o.AsDto());
+            .Select(o => o.ToResponse());
 
         return orders;
     }
 
-    public async Task<OrderDto?> GetByIdAsync(Guid orderId)
+    public async Task<OrderResponse?> GetByIdAsync(Guid orderId)
     {
         var order = await orderRepository.GetOneAsync(o => o.Id == orderId);
 
-        return order?.AsDto();
+        return order?.ToResponse();
     }
 
-    public async Task<IEnumerable<OrderDetailsDto>> GetOrderDetailsAsync(Guid orderId)
+    public async Task<IEnumerable<OrderDetailsResponse>> GetOrderDetailsAsync(Guid orderId)
     {
         var orderGames =
             (await orderGameRepository.GetAllByFilterAsync(og =>
                 og.OrderId == orderId))
-            .Select(og => og.AsDto());
+            .Select(og => og.ToResponse());
 
         return orderGames;
     }
 
-    public async Task<IEnumerable<OrderDetailsDto>> GetCartAsync(Guid customerId)
+    public async Task<IEnumerable<OrderDetailsResponse>> GetCartAsync(Guid customerId)
     {
         var order = await GetOpenOrderByCustomerIdOrElseThrow(customerId);
 
         var orderGames = (await orderGameRepository.GetAllByFilterAsync(
             og => og.OrderId == order.Id))
-            .Select(og => og.AsDto());
+            .Select(og => og.ToResponse());
 
         return orderGames;
     }

@@ -1,6 +1,5 @@
 using FluentValidation;
 using Gamestore.API.Controllers;
-using Gamestore.API.DTOs.Genre;
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.Common.Exceptions;
@@ -39,14 +38,14 @@ public class GenresControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreateGenreRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _genreServiceMock.Setup(x => x.CreateAsync(request.ToDto())).Returns(Task.CompletedTask);
+        _genreServiceMock.Setup(x => x.CreateAsync(request)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Create(request);
 
         // Assert
         result.Should().BeOfType<OkResult>();
-        _genreServiceMock.Verify(x => x.CreateAsync(request.ToDto()), Times.Once);
+        _genreServiceMock.Verify(x => x.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var genre = _fixture.Create<GenreShortDto>();
+        var genre = _fixture.Create<GenreShortResponse>();
         _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(genre);
 
         // Act
@@ -63,8 +62,8 @@ public class GenresControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genre.ToShortResponse());
-        okResult.Value.Should().BeOfType(genre.ToShortResponse().GetType());
+        okResult.Value.Should().BeEquivalentTo(genre);
+        okResult.Value.Should().BeOfType(genre.GetType());
     }
 
     [Fact]
@@ -72,7 +71,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ReturnsAsync((GenreShortDto)null);
+        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ReturnsAsync((GenreShortResponse)null);
 
         // Act
         var result = await _controller.GetGenre(id);
@@ -87,7 +86,7 @@ public class GenresControllerTests
     public async Task GetAllReturnsOkWhenGenresFound()
     {
         // Arrange
-        var genres = _fixture.Create<ICollection<GenreShortDto>>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
         _genreServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(genres);
 
         // Act
@@ -96,7 +95,7 @@ public class GenresControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.ToShortResponse()));
+        okResult.Value.Should().BeEquivalentTo(genres);
     }
 
     [Fact]
@@ -104,7 +103,7 @@ public class GenresControllerTests
     {
         // Arrange
         var parentId = Guid.NewGuid();
-        var genres = _fixture.Create<ICollection<GenreShortDto>>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
         _genreServiceMock.Setup(x => x.GetSubGenresAsync(parentId)).ReturnsAsync(genres);
 
         // Act
@@ -113,7 +112,7 @@ public class GenresControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.ToShortResponse()));
+        okResult.Value.Should().BeEquivalentTo(genres);
     }
 
     [Fact]
@@ -126,7 +125,7 @@ public class GenresControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _genreServiceMock.Setup(x => x.UpdateAsync(request.ToDto())).Returns(Task.CompletedTask);
+        _genreServiceMock.Setup(x => x.UpdateAsync(request)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Update(request);
@@ -145,7 +144,7 @@ public class GenresControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _genreServiceMock.Setup(x => x.UpdateAsync(request.ToDto())).ThrowsAsync(new NotFoundException("Genre not found"));
+        _genreServiceMock.Setup(x => x.UpdateAsync(request)).ThrowsAsync(new NotFoundException("Genre not found"));
 
         // Act
         var result = await _controller.Update(request);

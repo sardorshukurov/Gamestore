@@ -1,6 +1,6 @@
 namespace Gamestore.BLL.DTOs.Order;
 
-public record OrderDetailsDto(
+public record OrderDetailsResponse(
     Guid ProductId,
     double Price,
     int Quantity,

@@ -15,59 +15,75 @@ public class PlatformMappingsTests
     }
 
     [Fact]
-    public void AsDtoMapsCorrectly()
+    public void AsResponseMapsCorrectly()
     {
         // Arrange
-        var platform = _fixture.Create<Platform>();
-        var games = _fixture.Create<ICollection<GameShortDto>>();
+        var dto = _fixture.Create<Platform>();
+        var games = _fixture.Create<ICollection<GameShortResponse>>();
 
         // Act
-        var dto = platform.ToDto(games);
+        var response = dto.ToResponse(games);
 
         // Assert
-        dto.Id.Should().Be(platform.Id);
-        dto.Type.Should().Be(platform.Type);
-        dto.Games.Should().BeEquivalentTo(games);
+        response.Id.Should().Be(dto.Id);
+        response.Type.Should().Be(dto.Type);
+        response.Games.Should().BeEquivalentTo(games);
     }
 
     [Fact]
-    public void AsShortDtoMapsCorrectly()
+    public void AsShortResponseFromDtoMapsCorrectly()
     {
         // Arrange
-        var platform = _fixture.Create<Platform>();
+        var dto = _fixture.Create<Platform>();
 
         // Act
-        var shortDto = platform.ToShortDto();
+        var response = dto.ToShortResponse();
 
         // Assert
-        shortDto.Id.Should().Be(platform.Id);
-        shortDto.Type.Should().Be(platform.Type);
+        response.Id.Should().Be(dto.Id);
+        response.Type.Should().Be(dto.Type);
     }
 
     [Fact]
-    public void AsEntityMapsCorrectly()
+    public void AsShortResponseFromShortDtoMapsCorrectly()
     {
         // Arrange
-        var dto = _fixture.Create<CreatePlatformDto>();
+        var dto = _fixture.Create<Platform>();
 
         // Act
-        var platform = dto.ToEntity();
+        var response = dto.ToShortResponse();
 
         // Assert
-        platform.Type.Should().Be(dto.Type);
+        response.Id.Should().Be(dto.Id);
+        response.Type.Should().Be(dto.Type);
     }
 
     [Fact]
-    public void UpdateEntityUpdatesCorrectly()
+    public void AsCreatePlatformDtoMapsCorrectly()
     {
         // Arrange
-        var dto = _fixture.Create<UpdatePlatformDto>();
-        var platform = _fixture.Create<Platform>();
+        var request = _fixture.Create<CreatePlatformRequest>();
 
         // Act
-        dto.UpdateEntity(platform);
+        var entity = request.ToEntity();
 
         // Assert
-        platform.Type.Should().Be(dto.Type);
+        entity.Type.Should().Be(request.Platform.Type);
+    }
+
+    [Fact]
+    public void AsUpdatePlatformDtoMapsCorrectly()
+    {
+        // Arrange
+        var request = _fixture.Create<UpdatePlatformRequest>();
+
+        var entity = new Platform();
+
+        // Act
+        request.UpdateEntity(entity);
+
+        // Assert
+        entity.Id.Should().Be(request.Platform.Id);
+        entity.Type.Should().Be(request.Platform.Type);
     }
 }

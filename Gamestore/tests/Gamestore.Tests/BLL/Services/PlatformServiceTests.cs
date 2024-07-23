@@ -44,7 +44,7 @@ public class PlatformServiceTests
         var result = await _service.GetAllAsync();
 
         // Assert
-        result.Should().BeEquivalentTo(platforms.Select(p => p.ToShortDto()));
+        result.Should().BeEquivalentTo(platforms);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class PlatformServiceTests
         var result = await _service.GetByIdAsync(id);
 
         // Assert
-        result.Should().BeEquivalentTo(platform.ToShortDto());
+        result.Should().BeEquivalentTo(platform);
     }
 
     [Fact]
@@ -83,12 +83,12 @@ public class PlatformServiceTests
     {
         // Arrange
         var platformToUpdate = _fixture.Create<Platform>();
-        var updatePlatformDto = _fixture.Create<UpdatePlatformDto>();
+        var updatePlatformRequest = _fixture.Create<UpdatePlatformRequest>();
 
-        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformDto.Id)).ReturnsAsync(platformToUpdate);
+        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformRequest.Platform.Id)).ReturnsAsync(platformToUpdate);
 
         // Act
-        await _service.UpdateAsync(updatePlatformDto);
+        await _service.UpdateAsync(updatePlatformRequest);
 
         // Assert
         _platformRepostioryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -98,8 +98,8 @@ public class PlatformServiceTests
     public async Task UpdateAsyncThrowsExceptionWhenPlatformNotFound()
     {
         // Arrange
-        var updatePlatformDto = _fixture.Create<UpdatePlatformDto>();
-        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformDto.Id)).ReturnsAsync((Platform)null);
+        var updatePlatformDto = _fixture.Create<UpdatePlatformRequest>();
+        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformDto.Platform.Id)).ReturnsAsync((Platform)null);
 
         // Act and Assert
         await Assert.ThrowsAsync<PlatformNotFoundException>(() => _service.UpdateAsync(updatePlatformDto));
@@ -125,13 +125,17 @@ public class PlatformServiceTests
     public async Task CreateAsyncCreatesPlatformSuccessfully()
     {
         // Arrange
-        var createPlatformDto = _fixture.Create<CreatePlatformDto>();
+        var createPlatformRequest = _fixture.Create<CreatePlatformRequest>();
 
         // Act
-        await _service.CreateAsync(createPlatformDto);
+        await _service.CreateAsync(createPlatformRequest);
 
         // Assert
-        _platformRepostioryMock.Verify(x => x.CreateAsync(It.Is<Platform>(p => p.Type == createPlatformDto.Type)), Times.Once);
+        _platformRepostioryMock.Verify(
+            x =>
+            x.CreateAsync(It.Is<Platform>(
+                p => p.Type == createPlatformRequest.Platform.Type)),
+            Times.Once);
         _platformRepostioryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
@@ -153,7 +157,7 @@ public class PlatformServiceTests
         var result = await _service.GetAllByGameKeyAsync(gameKey);
 
         // Assert
-        result.Should().BeEquivalentTo(platforms.Select(p => p.ToShortDto()));
+        result.Should().BeEquivalentTo(platforms);
     }
 
     [Fact]

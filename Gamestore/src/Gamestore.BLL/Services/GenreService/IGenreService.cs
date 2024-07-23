@@ -4,17 +4,17 @@ namespace Gamestore.BLL.Services.GenreService;
 
 public interface IGenreService
 {
-    Task<ICollection<GenreShortDto>> GetAllAsync();
+    Task<ICollection<GenreShortResponse>> GetAllAsync();
 
-    Task<GenreShortDto?> GetByIdAsync(Guid id);
+    Task<GenreShortResponse?> GetByIdAsync(Guid id);
 
-    Task<ICollection<GenreShortDto>> GetSubGenresAsync(Guid parentId);
+    Task<ICollection<GenreShortResponse>> GetSubGenresAsync(Guid parentId);
 
-    Task UpdateAsync(UpdateGenreDto dto);
+    Task UpdateAsync(UpdateGenreRequest request);
 
     Task DeleteAsync(Guid id);
 
-    Task CreateAsync(CreateGenreDto dto);
+    Task CreateAsync(CreateGenreRequest request);
 
-    Task<ICollection<GenreShortDto>> GetAllByGameKeyAsync(string gameKey);
+    Task<ICollection<GenreShortResponse>> GetAllByGameKeyAsync(string gameKey);
 }

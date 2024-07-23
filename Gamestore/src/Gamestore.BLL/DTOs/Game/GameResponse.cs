@@ -1,4 +1,4 @@
-namespace Gamestore.API.DTOs.Game;
+namespace Gamestore.BLL.DTOs.Game;
 
 public record GameResponse(
     Guid Id,

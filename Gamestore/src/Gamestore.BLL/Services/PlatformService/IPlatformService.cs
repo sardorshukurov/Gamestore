@@ -4,15 +4,15 @@ namespace Gamestore.BLL.Services.PlatformService;
 
 public interface IPlatformService
 {
-    Task<ICollection<PlatformShortDto>> GetAllAsync();
+    Task<ICollection<PlatformShortResponse>> GetAllAsync();
 
-    Task<PlatformShortDto?> GetByIdAsync(Guid id);
+    Task<PlatformShortResponse?> GetByIdAsync(Guid id);
 
-    Task UpdateAsync(UpdatePlatformDto dto);
+    Task UpdateAsync(UpdatePlatformRequest request);
 
     Task DeleteAsync(Guid id);
 
-    Task CreateAsync(CreatePlatformDto dto);
+    Task CreateAsync(CreatePlatformRequest request);
 
-    Task<ICollection<PlatformShortDto>> GetAllByGameKeyAsync(string gameKey);
+    Task<ICollection<PlatformShortResponse>> GetAllByGameKeyAsync(string gameKey);
 }

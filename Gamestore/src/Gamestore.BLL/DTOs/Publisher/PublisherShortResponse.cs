@@ -1,4 +1,4 @@
-namespace Gamestore.API.DTOs.Publisher;
+namespace Gamestore.BLL.DTOs.Publisher;
 
 public record PublisherShortResponse(
     Guid Id,

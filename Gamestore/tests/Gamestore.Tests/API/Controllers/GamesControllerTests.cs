@@ -1,9 +1,6 @@
 using System.Text;
 using FluentValidation;
 using Gamestore.API.Controllers;
-using Gamestore.API.DTOs.Game;
-using Gamestore.API.DTOs.Genre;
-using Gamestore.API.DTOs.Platform;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.DTOs.Platform;
@@ -58,7 +55,7 @@ public class GamesControllerTests
     public async Task GetAllShouldReturnOkResponse()
     {
         // Arrange
-        var gamesDtoMock = _fixture.Create<ICollection<GameDto>>();
+        var gamesDtoMock = _fixture.Create<ICollection<GameResponse>>();
 
         _gameServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(gamesDtoMock);
 
@@ -84,7 +81,7 @@ public class GamesControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var games = _fixture.Create<ICollection<GameDto>>();
+        var games = _fixture.Create<ICollection<GameResponse>>();
         _gameServiceMock.Setup(x => x.GetByPlatformAsync(id)).ReturnsAsync(games);
 
         // Act
@@ -93,7 +90,7 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.ToResponse()));
+        okResult.Value.Should().BeEquivalentTo(games);
     }
 
     [Fact]
@@ -101,7 +98,7 @@ public class GamesControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var games = _fixture.Create<ICollection<GameDto>>();
+        var games = _fixture.Create<ICollection<GameResponse>>();
         _gameServiceMock.Setup(x => x.GetByGenreAsync(id)).ReturnsAsync(games);
 
         // Act
@@ -110,14 +107,14 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.ToResponse()));
+        okResult.Value.Should().BeEquivalentTo(games);
     }
 
     [Fact]
     public async Task GetByKeyShouldReturnOkResponseWhenGameFound()
     {
         // Arrange
-        var gameDtoMock = _fixture.Create<GameDto>();
+        var gameDtoMock = _fixture.Create<GameResponse>();
         var gameResponseMock = _fixture.Create<GameResponse>();
 
         string key = gameDtoMock.Key;
@@ -142,7 +139,7 @@ public class GamesControllerTests
     public async Task GetByKeyShouldReturnNotFoundResponseWhenGameNotFound()
     {
         // Arrange
-        GameDto? game = null;
+        GameResponse? game = null;
 
         string key = "key";
 
@@ -161,7 +158,7 @@ public class GamesControllerTests
     public async Task GetByIdShouldReturnOkResponseWhenGameFound()
     {
         // Arrange
-        var gameDtoMock = _fixture.Create<GameDto>();
+        var gameDtoMock = _fixture.Create<GameResponse>();
         var gameResponseMock = _fixture.Create<GameResponse>();
 
         Guid id = gameDtoMock.Id;
@@ -186,7 +183,7 @@ public class GamesControllerTests
     public async Task GetByIdShouldReturnNotFoundResponseWhenGameNotFound()
     {
         // Arrange
-        GameDto? game = null;
+        GameResponse? game = null;
 
         Guid id = Guid.NewGuid();
 
@@ -207,29 +204,13 @@ public class GamesControllerTests
         // Arrange
         var request = _fixture.Create<CreateGameRequest>();
 
-        var expectedDto = new CreateGameDto(
-            request.Game.Name,
-            request.Game.Key,
-            request.Game.Description,
-            request.Game.Price,
-            request.Game.UnitInStock,
-            request.Game.Discount,
-            request.Genres,
-            request.Platforms,
-            request.Publisher);
-
         _createValidator
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreateGameRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
         _gameServiceMock
-            .Setup(x => x.CreateAsync(It.Is<CreateGameDto>(dto =>
-                    dto.Name == expectedDto.Name &&
-                    dto.Description == expectedDto.Description &&
-                    dto.Key == expectedDto.Key &&
-                    CompareNullableCollections(dto.GenresIds, request.Genres) &&
-                    CompareNullableCollections(dto.PlatformsIds, request.Platforms))))
-            .Returns(Task.CompletedTask);
+            .Setup(x => x.CreateAsync(It.IsAny<CreateGameRequest>()))
+                .Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Create(request);
@@ -240,12 +221,8 @@ public class GamesControllerTests
 
         result.Should().BeAssignableTo<OkResult>();
         _gameServiceMock.Verify(
-            x => x.CreateAsync(It.Is<CreateGameDto>(dto =>
-            dto.Name == expectedDto.Name &&
-            dto.Description == expectedDto.Description &&
-            dto.Key == expectedDto.Key &&
-            CompareNullableCollections(dto.GenresIds, request.Genres) &&
-            CompareNullableCollections(dto.PlatformsIds, request.Platforms))),
+            x =>
+                x.CreateAsync(It.IsAny<CreateGameRequest>()),
             Times.Once);
     }
 
@@ -255,30 +232,12 @@ public class GamesControllerTests
         // Arrange
         var request = _fixture.Create<UpdateGameRequest>();
 
-        var expectedDto = new UpdateGameDto(
-            request.Game.Id,
-            request.Game.Name,
-            request.Game.Key,
-            request.Game.Description,
-            request.Game.Price,
-            request.Game.UnitInStock,
-            request.Game.Discount,
-            request.Genres,
-            request.Platforms,
-            request.Publisher);
-
         _updateValidator
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGameRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
         _gameServiceMock
-            .Setup(x => x.UpdateAsync(It.Is<UpdateGameDto>(dto =>
-                dto.Id == expectedDto.Id &&
-                dto.Name == expectedDto.Name &&
-                dto.Description == expectedDto.Description &&
-                dto.Key == expectedDto.Key &&
-                CompareNullableCollections(dto.GenresIds, request.Genres) &&
-                CompareNullableCollections(dto.PlatformsIds, request.Platforms))))
+            .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameRequest>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -290,13 +249,7 @@ public class GamesControllerTests
         result.Should().BeAssignableTo<NoContentResult>();
 
         _gameServiceMock.Verify(
-            x => x.UpdateAsync(It.Is<UpdateGameDto>(dto =>
-                dto.Id == expectedDto.Id &&
-                dto.Name == expectedDto.Name &&
-                dto.Description == expectedDto.Description &&
-                dto.Key == expectedDto.Key &&
-                CompareNullableCollections(dto.GenresIds, request.Genres) &&
-                CompareNullableCollections(dto.PlatformsIds, request.Platforms))),
+            x => x.UpdateAsync(It.IsAny<UpdateGameRequest>()),
             Times.Once);
     }
 
@@ -311,7 +264,7 @@ public class GamesControllerTests
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
         _gameServiceMock
-            .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameDto>()))
+            .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameRequest>()))
             .ThrowsAsync(new NotFoundException("Game not found"));
 
         // Act
@@ -368,7 +321,7 @@ public class GamesControllerTests
     {
         // Arrange
         var key = _fixture.Create<string>();
-        var game = _fixture.Create<GameDto>();
+        var game = _fixture.Create<GameResponse>();
         _gameServiceMock.Setup(x => x.GetByKeyAsync(key)).ReturnsAsync(game);
 
         // Act
@@ -387,7 +340,7 @@ public class GamesControllerTests
     {
         // Arrange
         var key = _fixture.Create<string>();
-        var genres = _fixture.Create<ICollection<GenreShortDto>>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
         _genreServiceMock
             .Setup(x => x.GetAllByGameKeyAsync(key))
             .ReturnsAsync(genres);
@@ -398,7 +351,7 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.ToShortResponse()));
+        okResult.Value.Should().BeEquivalentTo(genres);
     }
 
     [Fact]
@@ -424,7 +377,7 @@ public class GamesControllerTests
     {
         // Arrange
         var key = _fixture.Create<string>();
-        var platforms = _fixture.Create<ICollection<PlatformShortDto>>();
+        var platforms = _fixture.Create<ICollection<PlatformShortResponse>>();
         _platformServiceMock
             .Setup(x => x.GetAllByGameKeyAsync(key))
             .ReturnsAsync(platforms);
@@ -435,16 +388,6 @@ public class GamesControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(platforms.Select(p => p.ToShortResponse()));
-    }
-
-    private static bool CompareNullableCollections(ICollection<Guid>? list1, ICollection<Guid>? list2)
-    {
-#pragma warning disable SA1503, IDE0011
-        if (list1 == null && list2 == null) return true;
-        if (list1 == null || list2 == null) return false;
-#pragma warning restore SA1503, IDE0011
-
-        return list1.SequenceEqual(list2);
+        okResult.Value.Should().BeEquivalentTo(platforms);
     }
 }

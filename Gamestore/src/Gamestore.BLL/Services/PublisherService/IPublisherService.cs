@@ -4,17 +4,17 @@ namespace Gamestore.BLL.Services.PublisherService;
 
 public interface IPublisherService
 {
-    Task<ICollection<PublisherDto>> GetAllAsync();
+    Task<ICollection<PublisherResponse>> GetAllAsync();
 
-    Task<PublisherDto?> GetByIdAsync(Guid id);
+    Task<PublisherResponse?> GetByIdAsync(Guid id);
 
-    Task UpdateAsync(UpdatePublisherDto dto);
+    Task UpdateAsync(UpdatePublisherRequest request);
 
     Task DeleteAsync(Guid id);
 
-    Task CreateAsync(CreatePublisherDto dto);
+    Task CreateAsync(CreatePublisherRequest request);
 
-    Task<PublisherDto?> GetByCompanyNameAsync(string companyName);
+    Task<PublisherResponse?> GetByCompanyNameAsync(string companyName);
 
-    Task<PublisherDto?> GetByGameKeyAsync(string gameKey);
+    Task<PublisherResponse?> GetByGameKeyAsync(string gameKey);
 }

@@ -1,16 +1,15 @@
 using FluentValidation;
 using Gamestore.DAL.Data;
 
-namespace Gamestore.API.DTOs.Game;
+namespace Gamestore.BLL.DTOs.Game;
 
-public record UpdateGameRequest(
-    UpdateGame Game,
+public record CreateGameRequest(
+    CreateGame Game,
     ICollection<Guid> Genres,
     ICollection<Guid> Platforms,
     Guid Publisher);
 
-public record UpdateGame(
-    Guid Id,
+public record CreateGame(
     string Name,
     string Key,
     string Description,
@@ -18,11 +17,11 @@ public record UpdateGame(
     int UnitInStock,
     int Discount);
 
-public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
+public class CreateGameValidator : AbstractValidator<CreateGameRequest>
 {
     private readonly MainDbContext _dbContext;
 
-    public UpdateGameValidator(MainDbContext dbContext)
+    public CreateGameValidator(MainDbContext dbContext)
     {
         _dbContext = dbContext;
 
@@ -33,7 +32,7 @@ public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
         RuleFor(g => g.Game.Key)
             .NotEmpty()
             .WithMessage("Key is required")
-            .Must((game, key) => BeUniqueKey(key, game.Game.Id))
+            .Must(BeUniqueKey)
             .WithMessage("Key must be unique");
 
         RuleFor(g => g.Game.Description)
@@ -100,8 +99,8 @@ public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
         return publisherId != Guid.Empty && _dbContext.Publishers.Any(p => p.Id == publisherId);
     }
 
-    private bool BeUniqueKey(string key, Guid gameId)
+    private bool BeUniqueKey(string key)
     {
-        return !_dbContext.Games.Any(g => g.Key == key && g.Id != gameId);
+        return !_dbContext.Games.Any(g => g.Key == key);
     }
 }

@@ -1,7 +1,7 @@
 using FluentValidation;
 using Gamestore.DAL.Data;
 
-namespace Gamestore.API.DTOs.Genre;
+namespace Gamestore.BLL.DTOs.Genre;
 
 public record UpdateGenreRequest(
     UpdateGenre Genre);

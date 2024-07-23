@@ -1,6 +1,6 @@
 namespace Gamestore.BLL.DTOs.Order;
 
-public record OrderDto(
+public record OrderResponse(
     Guid Id,
     Guid CustomerId,
     DateTime? Date);

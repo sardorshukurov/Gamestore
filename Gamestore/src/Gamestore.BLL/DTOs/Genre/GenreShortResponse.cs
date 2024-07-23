@@ -1,4 +1,4 @@
-namespace Gamestore.API.DTOs.Genre;
+namespace Gamestore.BLL.DTOs.Genre;
 
 public record GenreShortResponse(
     Guid Id,

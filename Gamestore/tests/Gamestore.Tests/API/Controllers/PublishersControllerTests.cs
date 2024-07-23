@@ -1,7 +1,5 @@
 using FluentValidation;
 using Gamestore.API.Controllers;
-using Gamestore.API.DTOs.Game;
-using Gamestore.API.DTOs.Publisher;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.GameService;
@@ -53,16 +51,16 @@ public class PublishersControllerTests
 
         // Assert
         Assert.IsType<OkResult>(result);
-        _publisherServiceMock.Verify(x => x.CreateAsync(It.IsAny<CreatePublisherDto>()), Times.Once);
+        _publisherServiceMock.Verify(x => x.CreateAsync(It.IsAny<CreatePublisherRequest>()), Times.Once);
     }
 
     [Fact]
     public async Task GetByCompanyNamePublisherExistsReturnsOk()
     {
         // Arrange
-        var publisherDto = _fixture.Create<PublisherDto>();
+        var publisherResponse = _fixture.Create<PublisherResponse>();
         _publisherServiceMock.Setup(x => x.GetByCompanyNameAsync(It.IsAny<string>()))
-            .ReturnsAsync(publisherDto);
+            .ReturnsAsync(publisherResponse);
 
         // Act
         var result = await _controller.GetByCompanyName("companyName");
@@ -70,7 +68,7 @@ public class PublishersControllerTests
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         var returnValue = Assert.IsType<PublisherResponse>(okResult.Value);
-        Assert.Equal(publisherDto.Id, returnValue.Id);
+        Assert.Equal(publisherResponse.Id, returnValue.Id);
     }
 
     [Fact]
@@ -78,7 +76,7 @@ public class PublishersControllerTests
     {
         // Arrange
         _publisherServiceMock.Setup(x => x.GetByCompanyNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((PublisherDto)null);
+            .ReturnsAsync((PublisherResponse)null);
 
         // Act
         var result = await _controller.GetByCompanyName("companyName");
@@ -91,7 +89,7 @@ public class PublishersControllerTests
     public async Task GetAllReturnsListOfPublishers()
     {
         // Arrange
-        var publishers = _fixture.Create<List<PublisherDto>>();
+        var publishers = _fixture.Create<List<PublisherResponse>>();
         _publisherServiceMock.Setup(x => x.GetAllAsync())
             .ReturnsAsync(publishers);
 
@@ -121,7 +119,7 @@ public class PublishersControllerTests
 
         // Assert
         Assert.IsType<NoContentResult>(result);
-        _publisherServiceMock.Verify(x => x.UpdateAsync(It.IsAny<UpdatePublisherDto>()), Times.Once);
+        _publisherServiceMock.Verify(x => x.UpdateAsync(It.IsAny<UpdatePublisherRequest>()), Times.Once);
     }
 
     [Fact]
@@ -135,7 +133,7 @@ public class PublishersControllerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(validationResult);
 
-        _publisherServiceMock.Setup(x => x.UpdateAsync(It.IsAny<UpdatePublisherDto>()))
+        _publisherServiceMock.Setup(x => x.UpdateAsync(It.IsAny<UpdatePublisherRequest>()))
             .ThrowsAsync(new NotFoundException("Not found"));
 
         // Act
@@ -180,7 +178,7 @@ public class PublishersControllerTests
     public async Task GetGamesByCompanyNamePublisherExistsReturnsOk()
     {
         // Arrange
-        var games = _fixture.Create<List<GameDto>>();
+        var games = _fixture.Create<List<GameResponse>>();
         _gameServiceMock.Setup(x => x.GetByPublisherAsync(It.IsAny<string>()))
             .ReturnsAsync(games);
 

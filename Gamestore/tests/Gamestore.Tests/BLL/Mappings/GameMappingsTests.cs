@@ -14,63 +14,75 @@ public class GameMappingsTests
     }
 
     [Fact]
-    public void AsDtoMapsCorrectly()
+    public void AsResponseShouldReturnMappedGameResponse()
     {
         // Arrange
-        var game = _fixture.Create<Game>();
+        var entity = _fixture.Create<Game>();
 
         // Act
-        var dto = game.ToDto();
+        var response = entity.ToResponse();
 
         // Assert
-        dto.Id.Should().Be(game.Id);
-        dto.Name.Should().Be(game.Name);
-        dto.Key.Should().Be(game.Key);
-        dto.Description.Should().Be(game.Description);
+        response.Id.Should().Be(entity.Id);
+        response.Name.Should().Be(entity.Name);
+        response.Key.Should().Be(entity.Key);
+        response.Description.Should().Be(entity.Description);
+        response.Price.Should().Be(entity.Price);
+        response.Discount.Should().Be(entity.Discount);
+        response.UnitInStock.Should().Be(entity.UnitInStock);
     }
 
     [Fact]
-    public void AsShortDtoMapsCorrectly()
+    public void AsShortResponseShouldReturnMappedGameShortResponse()
     {
         // Arrange
-        var game = _fixture.Create<Game>();
+        var dto = _fixture.Create<Game>();
 
         // Act
-        var shortDto = game.ToShortDto();
+        var response = dto.ToShortResponse();
 
         // Assert
-        shortDto.Id.Should().Be(game.Id);
-        shortDto.Name.Should().Be(game.Name);
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
     }
 
     [Fact]
-    public void AsEntityMapsCorrectly()
+    public void AsCreateGameDtoShouldReturnMappedDtoFromRequest()
     {
         // Arrange
-        var dto = _fixture.Create<CreateGameDto>();
+        var request = _fixture.Create<CreateGameRequest>();
 
         // Act
-        var game = dto.ToEntity();
+        var entity = request.ToEntity();
 
         // Assert
-        game.Name.Should().Be(dto.Name);
-        game.Key.Should().Be(dto.Key ?? dto.Name);
-        game.Description.Should().Be(dto.Description);
+        request.Game.Name.Should().Be(entity.Name);
+        request.Game.Key.Should().Be(entity.Key);
+        request.Game.Description.Should().Be(entity.Description);
+        request.Game.Price.Should().Be(entity.Price);
+        request.Game.Discount.Should().Be(entity.Discount);
+        request.Game.UnitInStock.Should().Be(entity.UnitInStock);
+        request.Publisher.Should().Be(entity.PublisherId);
     }
 
     [Fact]
-    public void UpdateEntityUpdatesCorrectly()
+    public void AsUpdateGameDtoShouldReturnMappedDtoFromRequest()
     {
         // Arrange
-        var dto = _fixture.Create<UpdateGameDto>();
-        var game = _fixture.Create<Game>();
+        var request = _fixture.Create<UpdateGameRequest>();
+
+        var entity = new Game();
 
         // Act
-        dto.UpdateEntity(game);
+        request.UpdateEntity(entity);
 
         // Assert
-        game.Name.Should().Be(dto.Name);
-        game.Key.Should().Be(dto.Key ?? dto.Name);
-        game.Description.Should().Be(dto.Description);
+        request.Game.Name.Should().Be(entity.Name);
+        request.Game.Key.Should().Be(entity.Key);
+        request.Game.Description.Should().Be(entity.Description);
+        request.Game.Price.Should().Be(entity.Price);
+        request.Game.Discount.Should().Be(entity.Discount);
+        request.Game.UnitInStock.Should().Be(entity.UnitInStock);
+        request.Publisher.Should().Be(entity.PublisherId);
     }
 }

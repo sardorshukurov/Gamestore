@@ -1,5 +1,5 @@
-using Gamestore.API.DTOs.Game;
-using Gamestore.API.DTOs.Publisher;
+using Gamestore.BLL.DTOs.Game;
+using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.PublisherService;
 using Gamestore.Common.Exceptions;
@@ -16,7 +16,7 @@ public class PublishersController(
     [HttpPost]
     public async Task<IActionResult> Create(CreatePublisherRequest request)
     {
-        await publisherService.CreateAsync(request.ToDto());
+        await publisherService.CreateAsync(request);
         return Ok();
     }
 
@@ -28,15 +28,14 @@ public class PublishersController(
 
         return publisher is null
             ? NotFound($"Publisher with company name: {companyName} not found.")
-            : Ok(publisher.ToResponse());
+            : Ok(publisher);
     }
 
     [HttpGet]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PublisherResponse>>> GetAll()
     {
-        var publishers = (await publisherService.GetAllAsync())
-            .Select(p => p.ToResponse());
+        var publishers = await publisherService.GetAllAsync();
 
         return Ok(publishers);
     }
@@ -46,7 +45,7 @@ public class PublishersController(
     {
         try
         {
-            await publisherService.UpdateAsync(request.ToDto());
+            await publisherService.UpdateAsync(request);
 
             return NoContent();
         }
@@ -77,9 +76,7 @@ public class PublishersController(
     {
         try
         {
-            var games = (await gameService.GetByPublisherAsync(companyName))
-                .Select(g => g.ToResponse())
-                .ToList();
+            var games = await gameService.GetByPublisherAsync(companyName);
 
             return Ok(games);
         }

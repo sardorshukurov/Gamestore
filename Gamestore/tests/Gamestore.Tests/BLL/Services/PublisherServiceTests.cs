@@ -31,7 +31,6 @@ public class PublisherServiceTests
         // Arrange
         var publisherList = _fixture.CreateMany<Publisher>();
         var publishers = publisherList.ToList();
-        var publisherDtoList = publishers.Select(p => p.ToDto()).ToList();
 
         _publisherRepostioryMock
             .Setup(x => x.GetAllAsync())
@@ -41,7 +40,7 @@ public class PublisherServiceTests
         var result = await _service.GetAllAsync();
 
         // Assert
-        result.Should().BeEquivalentTo(publisherDtoList);
+        result.Should().BeEquivalentTo(publishers);
         _publisherRepostioryMock.Verify(x => x.GetAllAsync(), Times.Once());
     }
 
@@ -60,20 +59,20 @@ public class PublisherServiceTests
         var actualPublisher = await _service.GetByIdAsync(id);
 
         // Assert
-        actualPublisher.Should().BeEquivalentTo(expectedPublisher.ToDto());
+        actualPublisher.Should().BeEquivalentTo(expectedPublisher);
     }
 
     [Fact]
     public async Task UpdateAsyncWhenPublisherExistsShouldUpdatePublisher()
     {
         // Arrange
-        var publisherDto = _fixture.Create<UpdatePublisherDto>();
+        var publisherRequest = _fixture.Create<UpdatePublisherRequest>();
         var publisher = _fixture.Create<Publisher>();
 
-        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherDto.Id)).ReturnsAsync(publisher);
+        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherRequest.Publisher.Id)).ReturnsAsync(publisher);
 
         // Act
-        await _service.UpdateAsync(publisherDto);
+        await _service.UpdateAsync(publisherRequest);
 
         // Assert
         _publisherRepostioryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
@@ -83,8 +82,8 @@ public class PublisherServiceTests
     public async Task UpdateAsyncWhenPublisherDoesNotExistShouldThrowException()
     {
         // Arrange
-        var publisherDto = _fixture.Create<UpdatePublisherDto>();
-        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherDto.Id)).ReturnsAsync((Publisher)null);
+        var publisherDto = _fixture.Create<UpdatePublisherRequest>();
+        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherDto.Publisher.Id)).ReturnsAsync((Publisher)null);
 
         // Assert
         await Assert.ThrowsAsync<PublisherNotFoundException>(() => _service.UpdateAsync(publisherDto));
@@ -112,15 +111,15 @@ public class PublisherServiceTests
     public async Task CreateAsyncShouldCallCreateAndSaveChangesMethods()
     {
         // Arrange
-        var publisherDto = _fixture.Create<CreatePublisherDto>();
-        var publisher = publisherDto.ToEntity();
+        var publisherRequest = _fixture.Create<CreatePublisherRequest>();
+        var publisher = publisherRequest.ToEntity();
 
         _publisherRepostioryMock
             .Setup(r => r.CreateAsync(publisher))
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.CreateAsync(publisherDto);
+        await _service.CreateAsync(publisherRequest);
 
         // Assert
         _publisherRepostioryMock.Verify(r => r.CreateAsync(It.IsAny<Publisher>()), Times.Once);
@@ -140,7 +139,7 @@ public class PublisherServiceTests
         var result = await _service.GetByCompanyNameAsync(companyName);
 
         // Assert
-        result.Should().BeEquivalentTo(publisher.ToDto());
+        result.Should().BeEquivalentTo(publisher);
     }
 
     [Fact]
@@ -158,7 +157,7 @@ public class PublisherServiceTests
         var result = await _service.GetByGameKeyAsync(gameKey);
 
         // Assert
-        result.Should().BeEquivalentTo(publisher.ToDto());
+        result.Should().BeEquivalentTo(publisher);
     }
 
     [Fact]

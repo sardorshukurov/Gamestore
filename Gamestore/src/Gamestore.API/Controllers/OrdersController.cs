@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text;
-using Gamestore.API.DTOs.Order;
 using Gamestore.API.DTOs.Order.Payment;
+using Gamestore.BLL.DTOs.Order;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -40,8 +40,7 @@ public class OrdersController(
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderResponse>>> GetPaidAndCancelledOrders()
     {
-        var orders = (await orderService.GetPaidAndCancelledOrdersAsync())
-            .Select(o => o.ToResponse());
+        var orders = await orderService.GetPaidAndCancelledOrdersAsync();
 
         return Ok(orders);
     }
@@ -51,15 +50,13 @@ public class OrdersController(
     {
         var order = await orderService.GetByIdAsync(id);
 
-        return order is null ? NotFound($"Order with id {id} not found") : order.ToResponse();
+        return order is null ? NotFound($"Order with id {id} not found") : order;
     }
 
     [HttpGet("{id}/details")]
     public async Task<ActionResult<IEnumerable<OrderDetailsResponse>>> GetOrderDetails(Guid id)
     {
-        var orderDetails = (await orderService.GetOrderDetailsAsync(id))
-            .Select(od => od.ToResponse());
-
+        var orderDetails = await orderService.GetOrderDetailsAsync(id);
         return Ok(orderDetails);
     }
 
@@ -68,8 +65,7 @@ public class OrdersController(
     {
         try
         {
-            var orderDetails = (await orderService.GetCartAsync(_customerId))
-                .Select(od => od.ToResponse());
+            var orderDetails = await orderService.GetCartAsync(_customerId);
 
             return Ok(orderDetails);
         }

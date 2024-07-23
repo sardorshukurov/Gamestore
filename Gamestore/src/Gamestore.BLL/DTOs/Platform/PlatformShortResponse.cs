@@ -1,4 +1,4 @@
-namespace Gamestore.API.DTOs.Platform;
+namespace Gamestore.BLL.DTOs.Platform;
 
 public record PlatformShortResponse(
     Guid Id,

@@ -5,20 +5,20 @@ namespace Gamestore.BLL.DTOs.Order;
 
 public static class OrderMappingExtensions
 {
-    public static OrderDto AsDto(this OrderEntity order)
+    public static OrderResponse ToResponse(this OrderEntity entity)
     {
-        return new OrderDto(
-            order.Id,
-            order.CustomerId,
-            order.Date);
+        return new OrderResponse(
+            entity.Id,
+            entity.CustomerId,
+            entity.Date);
     }
 
-    public static OrderDetailsDto AsDto(this OrderGameEntity orderGame)
+    public static OrderDetailsResponse ToResponse(this OrderGameEntity entity)
     {
-        return new OrderDetailsDto(
-            orderGame.ProductId,
-            orderGame.Price,
-            orderGame.Quantity,
-            orderGame.Discount);
+        return new OrderDetailsResponse(
+            entity.ProductId,
+            entity.Price,
+            entity.Quantity,
+            entity.Discount);
     }
 }

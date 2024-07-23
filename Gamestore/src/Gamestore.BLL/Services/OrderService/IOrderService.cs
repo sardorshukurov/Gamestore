@@ -8,13 +8,13 @@ public interface IOrderService
 
     Task RemoveGameFromTheCartAsync(Guid customerId, string gameKey);
 
-    Task<IEnumerable<OrderDto>> GetPaidAndCancelledOrdersAsync();
+    Task<IEnumerable<OrderResponse>> GetPaidAndCancelledOrdersAsync();
 
-    Task<OrderDto?> GetByIdAsync(Guid orderId);
+    Task<OrderResponse?> GetByIdAsync(Guid orderId);
 
-    Task<IEnumerable<OrderDetailsDto>> GetOrderDetailsAsync(Guid orderId);
+    Task<IEnumerable<OrderDetailsResponse>> GetOrderDetailsAsync(Guid orderId);
 
-    Task<IEnumerable<OrderDetailsDto>> GetCartAsync(Guid customerId);
+    Task<IEnumerable<OrderDetailsResponse>> GetCartAsync(Guid customerId);
 
     Task CancelOrderAsync(Guid orderId);
 

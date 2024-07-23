@@ -1,8 +1,8 @@
 using System.Text;
-using Gamestore.API.DTOs.Game;
-using Gamestore.API.DTOs.Genre;
-using Gamestore.API.DTOs.Platform;
-using Gamestore.API.DTOs.Publisher;
+using Gamestore.BLL.DTOs.Game;
+using Gamestore.BLL.DTOs.Genre;
+using Gamestore.BLL.DTOs.Platform;
+using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
@@ -30,7 +30,7 @@ public class GamesController(
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {
-        await gameService.CreateAsync(request.ToDto());
+        await gameService.CreateAsync(request);
         return Ok();
     }
 
@@ -39,15 +39,14 @@ public class GamesController(
     {
         var game = await gameService.GetByKeyAsync(key);
 
-        return game is null ? NotFound($"Game with key {key} not found") : Ok(game.ToResponse());
+        return game is null ? NotFound($"Game with key {key} not found") : Ok(game);
     }
 
     [HttpGet("{genreId}/genre")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGamesByGenre(Guid genreId)
     {
-        var games = (await gameService.GetByGenreAsync(genreId))
-            .Select(g => g.ToResponse());
+        var games = await gameService.GetByGenreAsync(genreId);
 
         return Ok(games);
     }
@@ -56,9 +55,7 @@ public class GamesController(
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGamesByPlatform(Guid platformId)
     {
-        var games = (await gameService.GetByPlatformAsync(platformId))
-            .Select(g => g.ToResponse());
-
+        var games = await gameService.GetByPlatformAsync(platformId);
         return Ok(games);
     }
 
@@ -68,14 +65,13 @@ public class GamesController(
     {
         var game = await gameService.GetByIdAsync(id);
 
-        return game is null ? NotFound($"Game with id {id} not found") : Ok(game.ToResponse());
+        return game is null ? NotFound($"Game with id {id} not found") : Ok(game);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
     {
-        var games = (await gameService.GetAllAsync())
-            .Select(g => g.ToResponse());
+        var games = await gameService.GetAllAsync();
         return Ok(games);
     }
 
@@ -84,7 +80,7 @@ public class GamesController(
     {
         try
         {
-            var gameDto = request.ToDto();
+            var gameDto = request;
 
             await gameService.UpdateAsync(gameDto);
             return NoContent();
@@ -134,8 +130,7 @@ public class GamesController(
     {
         try
         {
-            var genres = (await genreService.GetAllByGameKeyAsync(key))
-                .Select(g => g.ToShortResponse());
+            var genres = await genreService.GetAllByGameKeyAsync(key);
 
             return Ok(genres);
         }
@@ -151,8 +146,7 @@ public class GamesController(
     {
         try
         {
-            var platforms = (await platformService.GetAllByGameKeyAsync(key))
-                .Select(p => p.ToShortResponse());
+            var platforms = await platformService.GetAllByGameKeyAsync(key);
 
             return Ok(platforms);
         }
@@ -172,7 +166,7 @@ public class GamesController(
 
             return publisher is null
                 ? NotFound($"Publisher for the game with game key {key} not found")
-                : Ok(publisher.ToResponse());
+                : Ok(publisher);
         }
         catch (NotFoundException nex)
         {
