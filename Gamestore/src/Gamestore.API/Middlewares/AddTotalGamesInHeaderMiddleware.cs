@@ -1,5 +1,5 @@
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Gamestore.API.Middlewares;

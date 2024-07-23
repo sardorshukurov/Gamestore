@@ -1,4 +1,4 @@
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Data;

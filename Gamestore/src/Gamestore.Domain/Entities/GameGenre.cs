@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Gamestore.DAL.Entities;
+namespace Gamestore.Domain.Entities;
 
-public class GamePlatform
+public class GameGenre
 {
     [Key]
     public Guid GameId { get; set; }
 
     [Key]
-    public Guid PlatformId { get; set; }
+    public Guid GenreId { get; set; }
 }

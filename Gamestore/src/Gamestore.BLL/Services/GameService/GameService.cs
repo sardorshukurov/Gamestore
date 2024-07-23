@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.BLL.Services.GameService;
 

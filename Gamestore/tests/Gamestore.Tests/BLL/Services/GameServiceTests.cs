@@ -2,8 +2,8 @@ using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.Tests.BLL.Services;
 

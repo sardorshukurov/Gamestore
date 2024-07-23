@@ -1,4 +1,4 @@
-namespace Gamestore.DAL.Entities;
+namespace Gamestore.Domain.Entities;
 
 public class OrderGame
 {

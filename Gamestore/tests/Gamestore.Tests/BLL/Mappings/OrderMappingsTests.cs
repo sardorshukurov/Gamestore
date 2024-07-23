@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Order;
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.Tests.BLL.Mappings;
 

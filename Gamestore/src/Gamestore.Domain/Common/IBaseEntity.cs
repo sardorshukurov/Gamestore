@@ -1,4 +1,4 @@
-namespace Gamestore.DAL.Common;
+namespace Gamestore.Domain.Common;
 
 public interface IBaseEntity
 {

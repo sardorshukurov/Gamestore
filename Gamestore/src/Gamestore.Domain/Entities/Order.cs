@@ -1,6 +1,6 @@
-using Gamestore.DAL.Common;
+using Gamestore.Domain.Common;
 
-namespace Gamestore.DAL.Entities;
+namespace Gamestore.Domain.Entities;
 
 public enum OrderStatus
 {

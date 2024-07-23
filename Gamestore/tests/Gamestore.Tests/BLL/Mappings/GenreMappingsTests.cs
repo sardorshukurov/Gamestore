@@ -1,6 +1,6 @@
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Genre;
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.Tests.BLL.Mappings;
 

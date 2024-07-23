@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Gamestore.DAL.Common;
+using Gamestore.Domain.Common;
 
-namespace Gamestore.DAL.Entities;
+namespace Gamestore.Domain.Entities;
 
 public class Genre : IBaseEntity
 {

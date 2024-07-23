@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Game;
-using GenreEntity = Gamestore.DAL.Entities.Genre;
+using GenreEntity = Gamestore.Domain.Entities.Genre;
 
 namespace Gamestore.BLL.DTOs.Genre;
 

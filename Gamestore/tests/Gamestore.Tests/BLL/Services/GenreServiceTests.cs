@@ -3,8 +3,8 @@ using Gamestore.API.DTOs.Genre;
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.Tests.BLL.Services;
 

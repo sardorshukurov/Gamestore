@@ -1,4 +1,4 @@
-using PublisherEntity = Gamestore.DAL.Entities.Publisher;
+using PublisherEntity = Gamestore.Domain.Entities.Publisher;
 
 namespace Gamestore.BLL.DTOs.Publisher;
 

@@ -1,4 +1,4 @@
-using GameEntity = Gamestore.DAL.Entities.Game;
+using GameEntity = Gamestore.Domain.Entities.Game;
 
 namespace Gamestore.BLL.DTOs.Game;
 
