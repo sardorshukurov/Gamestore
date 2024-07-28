@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Middlewares;
 
-public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger, RequestDelegate next)
+public class GlobalExceptionHandlingMiddleware(
+    ILogger<GlobalExceptionHandlingMiddleware> logger,
+    RequestDelegate next,
+    IHostEnvironment env)
 {
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, CancellationToken cancellationToken)
     {
         try
         {
@@ -21,7 +24,7 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
 
             string json = JsonSerializer.Serialize(nfex.Message);
 
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(json, cancellationToken);
 
             context.Response.ContentType = "application/json";
         }
@@ -33,7 +36,7 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
 
             string json = JsonSerializer.Serialize(brex.Message);
 
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(json, cancellationToken);
 
             context.Response.ContentType = "application/json";
         }
@@ -48,14 +51,14 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
                 Status = (int)HttpStatusCode.InternalServerError,
                 Type = "Server error",
                 Title = "Server error",
-                Detail = "An internal server error has occured",
+                Detail = env.IsDevelopment() ? ex.Message + ex.StackTrace : "An internal server error has occured",
             };
+
+            context.Response.ContentType = "application/json";
 
             string json = JsonSerializer.Serialize(problem);
 
-            await context.Response.WriteAsync(json);
-
-            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(json, cancellationToken);
         }
     }
 
