@@ -1,5 +1,9 @@
 using FluentValidation;
-using Gamestore.DAL.Data;
+using Gamestore.DAL.Repository;
+using GameEntity = Gamestore.Domain.Entities.Game;
+using GenreEntity = Gamestore.Domain.Entities.Genre;
+using PlatformEntity = Gamestore.Domain.Entities.Platform;
+using PublisherEntity = Gamestore.Domain.Entities.Publisher;
 
 namespace Gamestore.BLL.DTOs.Game;
 
@@ -20,11 +24,21 @@ public record UpdateGame(
 
 public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
 {
-    private readonly MainDbContext _dbContext;
+    private readonly IRepository<GenreEntity> _genreRepository;
+    private readonly IRepository<GameEntity> _gameRepository;
+    private readonly IRepository<PlatformEntity> _platformRepository;
+    private readonly IRepository<PublisherEntity> _publisherRepository;
 
-    public UpdateGameValidator(MainDbContext dbContext)
+    public UpdateGameValidator(
+        IRepository<GenreEntity> genreRepository,
+        IRepository<GameEntity> gameRepository,
+        IRepository<PlatformEntity> platformRepository,
+        IRepository<PublisherEntity> publisherRepository)
     {
-        _dbContext = dbContext;
+        _genreRepository = genreRepository;
+        _gameRepository = gameRepository;
+        _platformRepository = platformRepository;
+        _publisherRepository = publisherRepository;
 
         RuleFor(g => g.Game.Name)
             .NotEmpty()
@@ -33,7 +47,7 @@ public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
         RuleFor(g => g.Game.Key)
             .NotEmpty()
             .WithMessage("Key is required")
-            .Must((game, key) => BeUniqueKey(key, game.Game.Id))
+            .Must((game, key) => BeUniqueKey(key, game.Game.Id).Result)
             .WithMessage("Key must be unique");
 
         RuleFor(g => g.Game.Description)
@@ -53,55 +67,51 @@ public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
             .WithMessage("Discount must be between 0 and 100");
 
         RuleFor(g => g.Genres)
-            .Must(ContainExistingGenres)
+            .Must((genres) => ContainExistingGenres(genres).Result)
             .WithMessage("All genres must be existing genres");
 
         RuleFor(p => p.Platforms)
-            .Must(ContainExistingPlatforms)
+            .Must((platforms) => ContainExistingPlatforms(platforms).Result)
             .WithMessage("All platforms must be existing platforms");
 
         RuleFor(p => p.Publisher)
-            .Must(ContainExistingPublisher)
+            .Must((publisher) => ContainExistingPublisher(publisher).Result)
             .WithMessage("Publisher must be existing publisher");
     }
 
-    private bool ContainExistingGenres(ICollection<Guid> genreIds)
+    private async Task<bool> ContainExistingGenres(ICollection<Guid> genreIds)
     {
         if (genreIds.Contains(Guid.Empty))
         {
             return false;
         }
 
-        var existingGenreIds = _dbContext.Genres
-            .Where(g => genreIds.Contains(g.Id))
-            .Select(g => g.Id)
-            .ToList();
+        var existingGenreIds = await _genreRepository
+            .GetAllByFilterAsync(g => genreIds.Contains(g.Id));
 
-        return existingGenreIds.Count == genreIds.Count;
+        return existingGenreIds.Count() == genreIds.Count;
     }
 
-    private bool ContainExistingPlatforms(ICollection<Guid> platformIds)
+    private async Task<bool> ContainExistingPlatforms(ICollection<Guid> platformIds)
     {
         if (platformIds.Contains(Guid.Empty))
         {
             return false;
         }
 
-        var existingPlatformIds = _dbContext.Platforms
-            .Where(p => platformIds.Contains(p.Id))
-            .Select(p => p.Id)
-            .ToList();
+        var existingPlatformIds = await _platformRepository
+            .GetAllByFilterAsync(p => platformIds.Contains(p.Id));
 
-        return existingPlatformIds.Count == platformIds.Count;
+        return existingPlatformIds.Count() == platformIds.Count;
     }
 
-    private bool ContainExistingPublisher(Guid publisherId)
+    private async Task<bool> ContainExistingPublisher(Guid publisherId)
     {
-        return publisherId != Guid.Empty && _dbContext.Publishers.Any(p => p.Id == publisherId);
+        return publisherId != Guid.Empty && await _publisherRepository.Exists(p => p.Id == publisherId);
     }
 
-    private bool BeUniqueKey(string key, Guid gameId)
+    private async Task<bool> BeUniqueKey(string key, Guid gameId)
     {
-        return !_dbContext.Games.Any(g => g.Key == key && g.Id != gameId);
+        return !await _gameRepository.Exists(g => g.Key == key && g.Id != gameId);
     }
 }

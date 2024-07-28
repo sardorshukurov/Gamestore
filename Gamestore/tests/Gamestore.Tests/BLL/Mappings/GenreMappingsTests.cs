@@ -66,8 +66,8 @@ public class GenreMappingsTests
         var entity = request.ToEntity();
 
         // Assert
-        request.Genre.Name.Should().Be(entity.Name);
-        request.Genre.ParentGenreId.Should().Be(entity.ParentGenreId);
+        request.Name.Should().Be(entity.Name);
+        request.ParentGenreId.Should().Be(entity.ParentGenreId);
     }
 
     [Fact]
@@ -82,8 +82,8 @@ public class GenreMappingsTests
         request.UpdateEntity(entity);
 
         // Assert
-        request.Genre.Id.Should().Be(entity.Id);
-        request.Genre.Name.Should().Be(entity.Name);
-        request.Genre.ParentGenreId.Should().Be(entity.ParentGenreId);
+        request.Id.Should().Be(entity.Id);
+        request.Name.Should().Be(entity.Name);
+        request.ParentGenreId.Should().Be(entity.ParentGenreId);
     }
 }

@@ -23,15 +23,15 @@ public static class GenreMappingExtensions
     {
         return new GenreEntity()
         {
-            Name = request.Genre.Name,
-            ParentGenreId = request.Genre.ParentGenreId,
+            Name = request.Name,
+            ParentGenreId = request.ParentGenreId,
         };
     }
 
     public static void UpdateEntity(this UpdateGenreRequest request, GenreEntity entity)
     {
-        entity.Id = request.Genre.Id;
-        entity.Name = request.Genre.Name;
-        entity.ParentGenreId = request.Genre.ParentGenreId;
+        entity.Id = request.Id;
+        entity.Name = request.Name;
+        entity.ParentGenreId = request.ParentGenreId;
     }
 }

@@ -68,7 +68,7 @@ public class PlatformMappingsTests
         var entity = request.ToEntity();
 
         // Assert
-        entity.Type.Should().Be(request.Platform.Type);
+        entity.Type.Should().Be(request.Type);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class PlatformMappingsTests
         request.UpdateEntity(entity);
 
         // Assert
-        entity.Id.Should().Be(request.Platform.Id);
-        entity.Type.Should().Be(request.Platform.Type);
+        entity.Id.Should().Be(request.Id);
+        entity.Type.Should().Be(request.Type);
     }
 }

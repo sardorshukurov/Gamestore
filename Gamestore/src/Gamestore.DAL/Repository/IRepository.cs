@@ -29,4 +29,6 @@ public interface IRepository<T>
     Task<int> CountByFilterAsync(Expression<Func<T, bool>> filter);
 
     Task<bool> Exists(Expression<Func<T, bool>> filter);
+
+    Task<bool> Exists();
 }

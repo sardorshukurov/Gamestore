@@ -117,7 +117,7 @@ public class GenreServiceTests
         var genre = _fixture.Create<Genre>();
         var updateGenreRequest = _fixture.Create<UpdateGenreRequest>();
 
-        _genreRepositoryMock.Setup(x => x.GetByIdAsync(updateGenreRequest.Genre.Id)).ReturnsAsync(genre);
+        _genreRepositoryMock.Setup(x => x.GetByIdAsync(updateGenreRequest.Id)).ReturnsAsync(genre);
 
         // Act
         await _service.UpdateAsync(updateGenreRequest);
@@ -131,7 +131,7 @@ public class GenreServiceTests
     {
         // Arrange
         var updateGenreDto = _fixture.Create<UpdateGenreRequest>();
-        _genreRepositoryMock.Setup(x => x.GetByIdAsync(updateGenreDto.Genre.Id)).ReturnsAsync((Genre)null);
+        _genreRepositoryMock.Setup(x => x.GetByIdAsync(updateGenreDto.Id)).ReturnsAsync((Genre)null);
 
         // Act and Assert
         await Assert.ThrowsAsync<GenreNotFoundException>(() => _service.UpdateAsync(updateGenreDto));
@@ -144,7 +144,7 @@ public class GenreServiceTests
         var genre = _fixture.Create<Genre>();
         var updateGenreDto = _fixture.Create<UpdateGenreRequest>();
 
-        _genreRepositoryMock.Setup(x => x.GetByIdAsync(updateGenreDto.Genre.Id)).ReturnsAsync(genre);
+        _genreRepositoryMock.Setup(x => x.GetByIdAsync(updateGenreDto.Id)).ReturnsAsync(genre);
         _genreRepositoryMock.Setup(x => x.SaveChangesAsync()).ThrowsAsync(new Exception());
 
         // Act and Assert
@@ -172,9 +172,8 @@ public class GenreServiceTests
     {
         // Arrange
         var createGenreDto = new CreateGenreRequest(
-            new CreateGenre(
                 "New genre",
-                null));
+                null);
         var genre = createGenreDto.ToEntity();
 
         // Act
@@ -193,7 +192,7 @@ public class GenreServiceTests
         // Arrange
         var createGenreDto = _fixture.Create<CreateGenreRequest>();
 
-        _genreRepositoryMock.Setup(x => x.GetByIdAsync(createGenreDto.Genre.ParentGenreId!.Value))
+        _genreRepositoryMock.Setup(x => x.GetByIdAsync(createGenreDto.ParentGenreId!.Value))
             .ReturnsAsync((Genre)null);
 
         // Assert

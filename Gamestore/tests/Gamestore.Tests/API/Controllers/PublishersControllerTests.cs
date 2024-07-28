@@ -1,10 +1,7 @@
 using FluentValidation;
 using Gamestore.API.Controllers;
-using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Publisher;
-using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.PublisherService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.Tests.API.Controllers;
@@ -13,7 +10,6 @@ public class PublishersControllerTests
 {
     private readonly IFixture _fixture;
     private readonly Mock<IPublisherService> _publisherServiceMock;
-    private readonly Mock<IGameService> _gameServiceMock;
 
     private readonly Mock<CreatePublisherValidator> _createValidatorMock;
     private readonly Mock<UpdatePublisherValidator> _updateValidatorMock;
@@ -25,14 +21,12 @@ public class PublishersControllerTests
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
         _publisherServiceMock = _fixture.Freeze<Mock<IPublisherService>>();
-        _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
 
         _createValidatorMock = _fixture.Freeze<Mock<CreatePublisherValidator>>();
         _updateValidatorMock = _fixture.Freeze<Mock<UpdatePublisherValidator>>();
 
         _controller = new PublishersController(
-            _publisherServiceMock.Object,
-            _gameServiceMock.Object);
+            _publisherServiceMock.Object);
     }
 
     [Fact]
@@ -123,27 +117,6 @@ public class PublishersControllerTests
     }
 
     [Fact]
-    public async Task UpdateNotFoundExceptionReturnsNotFound()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdatePublisherRequest>();
-        var validationResult = new FluentValidation.Results.ValidationResult();
-        _updateValidatorMock.Setup(x => x.ValidateAsync(
-                It.IsAny<ValidationContext<UpdatePublisherRequest>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(validationResult);
-
-        _publisherServiceMock.Setup(x => x.UpdateAsync(It.IsAny<UpdatePublisherRequest>()))
-            .ThrowsAsync(new NotFoundException("Not found"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        Assert.IsType<NotFoundObjectResult>(result);
-    }
-
-    [Fact]
     public async Task DeleteValidIdCallsServiceAndDeletesPublisher()
     {
         // Arrange
@@ -156,52 +129,5 @@ public class PublishersControllerTests
         // Assert
         Assert.IsType<NoContentResult>(result);
         _publisherServiceMock.Verify(x => x.DeleteAsync(id), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteNotExistingIdReturnsNotFoundResult()
-    {
-        // Arrange
-        var id = _fixture.Create<Guid>();
-        _publisherServiceMock.Setup(x => x.DeleteAsync(id))
-            .Throws(new NotFoundException($"Publisher with id {id} not found"));
-
-        // Act
-        var result = await _controller.Delete(id);
-
-        // Assert
-        Assert.IsType<NotFoundObjectResult>(result);
-        _publisherServiceMock.Verify(x => x.DeleteAsync(id), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetGamesByCompanyNamePublisherExistsReturnsOk()
-    {
-        // Arrange
-        var games = _fixture.Create<List<GameResponse>>();
-        _gameServiceMock.Setup(x => x.GetByPublisherAsync(It.IsAny<string>()))
-            .ReturnsAsync(games);
-
-        // Act
-        var result = await _controller.GetGamesByCompanyName("companyName");
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        var returnValue = Assert.IsType<List<GameResponse>>(okResult.Value);
-        Assert.Equal(games.Count, returnValue.Count);
-    }
-
-    [Fact]
-    public async Task GetGamesByCompanyNamePublisherDoesNotExistReturnsNotFound()
-    {
-        // Arrange
-        _gameServiceMock.Setup(x => x.GetByPublisherAsync(It.IsAny<string>()))
-            .Throws(new NotFoundException("Not found"));
-
-        // Act
-        var result = await _controller.GetGamesByCompanyName("companyName");
-
-        // Assert
-        Assert.IsType<NotFoundObjectResult>(result.Result);
     }
 }

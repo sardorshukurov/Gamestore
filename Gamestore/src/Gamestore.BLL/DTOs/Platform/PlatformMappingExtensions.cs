@@ -24,13 +24,13 @@ public static class PlatformMappingExtensions
     {
         return new PlatformEntity
         {
-            Type = request.Platform.Type,
+            Type = request.Type,
         };
     }
 
     public static void UpdateEntity(this UpdatePlatformRequest request, PlatformEntity entity)
     {
-        entity.Id = request.Platform.Id;
-        entity.Type = request.Platform.Type;
+        entity.Id = request.Id;
+        entity.Type = request.Type;
     }
 }

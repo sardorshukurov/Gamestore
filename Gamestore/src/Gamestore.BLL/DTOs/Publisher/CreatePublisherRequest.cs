@@ -1,41 +1,39 @@
 using FluentValidation;
-using Gamestore.DAL.Data;
+using Gamestore.DAL.Repository;
+using PublisherEntity = Gamestore.Domain.Entities.Publisher;
 
 namespace Gamestore.BLL.DTOs.Publisher;
 
 public record CreatePublisherRequest(
-    CreatePublisher Publisher);
-
-public record CreatePublisher(
     string CompanyName,
     string HomePage,
     string Description);
 
 public class CreatePublisherValidator : AbstractValidator<CreatePublisherRequest>
 {
-    private readonly MainDbContext _dbContext;
+    private readonly IRepository<PublisherEntity> _publisherRepository;
 
-    public CreatePublisherValidator(MainDbContext dbContext)
+    public CreatePublisherValidator(IRepository<PublisherEntity> publisherRepository)
     {
-        _dbContext = dbContext;
+        _publisherRepository = publisherRepository;
 
-        RuleFor(p => p.Publisher.CompanyName)
+        RuleFor(p => p.CompanyName)
             .NotEmpty()
             .WithMessage("Company name is required")
-            .Must(BeUniqueCompanyName)
+            .Must((companyName) => BeUniqueCompanyName(companyName).Result)
             .WithMessage("Company name must be unique");
 
-        RuleFor(p => p.Publisher.HomePage)
+        RuleFor(p => p.HomePage)
             .NotEmpty()
             .WithMessage("Home page is required");
 
-        RuleFor(p => p.Publisher.Description)
+        RuleFor(p => p.Description)
             .NotEmpty()
             .WithMessage("Description is required");
     }
 
-    private bool BeUniqueCompanyName(string companyName)
+    private async Task<bool> BeUniqueCompanyName(string companyName)
     {
-        return !_dbContext.Publishers.Any(g => g.CompanyName == companyName);
+        return !await _publisherRepository.Exists(g => g.CompanyName == companyName);
     }
 }

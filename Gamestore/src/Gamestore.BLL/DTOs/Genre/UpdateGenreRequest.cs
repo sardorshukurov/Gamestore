@@ -1,48 +1,46 @@
 using FluentValidation;
-using Gamestore.DAL.Data;
+using Gamestore.DAL.Repository;
+using GenreEntity = Gamestore.Domain.Entities.Genre;
 
 namespace Gamestore.BLL.DTOs.Genre;
 
 public record UpdateGenreRequest(
-    UpdateGenre Genre);
-
-public record UpdateGenre(
     Guid Id,
     string Name,
     Guid? ParentGenreId);
 
 public class UpdateGenreValidator : AbstractValidator<UpdateGenreRequest>
 {
-    private readonly MainDbContext _dbContext;
+    private readonly IRepository<GenreEntity> _genreRepository;
 
-    public UpdateGenreValidator(MainDbContext dbContext)
+    public UpdateGenreValidator(IRepository<GenreEntity> genreRepository)
     {
-        _dbContext = dbContext;
+        _genreRepository = genreRepository;
 
-        RuleFor(g => g.Genre.Name)
+        RuleFor(g => g.Name)
             .NotEmpty()
             .WithMessage("Genre name is required")
-            .Must(BeUniqueGenreName)
+            .Must((name) => BeUniqueGenreName(name).Result)
             .WithMessage("Genre name must be unique");
 
-        RuleFor(g => g.Genre.ParentGenreId)
-            .Must(ContainExistingParentGenre)
+        RuleFor(g => g.ParentGenreId)
+            .Must((parentGenreId) => ContainExistingParentGenre(parentGenreId).Result)
             .WithMessage("Parent genre must exist");
     }
 
-    private bool BeUniqueGenreName(string name)
+    private async Task<bool> BeUniqueGenreName(string name)
     {
-        return !_dbContext.Genres.Any(g => g.Name == name);
+        return !await _genreRepository.Exists(g => g.Name == name);
     }
 
-    private bool ContainExistingParentGenre(Guid? parentGenreId)
+    private async Task<bool> ContainExistingParentGenre(Guid? parentGenreId)
     {
         if (parentGenreId == null)
         {
             return true;
         }
 
-        var parentGenre = _dbContext.Genres.FirstOrDefault(g => g.Id == parentGenreId);
+        var parentGenre = await _genreRepository.GetOneAsync(g => g.Id == parentGenreId);
 
         return parentGenre is not null || parentGenre.Id != parentGenre.ParentGenreId;
     }

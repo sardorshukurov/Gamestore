@@ -28,8 +28,8 @@ public class PlatformService(
 
     public async Task UpdateAsync(UpdatePlatformRequest request)
     {
-        var platformToUpdate = await repository.GetByIdAsync(request.Platform.Id)
-                               ?? throw new PlatformNotFoundException(request.Platform.Id);
+        var platformToUpdate = await repository.GetByIdAsync(request.Id)
+                               ?? throw new PlatformNotFoundException(request.Id);
 
         request.UpdateEntity(platformToUpdate);
 

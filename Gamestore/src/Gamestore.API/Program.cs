@@ -51,6 +51,8 @@ builder.Services.AddCors(options =>
             .WithExposedHeaders("x-total-number-of-games"));
 });
 
+builder.Services.Configure<TotalGamesMiddlewareConfig>(builder.Configuration.GetSection("TotalGamesMiddleware"));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

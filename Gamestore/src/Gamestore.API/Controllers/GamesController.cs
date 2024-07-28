@@ -8,7 +8,6 @@ using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.BLL.Services.PublisherService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -59,6 +58,15 @@ public class GamesController(
         return Ok(games);
     }
 
+    [HttpGet("{companyName}/companyName")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGamesByPublisher(string companyName)
+    {
+        var games = await gameService.GetByPublisherAsync(companyName);
+
+        return Ok(games);
+    }
+
     [HttpGet("{id}")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GameResponse>> GetById(Guid id)
@@ -78,31 +86,17 @@ public class GamesController(
     [HttpPut]
     public async Task<IActionResult> Update(UpdateGameRequest request)
     {
-        try
-        {
-            var gameDto = request;
+        var gameDto = request;
 
-            await gameService.UpdateAsync(gameDto);
-            return NoContent();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        await gameService.UpdateAsync(gameDto);
+        return NoContent();
     }
 
     [HttpDelete("{key}")]
     public async Task<IActionResult> Delete(string key)
     {
-        try
-        {
-            await gameService.DeleteByKeyAsync(key);
-            return NoContent();
-        }
-        catch (NotFoundException)
-        {
-            return NotFound($"Game with key {key} not found");
-        }
+        await gameService.DeleteByKeyAsync(key);
+        return NoContent();
     }
 
     [HttpGet("{key}/file")]
@@ -128,67 +122,35 @@ public class GamesController(
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetGenresByKey(string key)
     {
-        try
-        {
-            var genres = await genreService.GetAllByGameKeyAsync(key);
+        var genres = await genreService.GetAllByGameKeyAsync(key);
 
-            return Ok(genres);
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return Ok(genres);
     }
 
     [HttpGet("{key}/platforms")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetPlatformsByKey(string key)
     {
-        try
-        {
-            var platforms = await platformService.GetAllByGameKeyAsync(key);
+        var platforms = await platformService.GetAllByGameKeyAsync(key);
 
-            return Ok(platforms);
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return Ok(platforms);
     }
 
     [HttpGet("{key}/publisher")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<PublisherResponse>> GetPublisherByKey(string key)
     {
-        try
-        {
-            var publisher = await publisherService.GetByGameKeyAsync(key);
+        var publisher = await publisherService.GetByGameKeyAsync(key);
 
-            return publisher is null
-                ? NotFound($"Publisher for the game with game key {key} not found")
-                : Ok(publisher);
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return publisher is null
+            ? NotFound($"Publisher for the game with game key {key} not found")
+            : Ok(publisher);
     }
 
     [HttpPost("{key}/buy")]
     public async Task<IActionResult> BuyGame(string key)
     {
-        try
-        {
-            await orderService.AddGameInTheCartAsync(_customerId, key);
-            return Ok();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
-        catch (NotEnoughGamesInStockException negex)
-        {
-            return BadRequest(negex.Message);
-        }
+        await orderService.AddGameInTheCartAsync(_customerId, key);
+        return Ok();
     }
 }

@@ -1,8 +1,5 @@
-using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Publisher;
-using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.PublisherService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -10,8 +7,7 @@ namespace Gamestore.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class PublishersController(
-    IPublisherService publisherService,
-    IGameService gameService) : ControllerBase
+    IPublisherService publisherService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create(CreatePublisherRequest request)
@@ -43,46 +39,16 @@ public class PublishersController(
     [HttpPut]
     public async Task<IActionResult> Update(UpdatePublisherRequest request)
     {
-        try
-        {
-            await publisherService.UpdateAsync(request);
+        await publisherService.UpdateAsync(request);
 
-            return NoContent();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await publisherService.DeleteAsync(id);
+        await publisherService.DeleteAsync(id);
 
-            return NoContent();
-        }
-        catch (NotFoundException)
-        {
-            return NotFound($"Publisher with id {id} not found");
-        }
-    }
-
-    [HttpGet("{companyName}/games")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<IEnumerable<GameResponse>>> GetGamesByCompanyName(string companyName)
-    {
-        try
-        {
-            var games = await gameService.GetByPublisherAsync(companyName);
-
-            return Ok(games);
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return NoContent();
     }
 }

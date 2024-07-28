@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Middlewares;
@@ -11,6 +12,30 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
         try
         {
             await next(context);
+        }
+        catch (NotFoundException nfex)
+        {
+            LogException(nfex);
+
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+
+            string json = JsonSerializer.Serialize(nfex.Message);
+
+            await context.Response.WriteAsync(json);
+
+            context.Response.ContentType = "application/json";
+        }
+        catch (BadRequestException brex)
+        {
+            LogException(brex);
+
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+            string json = JsonSerializer.Serialize(brex.Message);
+
+            await context.Response.WriteAsync(json);
+
+            context.Response.ContentType = "application/json";
         }
         catch (Exception ex)
         {

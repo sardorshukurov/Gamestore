@@ -66,8 +66,8 @@ public class PublisherMappingsTests
         var entity = request.ToEntity();
 
         // Assert
-        entity.CompanyName.Should().Be(request.Publisher.CompanyName);
-        entity.HomePage.Should().Be(request.Publisher.HomePage);
-        entity.Description.Should().Be(request.Publisher.Description);
+        entity.CompanyName.Should().Be(request.CompanyName);
+        entity.HomePage.Should().Be(request.HomePage);
+        entity.Description.Should().Be(request.Description);
     }
 }

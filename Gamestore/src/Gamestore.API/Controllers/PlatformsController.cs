@@ -1,6 +1,5 @@
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -38,30 +37,16 @@ public class PlatformsController(
     [HttpPut]
     public async Task<IActionResult> Update(UpdatePlatformRequest request)
     {
-        try
-        {
-            await platformService.UpdateAsync(request);
+        await platformService.UpdateAsync(request);
 
-            return NoContent();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await platformService.DeleteAsync(id);
+        await platformService.DeleteAsync(id);
 
-            return NoContent();
-        }
-        catch (NotFoundException)
-        {
-            return NotFound($"Platform with id {id} not found");
-        }
+        return NoContent();
     }
 }

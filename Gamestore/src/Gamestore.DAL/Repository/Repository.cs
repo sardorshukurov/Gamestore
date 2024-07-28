@@ -113,4 +113,9 @@ public class Repository<T> : IRepository<T>
     {
         return await _dbSet.AnyAsync(filter);
     }
+
+    public async Task<bool> Exists()
+    {
+        return await _dbSet.AnyAsync();
+    }
 }

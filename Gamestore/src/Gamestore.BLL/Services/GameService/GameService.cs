@@ -92,9 +92,7 @@ public class GameService(
         await gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == request.Game.Id);
 
         // add all genres
-#pragma warning disable CA1860
         if (request.Genres.Any())
-#pragma warning restore CA1860
         {
             foreach (var genreId in request.Genres)
             {
@@ -104,9 +102,7 @@ public class GameService(
         }
 
         // add all platforms
-#pragma warning disable CA1860
         if (request.Platforms.Any())
-#pragma warning restore CA1860
         {
             foreach (var platformId in request.Platforms)
             {
@@ -125,9 +121,7 @@ public class GameService(
         await repository.CreateAsync(game);
 
         // add all genres
-#pragma warning disable CA1860
         if (request.Genres.Any())
-#pragma warning restore CA1860
         {
             foreach (var genreId in request.Genres)
             {
@@ -137,9 +131,7 @@ public class GameService(
         }
 
         // add all platforms
-#pragma warning disable CA1860
         if (request.Platforms.Any())
-#pragma warning restore CA1860
         {
             foreach (var platformId in request.Platforms)
             {

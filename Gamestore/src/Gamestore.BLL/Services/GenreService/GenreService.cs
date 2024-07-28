@@ -37,15 +37,15 @@ public class GenreService(
 
     public async Task UpdateAsync(UpdateGenreRequest request)
     {
-        if (request.Genre.ParentGenreId is not null)
+        if (request.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
-            _ = await repository.GetByIdAsync((Guid)request.Genre.ParentGenreId)
-                ?? throw new GenreNotFoundException((Guid)request.Genre.ParentGenreId);
+            _ = await repository.GetByIdAsync((Guid)request.ParentGenreId)
+                ?? throw new GenreNotFoundException((Guid)request.ParentGenreId);
         }
 
-        var genreToUpdate = await repository.GetByIdAsync(request.Genre.Id)
-                            ?? throw new GenreNotFoundException(request.Genre.Id);
+        var genreToUpdate = await repository.GetByIdAsync(request.Id)
+                            ?? throw new GenreNotFoundException(request.Id);
 
         request.UpdateEntity(genreToUpdate);
 
@@ -60,12 +60,12 @@ public class GenreService(
 
     public async Task CreateAsync(CreateGenreRequest request)
     {
-        if (request.Genre.ParentGenreId is not null)
+        if (request.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
-            if (!await repository.Exists(g => g.ParentGenreId == request.Genre.ParentGenreId))
+            if (!await repository.Exists(g => g.ParentGenreId == request.ParentGenreId))
             {
-                throw new GenreNotFoundException((Guid)request.Genre.ParentGenreId);
+                throw new GenreNotFoundException((Guid)request.ParentGenreId);
             }
         }
 

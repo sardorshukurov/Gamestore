@@ -69,7 +69,7 @@ public class PublisherServiceTests
         var publisherRequest = _fixture.Create<UpdatePublisherRequest>();
         var publisher = _fixture.Create<Publisher>();
 
-        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherRequest.Publisher.Id)).ReturnsAsync(publisher);
+        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherRequest.Id)).ReturnsAsync(publisher);
 
         // Act
         await _service.UpdateAsync(publisherRequest);
@@ -83,7 +83,7 @@ public class PublisherServiceTests
     {
         // Arrange
         var publisherDto = _fixture.Create<UpdatePublisherRequest>();
-        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherDto.Publisher.Id)).ReturnsAsync((Publisher)null);
+        _publisherRepostioryMock.Setup(r => r.GetByIdAsync(publisherDto.Id)).ReturnsAsync((Publisher)null);
 
         // Assert
         await Assert.ThrowsAsync<PublisherNotFoundException>(() => _service.UpdateAsync(publisherDto));

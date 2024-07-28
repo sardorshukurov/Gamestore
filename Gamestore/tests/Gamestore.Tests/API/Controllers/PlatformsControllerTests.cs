@@ -2,7 +2,6 @@ using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.Tests.API.Controllers;
@@ -120,27 +119,6 @@ public class PlatformsControllerTests
     }
 
     [Fact]
-    public async Task UpdateReturnsNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdatePlatformRequest>();
-
-        _updateValidator
-            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdatePlatformRequest>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
-
-        _platformService.Setup(x => x.UpdateAsync(request)).ThrowsAsync(new NotFoundException("Platform not found"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be("Platform not found");
-    }
-
-    [Fact]
     public async Task DeleteReturnsNoContentWhenDeleteIsSuccessful()
     {
         // Arrange
@@ -152,21 +130,5 @@ public class PlatformsControllerTests
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task DeleteReturnsNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        _platformService.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new NotFoundException($"Platform with id {id} not found"));
-
-        // Act
-        var result = await _controller.Delete(id);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be($"Platform with id {id} not found");
     }
 }

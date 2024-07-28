@@ -3,6 +3,7 @@
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+		<NoWarn>$(NoWarn);CA1860</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

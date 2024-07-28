@@ -1,6 +1,5 @@
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -47,29 +46,15 @@ public class GenresController(
     [HttpPut]
     public async Task<IActionResult> Update(UpdateGenreRequest request)
     {
-        try
-        {
-            await genreService.UpdateAsync(request);
+        await genreService.UpdateAsync(request);
 
-            return NoContent();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await genreService.DeleteAsync(id);
-            return NoContent();
-        }
-        catch (NotFoundException)
-        {
-            return NotFound($"Genre with id {id} not found");
-        }
+        await genreService.DeleteAsync(id);
+        return NoContent();
     }
 }

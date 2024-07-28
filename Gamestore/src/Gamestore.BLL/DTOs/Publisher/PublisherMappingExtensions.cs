@@ -24,17 +24,17 @@ public static class PublisherMappingExtensions
     {
         return new PublisherEntity
         {
-            CompanyName = request.Publisher.CompanyName,
-            HomePage = request.Publisher.HomePage,
-            Description = request.Publisher.Description,
+            CompanyName = request.CompanyName,
+            HomePage = request.HomePage,
+            Description = request.Description,
         };
     }
 
     public static void UpdateEntity(this UpdatePublisherRequest request, PublisherEntity entity)
     {
-        entity.Id = request.Publisher.Id;
-        entity.CompanyName = request.Publisher.CompanyName;
-        entity.HomePage = request.Publisher.HomePage;
-        entity.Description = request.Publisher.Description;
+        entity.Id = request.Id;
+        entity.CompanyName = request.CompanyName;
+        entity.HomePage = request.HomePage;
+        entity.Description = request.Description;
     }
 }

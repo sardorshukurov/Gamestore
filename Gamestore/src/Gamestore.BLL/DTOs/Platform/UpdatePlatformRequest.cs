@@ -1,32 +1,30 @@
 using FluentValidation;
-using Gamestore.DAL.Data;
+using Gamestore.DAL.Repository;
+using PlatformEntity = Gamestore.Domain.Entities.Platform;
 
 namespace Gamestore.BLL.DTOs.Platform;
 
 public record UpdatePlatformRequest(
-    UpdatePlatform Platform);
-
-public record UpdatePlatform(
     Guid Id,
     string Type);
 
 public class UpdatePlatformValidator : AbstractValidator<UpdatePlatformRequest>
 {
-    private readonly MainDbContext _dbContext;
+    private readonly IRepository<PlatformEntity> _platformRepository;
 
-    public UpdatePlatformValidator(MainDbContext dbContext)
+    public UpdatePlatformValidator(IRepository<PlatformEntity> platformRepository)
     {
-        _dbContext = dbContext;
+        _platformRepository = platformRepository;
 
-        RuleFor(p => p.Platform.Type)
+        RuleFor(p => p.Type)
             .NotEmpty()
             .WithMessage("Platform type is required")
-            .Must(BeUniqueType)
+            .Must((type) => BeUniqueType(type).Result)
             .WithMessage("Platform type must be unique");
     }
 
-    private bool BeUniqueType(string type)
+    private async Task<bool> BeUniqueType(string type)
     {
-        return !_dbContext.Platforms.Any(p => p.Type == type);
+        return !await _platformRepository.Exists(p => p.Type == type);
     }
 }

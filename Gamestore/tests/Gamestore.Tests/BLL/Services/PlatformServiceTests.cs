@@ -85,7 +85,7 @@ public class PlatformServiceTests
         var platformToUpdate = _fixture.Create<Platform>();
         var updatePlatformRequest = _fixture.Create<UpdatePlatformRequest>();
 
-        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformRequest.Platform.Id)).ReturnsAsync(platformToUpdate);
+        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformRequest.Id)).ReturnsAsync(platformToUpdate);
 
         // Act
         await _service.UpdateAsync(updatePlatformRequest);
@@ -99,7 +99,7 @@ public class PlatformServiceTests
     {
         // Arrange
         var updatePlatformDto = _fixture.Create<UpdatePlatformRequest>();
-        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformDto.Platform.Id)).ReturnsAsync((Platform)null);
+        _platformRepostioryMock.Setup(x => x.GetByIdAsync(updatePlatformDto.Id)).ReturnsAsync((Platform)null);
 
         // Act and Assert
         await Assert.ThrowsAsync<PlatformNotFoundException>(() => _service.UpdateAsync(updatePlatformDto));
@@ -134,7 +134,7 @@ public class PlatformServiceTests
         _platformRepostioryMock.Verify(
             x =>
             x.CreateAsync(It.Is<Platform>(
-                p => p.Type == createPlatformRequest.Platform.Type)),
+                p => p.Type == createPlatformRequest.Type)),
             Times.Once);
         _platformRepostioryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }

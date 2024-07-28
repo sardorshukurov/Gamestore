@@ -27,8 +27,8 @@ public class PublisherService(
 
     public async Task UpdateAsync(UpdatePublisherRequest request)
     {
-        var publisherToUpdate = await repository.GetByIdAsync(request.Publisher.Id)
-                                ?? throw new PublisherNotFoundException(request.Publisher.Id);
+        var publisherToUpdate = await repository.GetByIdAsync(request.Id)
+                                ?? throw new PublisherNotFoundException(request.Id);
 
         request.UpdateEntity(publisherToUpdate);
 

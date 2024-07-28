@@ -1,41 +1,39 @@
 using FluentValidation;
-using Gamestore.DAL.Data;
+using Gamestore.DAL.Repository;
+using GenreEntity = Gamestore.Domain.Entities.Genre;
 
 namespace Gamestore.BLL.DTOs.Genre;
 
 public record CreateGenreRequest(
-    CreateGenre Genre);
-
-public record CreateGenre(
     string Name,
     Guid? ParentGenreId);
 
 public class CreateGenreValidator : AbstractValidator<CreateGenreRequest>
 {
-    private readonly MainDbContext _dbContext;
+    private readonly IRepository<GenreEntity> _genreRepository;
 
-    public CreateGenreValidator(MainDbContext dbContext)
+    public CreateGenreValidator(IRepository<GenreEntity> genreRepository)
     {
-        _dbContext = dbContext;
+        _genreRepository = genreRepository;
 
-        RuleFor(g => g.Genre.Name)
+        RuleFor(g => g.Name)
             .NotEmpty()
             .WithMessage("Genre name is required")
-            .Must(BeUniqueGenreName)
+            .Must((genreName) => BeUniqueGenreName(genreName).Result)
             .WithMessage("Genre name must be unique");
 
-        RuleFor(g => g.Genre.ParentGenreId)
-            .Must(ContainExistingParentGenre)
+        RuleFor(g => g.ParentGenreId)
+            .Must((parentGenreId) => ContainExistingParentGenre(parentGenreId).Result)
             .WithMessage("Parent genre must exist");
     }
 
-    private bool BeUniqueGenreName(string name)
+    private async Task<bool> BeUniqueGenreName(string name)
     {
-        return !_dbContext.Genres.Any(g => g.Name == name);
+        return !await _genreRepository.Exists(g => g.Name == name);
     }
 
-    private bool ContainExistingParentGenre(Guid? parentGenreId)
+    private async Task<bool> ContainExistingParentGenre(Guid? parentGenreId)
     {
-        return parentGenreId is null || _dbContext.Genres.Any(g => g.Id == parentGenreId);
+        return parentGenreId is null || await _genreRepository.Exists(g => g.Id == parentGenreId);
     }
 }

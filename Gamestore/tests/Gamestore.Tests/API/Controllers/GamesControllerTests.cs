@@ -9,7 +9,6 @@ using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.BLL.Services.PublisherService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -254,29 +253,6 @@ public class GamesControllerTests
     }
 
     [Fact]
-    public async Task UpdateShouldReturnNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdateGameRequest>();
-
-        _updateValidator
-            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGameRequest>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
-
-        _gameServiceMock
-            .Setup(x => x.UpdateAsync(It.IsAny<UpdateGameRequest>()))
-            .ThrowsAsync(new NotFoundException("Game not found"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be("Game not found");
-    }
-
-    [Fact]
     public async Task DeleteShouldReturnNoContentWhenValidKey()
     {
         // Arrange
@@ -295,25 +271,6 @@ public class GamesControllerTests
         result.Should().BeAssignableTo<NoContentResult>();
 
         _gameServiceMock.Verify(x => x.DeleteByKeyAsync(key), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteShouldReturnNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-
-        _gameServiceMock
-            .Setup(x => x.DeleteByKeyAsync(key))
-            .ThrowsAsync(new NotFoundException("Game not found"));
-
-        // Act
-        var result = await _controller.Delete(key);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be($"Game with key {key} not found");
     }
 
     [Fact]
@@ -355,24 +312,6 @@ public class GamesControllerTests
     }
 
     [Fact]
-    public async Task GetGenresByKeyReturnsNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-        _genreServiceMock
-            .Setup(x => x.GetAllByGameKeyAsync(key))
-            .ThrowsAsync(new NotFoundException("Genres not found"));
-
-        // Act
-        var result = await _controller.GetGenresByKey(key);
-
-        // Assert
-        result.Result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be("Genres not found");
-    }
-
-    [Fact]
     public async Task GetPlatformsByKeyReturnsOkWhenPlatformsAreFound()
     {
         // Arrange
@@ -389,5 +328,22 @@ public class GamesControllerTests
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
         okResult.Value.Should().BeEquivalentTo(platforms);
+    }
+
+    [Fact]
+    public async Task GetGamesByCompanyNamePublisherExistsReturnsOk()
+    {
+        // Arrange
+        var games = _fixture.Create<List<GameResponse>>();
+        _gameServiceMock.Setup(x => x.GetByPublisherAsync(It.IsAny<string>()))
+            .ReturnsAsync(games);
+
+        // Act
+        var result = await _controller.GetAllGamesByPublisher("companyName");
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnValue = Assert.IsType<List<GameResponse>>(okResult.Value);
+        Assert.Equal(games.Count, returnValue.Count);
     }
 }

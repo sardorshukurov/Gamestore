@@ -2,7 +2,6 @@ using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.Tests.API.Controllers;
@@ -135,27 +134,6 @@ public class GenresControllerTests
     }
 
     [Fact]
-    public async Task UpdateReturnsNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdateGenreRequest>();
-
-        _updateValidator
-            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
-
-        _genreServiceMock.Setup(x => x.UpdateAsync(request)).ThrowsAsync(new NotFoundException("Genre not found"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be("Genre not found");
-    }
-
-    [Fact]
     public async Task DeleteReturnsNoContentWhenDeleteIsSuccessful()
     {
         // Arrange
@@ -167,21 +145,5 @@ public class GenresControllerTests
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task DeleteReturnsNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new NotFoundException($"Genre with id {id} not found"));
-
-        // Act
-        var result = await _controller.Delete(id);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be($"Genre with id {id} not found");
     }
 }
