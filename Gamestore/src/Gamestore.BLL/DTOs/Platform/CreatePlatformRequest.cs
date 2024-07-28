@@ -24,6 +24,6 @@ public class CreatePlatformValidator : AbstractValidator<CreatePlatformRequest>
 
     private async Task<bool> BeUniqueType(string type)
     {
-        return !await _platformRepository.Exists(p => p.Type == type);
+        return !await _platformRepository.ExistsAsync(p => p.Type == type);
     }
 }

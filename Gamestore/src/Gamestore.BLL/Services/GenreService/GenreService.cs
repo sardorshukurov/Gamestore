@@ -63,7 +63,7 @@ public class GenreService(
         if (request.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
-            if (!await repository.Exists(g => g.ParentGenreId == request.ParentGenreId))
+            if (!await repository.ExistsAsync(g => g.ParentGenreId == request.ParentGenreId))
             {
                 throw new GenreNotFoundException((Guid)request.ParentGenreId);
             }

@@ -106,11 +106,11 @@ public class CreateGameValidator : AbstractValidator<CreateGameRequest>
 
     private async Task<bool> ContainExistingPublisher(Guid publisherId)
     {
-        return publisherId != Guid.Empty && await _publisherRepository.Exists(p => p.Id == publisherId);
+        return publisherId != Guid.Empty && await _publisherRepository.ExistsAsync(p => p.Id == publisherId);
     }
 
     private async Task<bool> BeUniqueKey(string key)
     {
-        return !await _gameRepository.Exists(g => g.Key == key);
+        return !await _gameRepository.ExistsAsync(g => g.Key == key);
     }
 }

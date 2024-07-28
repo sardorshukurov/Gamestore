@@ -76,20 +76,38 @@ public class Repository<T> : IRepository<T>
         return await _dbSet.FindAsync(id);
     }
 
-    public async Task<T?> GetOneAsync(Expression<Func<T, bool>> filter)
+    public async Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includeProperties)
     {
-        return await _dbSet.FirstOrDefaultAsync(filter);
+        IQueryable<T> query = _dbSet;
+        foreach (var includeProperty in includeProperties)
+        {
+            query = query.Include(includeProperty);
+        }
+
+        return await query.FirstOrDefaultAsync(filter);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties)
     {
-        return await _dbSet.AsNoTracking()
+        IQueryable<T> query = _dbSet;
+        foreach (var includeProperty in includeProperties)
+        {
+            query = query.Include(includeProperty);
+        }
+
+        return await query.AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter)
+    public async Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includeProperties)
     {
-        return await _dbSet.AsNoTracking()
+        IQueryable<T> query = _dbSet;
+        foreach (var includeProperty in includeProperties)
+        {
+            query = query.Include(includeProperty);
+        }
+
+        return await query.AsNoTracking()
             .Where(filter)
             .ToListAsync();
     }
@@ -109,12 +127,12 @@ public class Repository<T> : IRepository<T>
         return await _dbSet.Where(filter).CountAsync();
     }
 
-    public async Task<bool> Exists(Expression<Func<T, bool>> filter)
+    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> filter)
     {
         return await _dbSet.AnyAsync(filter);
     }
 
-    public async Task<bool> Exists()
+    public async Task<bool> ExistsAsync()
     {
         return await _dbSet.AnyAsync();
     }

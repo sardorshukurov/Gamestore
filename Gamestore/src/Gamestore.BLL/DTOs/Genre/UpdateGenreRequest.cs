@@ -30,7 +30,7 @@ public class UpdateGenreValidator : AbstractValidator<UpdateGenreRequest>
 
     private async Task<bool> BeUniqueGenreName(string name)
     {
-        return !await _genreRepository.Exists(g => g.Name == name);
+        return !await _genreRepository.ExistsAsync(g => g.Name == name);
     }
 
     private async Task<bool> ContainExistingParentGenre(Guid? parentGenreId)

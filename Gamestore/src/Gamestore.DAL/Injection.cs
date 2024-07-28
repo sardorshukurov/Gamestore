@@ -24,9 +24,13 @@ public static class Injection
         services.AddScoped<IRepository<Platform>, Repository<Platform>>();
         services.AddScoped<IRepository<GameGenre>, Repository<GameGenre>>();
         services.AddScoped<IRepository<GamePlatform>, Repository<GamePlatform>>();
+
         services.AddScoped<IRepository<Publisher>, Repository<Publisher>>();
+
         services.AddScoped<IRepository<Order>, Repository<Order>>();
         services.AddScoped<IRepository<OrderGame>, Repository<OrderGame>>();
+
+        services.AddScoped<IRepository<Comment>, Repository<Comment>>();
 
         return services;
     }

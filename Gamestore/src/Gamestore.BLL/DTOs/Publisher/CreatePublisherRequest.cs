@@ -34,6 +34,6 @@ public class CreatePublisherValidator : AbstractValidator<CreatePublisherRequest
 
     private async Task<bool> BeUniqueCompanyName(string companyName)
     {
-        return !await _publisherRepository.Exists(g => g.CompanyName == companyName);
+        return !await _publisherRepository.ExistsAsync(g => g.CompanyName == companyName);
     }
 }

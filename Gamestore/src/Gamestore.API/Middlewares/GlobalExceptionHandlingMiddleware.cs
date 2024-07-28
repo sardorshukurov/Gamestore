@@ -10,7 +10,7 @@ public class GlobalExceptionHandlingMiddleware(
     RequestDelegate next,
     IHostEnvironment env)
 {
-    public async Task InvokeAsync(HttpContext context, CancellationToken cancellationToken)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
@@ -24,7 +24,7 @@ public class GlobalExceptionHandlingMiddleware(
 
             string json = JsonSerializer.Serialize(nfex.Message);
 
-            await context.Response.WriteAsync(json, cancellationToken);
+            await context.Response.WriteAsync(json);
 
             context.Response.ContentType = "application/json";
         }
@@ -36,7 +36,7 @@ public class GlobalExceptionHandlingMiddleware(
 
             string json = JsonSerializer.Serialize(brex.Message);
 
-            await context.Response.WriteAsync(json, cancellationToken);
+            await context.Response.WriteAsync(json);
 
             context.Response.ContentType = "application/json";
         }
@@ -58,7 +58,7 @@ public class GlobalExceptionHandlingMiddleware(
 
             string json = JsonSerializer.Serialize(problem);
 
-            await context.Response.WriteAsync(json, cancellationToken);
+            await context.Response.WriteAsync(json);
         }
     }
 
