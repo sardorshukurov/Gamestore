@@ -32,9 +32,19 @@ public class PublishersController(
     public async Task<ActionResult<IEnumerable<PublisherResponse>>> GetAll()
     {
         var publishers = await publisherService.GetAllAsync();
-        throw new Exception(publishers.ToString());
 
-        // return Ok(publishers);
+        return Ok(publishers);
+    }
+
+    [HttpGet("{gameKey}/game")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<PublisherResponse>> GetPublisherByGameKey(string gameKey)
+    {
+        var publisher = await publisherService.GetByGameKeyAsync(gameKey);
+
+        return publisher is null
+            ? NotFound($"Publisher for the game with game key {gameKey} not found")
+            : Ok(publisher);
     }
 
     [HttpPut]

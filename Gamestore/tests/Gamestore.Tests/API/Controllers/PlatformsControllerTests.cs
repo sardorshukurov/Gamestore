@@ -131,4 +131,23 @@ public class PlatformsControllerTests
         // Assert
         result.Should().BeOfType<NoContentResult>();
     }
+
+    [Fact]
+    public async Task GetPlatformsByKeyReturnsOkWhenPlatformsAreFound()
+    {
+        // Arrange
+        var key = _fixture.Create<string>();
+        var platforms = _fixture.Create<ICollection<PlatformShortResponse>>();
+        _platformService
+            .Setup(x => x.GetAllByGameKeyAsync(key))
+            .ReturnsAsync(platforms);
+
+        // Act
+        var result = await _controller.GetPlatformsByGameKey(key);
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult.Value.Should().BeEquivalentTo(platforms);
+    }
 }

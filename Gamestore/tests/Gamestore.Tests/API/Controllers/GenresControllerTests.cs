@@ -146,4 +146,23 @@ public class GenresControllerTests
         // Assert
         result.Should().BeOfType<NoContentResult>();
     }
+
+    [Fact]
+    public async Task GetGenresByKeyReturnsOkWhenGenresAreFound()
+    {
+        // Arrange
+        var key = _fixture.Create<string>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
+        _genreServiceMock
+            .Setup(x => x.GetAllByGameKeyAsync(key))
+            .ReturnsAsync(genres);
+
+        // Act
+        var result = await _controller.GetGenresByKey(key);
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult.Value.Should().BeEquivalentTo(genres);
+    }
 }

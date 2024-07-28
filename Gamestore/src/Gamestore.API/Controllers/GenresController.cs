@@ -34,6 +34,15 @@ public class GenresController(
         return Ok(genres);
     }
 
+    [HttpGet("{gameKey}/game")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetGenresByKey(string gameKey)
+    {
+        var genres = await genreService.GetAllByGameKeyAsync(gameKey);
+
+        return Ok(genres);
+    }
+
     [HttpGet("{parentId}/genres")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetSubGenres(Guid parentId)

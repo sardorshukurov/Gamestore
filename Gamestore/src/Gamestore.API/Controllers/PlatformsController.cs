@@ -34,6 +34,15 @@ public class PlatformsController(
         return Ok(platforms);
     }
 
+    [HttpGet("{gameKey}/game")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetPlatformsByGameKey(string gameKey)
+    {
+        var platforms = await platformService.GetAllByGameKeyAsync(gameKey);
+
+        return Ok(platforms);
+    }
+
     [HttpPut]
     public async Task<IActionResult> Update(UpdatePlatformRequest request)
     {

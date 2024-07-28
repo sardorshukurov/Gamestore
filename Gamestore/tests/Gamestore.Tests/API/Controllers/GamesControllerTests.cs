@@ -2,13 +2,8 @@ using System.Text;
 using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.BLL.DTOs.Genre;
-using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.GameService;
-using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
-using Gamestore.BLL.Services.PlatformService;
-using Gamestore.BLL.Services.PublisherService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -19,9 +14,6 @@ public class GamesControllerTests
     private readonly IFixture _fixture;
 
     private readonly Mock<IGameService> _gameServiceMock;
-    private readonly Mock<IGenreService> _genreServiceMock;
-    private readonly Mock<IPlatformService> _platformServiceMock;
-    private readonly Mock<IPublisherService> _publisherServiceMock;
     private readonly Mock<IOrderService> _orderServiceMock;
 
     private readonly Mock<CreateGameValidator> _createValidator;
@@ -34,9 +26,6 @@ public class GamesControllerTests
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
         _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
-        _genreServiceMock = _fixture.Freeze<Mock<IGenreService>>();
-        _platformServiceMock = _fixture.Freeze<Mock<IPlatformService>>();
-        _publisherServiceMock = _fixture.Freeze<Mock<IPublisherService>>();
         _orderServiceMock = _fixture.Freeze<Mock<IOrderService>>();
 
         _createValidator = _fixture.Freeze<Mock<CreateGameValidator>>();
@@ -44,9 +33,6 @@ public class GamesControllerTests
 
         _controller = new GamesController(
             _gameServiceMock.Object,
-            _genreServiceMock.Object,
-            _platformServiceMock.Object,
-            _publisherServiceMock.Object,
             _orderServiceMock.Object);
     }
 
@@ -290,44 +276,6 @@ public class GamesControllerTests
         fileResult.FileContents.Should().BeEquivalentTo(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(game)));
         fileResult.ContentType.Should().Be("text/plain");
         fileResult.FileDownloadName.Should().StartWith(game.Name);
-    }
-
-    [Fact]
-    public async Task GetGenresByKeyReturnsOkWhenGenresAreFound()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
-        _genreServiceMock
-            .Setup(x => x.GetAllByGameKeyAsync(key))
-            .ReturnsAsync(genres);
-
-        // Act
-        var result = await _controller.GetGenresByKey(key);
-
-        // Assert
-        result.Result.Should().BeOfType<OkObjectResult>();
-        var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres);
-    }
-
-    [Fact]
-    public async Task GetPlatformsByKeyReturnsOkWhenPlatformsAreFound()
-    {
-        // Arrange
-        var key = _fixture.Create<string>();
-        var platforms = _fixture.Create<ICollection<PlatformShortResponse>>();
-        _platformServiceMock
-            .Setup(x => x.GetAllByGameKeyAsync(key))
-            .ReturnsAsync(platforms);
-
-        // Act
-        var result = await _controller.GetPlatformsByKey(key);
-
-        // Assert
-        result.Result.Should().BeOfType<OkObjectResult>();
-        var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(platforms);
     }
 
     [Fact]

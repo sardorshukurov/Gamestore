@@ -1,13 +1,7 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.BLL.DTOs.Genre;
-using Gamestore.BLL.DTOs.Platform;
-using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.GameService;
-using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
-using Gamestore.BLL.Services.PlatformService;
-using Gamestore.BLL.Services.PublisherService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -17,9 +11,6 @@ namespace Gamestore.API.Controllers;
 [ApiController]
 public class GamesController(
     IGameService gameService,
-    IGenreService genreService,
-    IPlatformService platformService,
-    IPublisherService publisherService,
     IOrderService orderService) : ControllerBase
 {
     // TODO: what is this used for?
@@ -116,35 +107,6 @@ public class GamesController(
         var serializedGame = JsonConvert.SerializeObject(game);
 
         return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
-    }
-
-    [HttpGet("{key}/genres")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetGenresByKey(string key)
-    {
-        var genres = await genreService.GetAllByGameKeyAsync(key);
-
-        return Ok(genres);
-    }
-
-    [HttpGet("{key}/platforms")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<IEnumerable<PlatformShortResponse>>> GetPlatformsByKey(string key)
-    {
-        var platforms = await platformService.GetAllByGameKeyAsync(key);
-
-        return Ok(platforms);
-    }
-
-    [HttpGet("{key}/publisher")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<PublisherResponse>> GetPublisherByKey(string key)
-    {
-        var publisher = await publisherService.GetByGameKeyAsync(key);
-
-        return publisher is null
-            ? NotFound($"Publisher for the game with game key {key} not found")
-            : Ok(publisher);
     }
 
     [HttpPost("{key}/buy")]
