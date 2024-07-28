@@ -15,12 +15,12 @@ public static class CommentMappingExtensions
                 .ToList());
     }
 
-    public static CommentEntity ToEntity(this CreateCommentRequest request, Guid gameId)
+    public static CommentEntity ToEntity(this CreateCommentRequest request, string bodyMessage, Guid gameId)
     {
         return new CommentEntity
         {
             Name = request.Name,
-            Body = request.Body,
+            Body = bodyMessage,
             ParentCommentId = request.ParentId,
             GameId = gameId,
         };

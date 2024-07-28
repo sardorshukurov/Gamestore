@@ -10,15 +10,35 @@ public class CommentService(
     IRepository<Comment> commentRepository,
     IRepository<Game> gameRepository) : ICommentService
 {
-    public Task AddCommentAsync(string gameKey, CreateCommentRequest request)
+    public async Task AddCommentAsync(string gameKey, CreateCommentRequest request)
     {
-        throw new NotImplementedException();
+        var game = await GetGameByKeyOrThrow(gameKey);
+        string message = request.Body;
+
+        if (request.ParentId is not null)
+        {
+            await CheckIfCommentsGamesMatch((Guid)request.ParentId, gameKey);
+
+            var authorComment = await commentRepository.GetOneAsync(c => c.Id == request.ParentId)
+                                ?? throw new CommentNotFoundException((Guid)request.ParentId);
+
+            message = request.Action switch
+            {
+                CommentAction.Reply => $"{authorComment.Name}, {request.Body}",
+                CommentAction.Quote => $"{authorComment.Body}, {request.Body}",
+                _ => message,
+            };
+        }
+
+        var commentToAdd = request.ToEntity(message, game.Id);
+
+        await commentRepository.CreateAsync(commentToAdd);
+        await commentRepository.SaveChangesAsync();
     }
 
     public async Task<ICollection<CommentResponse>> GetAllCommentsByGameAsync(string gameKey)
     {
-        var game = await gameRepository.GetOneAsync(g => g.Key == gameKey)
-                   ?? throw new GameNotFoundException(gameKey);
+        var game = await GetGameByKeyOrThrow(gameKey);
 
         var allComments = (await GetAllCommentsByGameIdAsync(game.Id))
             .ToList();
@@ -56,6 +76,29 @@ public class CommentService(
             .ToList();
 
         return comments;
+    }
+
+    private async Task<Game> GetGameByKeyOrThrow(string gameKey)
+    {
+        return await gameRepository.GetOneAsync(g => g.Key == gameKey)
+            ?? throw new GameNotFoundException(gameKey);
+    }
+
+    private async Task<Comment> GetCommentByIdOrThrow(Guid id)
+    {
+        return await commentRepository.GetByIdAsync(id)
+               ?? throw new CommentNotFoundException(id);
+    }
+
+    private async Task CheckIfCommentsGamesMatch(Guid parentCommentId, string gameKey)
+    {
+        var game = await GetGameByKeyOrThrow(gameKey);
+        var parentComment = await GetCommentByIdOrThrow(parentCommentId);
+
+        if (game.Id != parentComment.GameId)
+        {
+            throw new CommentGameMismatchException();
+        }
     }
 
     private static CommentResponse BuildCommentResponse(Comment comment, List<Comment> allComments)

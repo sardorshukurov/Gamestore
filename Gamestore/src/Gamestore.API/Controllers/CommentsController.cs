@@ -16,4 +16,12 @@ public class CommentsController(
 
         return Ok(comments);
     }
+
+    [HttpPost("{gameKey}")]
+    public async Task<IActionResult> AddComment(string gameKey, CreateCommentRequest request)
+    {
+        await commentService.AddCommentAsync(gameKey, request);
+
+        return Ok();
+    }
 }
