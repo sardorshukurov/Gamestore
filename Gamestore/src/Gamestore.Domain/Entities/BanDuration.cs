@@ -1,4 +1,4 @@
-namespace Gamestore.BLL.DTOs.Comment.Ban;
+namespace Gamestore.Domain.Entities;
 
 public enum BanDuration
 {

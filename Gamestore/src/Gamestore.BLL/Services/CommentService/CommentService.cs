@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Comment;
 using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.Common.Exceptions;
+using Gamestore.Common.Helpers;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -8,11 +9,16 @@ namespace Gamestore.BLL.Services.CommentService;
 
 public class CommentService(
     IRepository<Comment> commentRepository,
-    IRepository<Game> gameRepository) : ICommentService
+    IRepository<Game> gameRepository,
+    IRepository<Ban> banRepository) : ICommentService
 {
-    // TODO: add ban check
     public async Task AddCommentAsync(string gameKey, CreateCommentRequest request)
     {
+        if (!await CanUserCommentAsync(request.Name))
+        {
+            throw new UserIsBannedException(request.Name);
+        }
+
         var game = await GetGameByKeyOrThrow(gameKey);
         string message = request.Body;
 
@@ -68,12 +74,34 @@ public class CommentService(
 
     public ICollection<string> GetBanDurations()
     {
-        return BanDurationResponse.BanDurations.Values;
+        return BanHelper.BanDurations.Values;
     }
 
-    public Task BanUserAsync(BanUserRequest request)
+    public async Task BanUserAsync(BanUserRequest request)
     {
-        throw new NotImplementedException();
+        var duration = BanHelper.MapStringToDuration(request.Duration);
+        var endDate = CalculateBanEndDate(duration);
+        var existingBan = await banRepository.GetOneAsync(b => b.UserName == request.User);
+
+        if (existingBan is not null)
+        {
+            existingBan.Duration = duration;
+            existingBan.StartDate = DateTime.Now;
+            existingBan.EndDate = endDate;
+        }
+        else
+        {
+            var ban = new Ban
+            {
+                UserName = request.User,
+                Duration = duration,
+                StartDate = DateTime.Now,
+                EndDate = endDate,
+            };
+            await banRepository.CreateAsync(ban);
+        }
+
+        await banRepository.SaveChangesAsync();
     }
 
     private async Task<ICollection<Comment>> GetAllCommentsByGameIdAsync(Guid gameId)
@@ -133,5 +161,38 @@ public class CommentService(
 
             await DeleteChildComments(childComment.Id);
         }
+    }
+
+    private async Task<bool> CanUserCommentAsync(string userName)
+    {
+        var ban = await banRepository.GetOneAsync(b => b.UserName == userName);
+        if (ban is null)
+        {
+            return true;
+        }
+
+        if (ban.EndDate.HasValue && ban.EndDate > DateTime.Now)
+        {
+            return false;
+        }
+        else
+        {
+            await banRepository.DeleteOneAsync(b => b.Id == ban.Id);
+        }
+
+        return true;
+    }
+
+    private static DateTime? CalculateBanEndDate(BanDuration duration)
+    {
+        return duration switch
+        {
+            BanDuration.OneHour => DateTime.Now.AddHours(1),
+            BanDuration.OneDay => DateTime.Now.AddDays(1),
+            BanDuration.OneWeek => DateTime.Now.AddDays(7),
+            BanDuration.OneMonth => DateTime.Now.AddMonths(1),
+            BanDuration.Permanent => null,
+            _ => throw new NotImplementedException(),
+        };
     }
 }

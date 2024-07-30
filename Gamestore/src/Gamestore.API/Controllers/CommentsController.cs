@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Comment;
+using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.BLL.Services.CommentService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,6 +39,13 @@ public class CommentsController(
     {
         await commentService.DeleteCommentByIdAsync(id);
 
+        return NoContent();
+    }
+
+    [HttpPost("ban")]
+    public async Task<IActionResult> BanUser(BanUserRequest request)
+    {
+        await commentService.BanUserAsync(request);
         return NoContent();
     }
 }
