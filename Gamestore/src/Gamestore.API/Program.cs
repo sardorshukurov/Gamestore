@@ -27,7 +27,12 @@ builder.Services.AddHttpClient("PaymentAPI", client =>
 builder.Services.AddMemoryCache();
 
 // adding controllers, fluent validation, endpoints, and swagger
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

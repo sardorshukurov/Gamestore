@@ -1,4 +1,3 @@
-using Gamestore.Common.Exceptions;
 using Gamestore.Domain.Entities;
 
 namespace Gamestore.Common.Helpers;
@@ -14,14 +13,4 @@ public static class BanHelper
         { BanDuration.OneMonth, "1 month" },
         { BanDuration.Permanent, "permanent" },
     };
-
-    private static readonly Dictionary<string, BanDuration> StringToDurationMap =
-        BanDurations.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
-
-    public static BanDuration MapStringToDuration(string duration)
-    {
-        return StringToDurationMap.TryGetValue(duration, out BanDuration result)
-            ? result
-            : throw new InvalidBanDurationException();
-    }
 }

@@ -79,13 +79,12 @@ public class CommentService(
 
     public async Task BanUserAsync(BanUserRequest request)
     {
-        var duration = BanHelper.MapStringToDuration(request.Duration);
-        var endDate = CalculateBanEndDate(duration);
+        var endDate = CalculateBanEndDate(request.Duration);
         var existingBan = await banRepository.GetOneAsync(b => b.UserName == request.User);
 
         if (existingBan is not null)
         {
-            existingBan.Duration = duration;
+            existingBan.Duration = request.Duration;
             existingBan.StartDate = DateTime.Now;
             existingBan.EndDate = endDate;
         }
@@ -94,7 +93,7 @@ public class CommentService(
             var ban = new Ban
             {
                 UserName = request.User,
-                Duration = duration,
+                Duration = request.Duration,
                 StartDate = DateTime.Now,
                 EndDate = endDate,
             };
