@@ -66,16 +66,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 app.UseSerilogRequestLogging(o =>
     o.MessageTemplate = "Processed {RequestPath} in {Elapsed:0.0000} ms Response {StatusCode}");
-
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
-app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
+
+app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllers();
 
