@@ -260,7 +260,7 @@ namespace Gamestore.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Gamestore.Domain.Entities.Comment", null)
-                        .WithMany("Replies")
+                        .WithMany()
                         .HasForeignKey("ParentCommentId");
                 });
 
@@ -316,11 +316,6 @@ namespace Gamestore.DAL.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
-                {
-                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,6 +13,4 @@ public class Comment : IBaseEntity
     public Guid? ParentCommentId { get; set; }
 
     public Guid GameId { get; set; }
-
-    public ICollection<Comment> Replies { get; set; } = new List<Comment>();
 }
