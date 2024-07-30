@@ -24,4 +24,20 @@ public class CommentsController(
 
         return Ok();
     }
+
+    [HttpGet("ban/durations")]
+    public ActionResult<IEnumerable<string>> GetBanDurations()
+    {
+        var durations = commentService.GetBanDurations();
+
+        return Ok(durations);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteComment(Guid id)
+    {
+        await commentService.DeleteCommentByIdAsync(id);
+
+        return NoContent();
+    }
 }

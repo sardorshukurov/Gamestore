@@ -10,6 +10,7 @@ public class CommentService(
     IRepository<Comment> commentRepository,
     IRepository<Game> gameRepository) : ICommentService
 {
+    // TODO: add ban check
     public async Task AddCommentAsync(string gameKey, CreateCommentRequest request)
     {
         var game = await GetGameByKeyOrThrow(gameKey);
@@ -54,14 +55,20 @@ public class CommentService(
         return commentResponses;
     }
 
-    public Task DeleteCommentByIdAsync(Guid id)
+    public async Task DeleteCommentByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var commentToDelete = await commentRepository.GetByIdAsync(id) ?? throw new CommentNotFoundException(id);
+
+        commentToDelete.Body = "A comment/quote was deleted";
+
+        await DeleteChildComments(id);
+
+        await commentRepository.SaveChangesAsync();
     }
 
     public ICollection<string> GetBanDurations()
     {
-        return BanDurationResponse.BanDurations;
+        return BanDurationResponse.BanDurations.Values;
     }
 
     public Task BanUserAsync(BanUserRequest request)
@@ -113,5 +120,18 @@ public class CommentService(
             comment.Name,
             comment.Body,
             childComments);
+    }
+
+    private async Task DeleteChildComments(Guid parentId)
+    {
+        var childComments = await commentRepository.GetAllByFilterAsync(c => c.ParentCommentId == parentId);
+
+        foreach (var childComment in childComments)
+        {
+            childComment.Body = "A comment/quote was deleted";
+            await commentRepository.UpdateAsync(childComment.Id, childComment);
+
+            await DeleteChildComments(childComment.Id);
+        }
     }
 }
