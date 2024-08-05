@@ -99,4 +99,26 @@ public static class BaseData
             ParentGenreId = ParentGenres.First(p => p.Name == "Action").Id,
         },
     ];
+
+    public static readonly IEnumerable<PaymentMethod> PaymentMethods =
+    [
+        new PaymentMethod
+        {
+            ImageUrl = "https://cdn-icons-png.flaticon.com/512/858/858170.png",
+            Title = "Bank",
+            Description = "Bank Payment",
+        },
+        new PaymentMethod
+        {
+            ImageUrl = "https://cdn-icons-png.flaticon.com/512/11105/11105672.png",
+            Title = "IBox terminal",
+            Description = "IBox terminal payment",
+        },
+        new PaymentMethod
+        {
+            ImageUrl = "https://static-00.iconduck.com/assets.00/visa-icon-2048x628-6yzgq2vq.png",
+            Title = "Visa",
+            Description = "Visa Payment",
+        },
+    ];
 }

@@ -1,4 +1,4 @@
-namespace Gamestore.API.DTOs.Order.Payment;
+namespace Gamestore.BLL.DTOs.Order.Payment;
 
 public record VisaRequest(
     double TransactionAmount,

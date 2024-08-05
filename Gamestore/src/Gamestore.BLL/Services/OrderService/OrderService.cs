@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Order;
+using Gamestore.BLL.DTOs.Order.Payment;
 using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
@@ -12,6 +13,7 @@ public class OrderService(
     IRepository<Order> orderRepository,
     IRepository<OrderGame> orderGameRepository,
     IRepository<Game> gameRepository,
+    IRepository<PaymentMethod> paymentMethodRepository,
     IConfiguration configuration) : IOrderService
 {
     public async Task AddGameInTheCartAsync(Guid customerId, string gameKey)
@@ -168,6 +170,14 @@ public class OrderService(
     public async Task<Guid> GetCartIdAsync(Guid customerId)
     {
         return (await GetOpenOrderByCustomerIdOrElseThrow(customerId)).Id;
+    }
+
+    public async Task<IEnumerable<PaymentMethodResponse>> GetPaymentMethodsAsync()
+    {
+        var paymentMethods = (await paymentMethodRepository.GetAllAsync())
+            .Select(pm => pm.ToResponse());
+
+        return paymentMethods;
     }
 
     /// <summary>

@@ -1,9 +1,8 @@
 using System.Net;
 using System.Text;
-using Gamestore.API.DTOs.Order.Payment;
 using Gamestore.BLL.DTOs.Order;
+using Gamestore.BLL.DTOs.Order.Payment;
 using Gamestore.BLL.Services.OrderService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -26,15 +25,8 @@ public class OrdersController(
     [HttpDelete("cart/{key}")]
     public async Task<IActionResult> RemoveGameFromCart(string key)
     {
-        try
-        {
-            await orderService.RemoveGameFromTheCartAsync(_customerId, key);
-            return Ok();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        await orderService.RemoveGameFromTheCartAsync(_customerId, key);
+        return Ok();
     }
 
     [HttpGet]
@@ -63,45 +55,27 @@ public class OrdersController(
     [HttpGet("cart")]
     public async Task<ActionResult<IEnumerable<OrderDetailsResponse>>> GetCart()
     {
-        try
-        {
-            var orderDetails = await orderService.GetCartAsync(_customerId);
+        var orderDetails = await orderService.GetCartAsync(_customerId);
 
-            return Ok(orderDetails);
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return Ok(orderDetails);
     }
 
     [HttpGet("payment-methods")]
-    public ActionResult<IEnumerable<PaymentMethodResponse>> GetPaymentMethods()
+    public async Task<ActionResult<IEnumerable<PaymentMethodResponse>>> GetPaymentMethods()
     {
-        return Ok(PaymentMethodsHelper.PaymentMethods);
+        return Ok(await orderService.GetPaymentMethodsAsync());
     }
 
     [HttpPost("payment")]
     public async Task<IActionResult> MakePayment(PaymentRequest request)
     {
-        try
+        return request.Method switch
         {
-            return request.Method switch
-            {
-                "Bank" => await ProcessBankPayment(),
-                "IBox terminal" => await ProcessIBoxPayment(),
-                "Visa" => await ProcessVisaPayment(request),
-                _ => BadRequest(),
-            };
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+            "Bank" => await ProcessBankPayment(),
+            "IBox terminal" => await ProcessIBoxPayment(),
+            "Visa" => await ProcessVisaPayment(request),
+            _ => BadRequest(),
+        };
     }
 
     private async Task<IActionResult> ProcessVisaPayment(PaymentRequest request)
