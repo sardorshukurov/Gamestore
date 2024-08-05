@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.BLL.Services.GenreService;
 
@@ -10,44 +10,44 @@ public class GenreService(
     IRepository<GameGenre> gameGenreRepository,
     IRepository<Game> gameRepository) : IGenreService
 {
-    public async Task<ICollection<GenreShortDto>> GetAllAsync()
+    public async Task<ICollection<GenreShortResponse>> GetAllAsync()
     {
         var genres = (await repository.GetAllAsync())
-            .Select(g => g.AsShortDto())
+            .Select(g => g.ToShortResponse())
             .ToList();
 
         return genres;
     }
 
-    public async Task<GenreShortDto?> GetByIdAsync(Guid id)
+    public async Task<GenreShortResponse?> GetByIdAsync(Guid id)
     {
         var genre = await repository.GetByIdAsync(id);
 
-        return genre?.AsShortDto();
+        return genre?.ToShortResponse();
     }
 
-    public async Task<ICollection<GenreShortDto>> GetSubGenresAsync(Guid parentId)
+    public async Task<ICollection<GenreShortResponse>> GetSubGenresAsync(Guid parentId)
     {
         var subGenres = (await repository.GetAllByFilterAsync(g => g.ParentGenreId == parentId))
-            .Select(g => g.AsShortDto())
+            .Select(g => g.ToShortResponse())
             .ToList();
 
         return subGenres;
     }
 
-    public async Task UpdateAsync(UpdateGenreDto dto)
+    public async Task UpdateAsync(UpdateGenreRequest request)
     {
-        if (dto.ParentGenreId is not null)
+        if (request.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
-            _ = await repository.GetByIdAsync((Guid)dto.ParentGenreId)
-                ?? throw new GenreNotFoundException((Guid)dto.ParentGenreId);
+            _ = await repository.GetByIdAsync((Guid)request.ParentGenreId)
+                ?? throw new GenreNotFoundException((Guid)request.ParentGenreId);
         }
 
-        var genreToUpdate = await repository.GetByIdAsync(dto.Id)
-                            ?? throw new GenreNotFoundException(dto.Id);
+        var genreToUpdate = await repository.GetByIdAsync(request.Id)
+                            ?? throw new GenreNotFoundException(request.Id);
 
-        dto.UpdateEntity(genreToUpdate);
+        request.UpdateEntity(genreToUpdate);
 
         await repository.SaveChangesAsync();
     }
@@ -58,25 +58,24 @@ public class GenreService(
         await repository.SaveChangesAsync();
     }
 
-    public async Task CreateAsync(CreateGenreDto dto)
+    public async Task CreateAsync(CreateGenreRequest request)
     {
-        if (dto.ParentGenreId is not null)
+        if (request.ParentGenreId is not null)
         {
             // ensure that the genre for parentGenre exists
-
-            // TODO: in such scenarios, it is better to use a separate method to check if the genre exists
-            // use `Any` instead of GetByIdAsync with empty variable assignment to make it more clear
-            _ = await repository.GetByIdAsync((Guid)dto.ParentGenreId)
-                ?? throw new GenreNotFoundException((Guid)dto.ParentGenreId);
+            if (!await repository.ExistsAsync(g => g.ParentGenreId == request.ParentGenreId))
+            {
+                throw new GenreNotFoundException((Guid)request.ParentGenreId);
+            }
         }
 
-        var genreToAdd = dto.AsEntity();
+        var genreToAdd = request.ToEntity();
 
         await repository.CreateAsync(genreToAdd);
         await repository.SaveChangesAsync();
     }
 
-    public async Task<ICollection<GenreShortDto>> GetAllByGameKeyAsync(string gameKey)
+    public async Task<ICollection<GenreShortResponse>> GetAllByGameKeyAsync(string gameKey)
     {
         var game = (await gameRepository.GetOneAsync(g => g.Key == gameKey)) ??
                      throw new GameNotFoundException(gameKey);
@@ -87,7 +86,7 @@ public class GenreService(
 
         // get genres from ids
         var genres = (await repository.GetAllByFilterAsync(g => genreIds.Contains(g.Id)))
-            .Select(g => g.AsShortDto())
+            .Select(g => g.ToShortResponse())
             .ToList();
 
         return genres;

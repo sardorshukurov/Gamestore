@@ -16,15 +16,19 @@ public interface IRepository<T>
 
     Task<T?> GetByIdAsync(Guid id);
 
-    Task<T?> GetOneAsync(Expression<Func<T, bool>> filter);
+    Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includeProperties);
 
-    Task<IEnumerable<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties);
 
-    Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter);
+    Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includeProperties);
 
     Task SaveChangesAsync();
 
     Task<int> CountAsync();
 
     Task<int> CountByFilterAsync(Expression<Func<T, bool>> filter);
+
+    Task<bool> ExistsAsync(Expression<Func<T, bool>> filter);
+
+    Task<bool> ExistsAsync();
 }

@@ -1,39 +1,40 @@
-using PublisherEntity = Gamestore.DAL.Entities.Publisher;
+using PublisherEntity = Gamestore.Domain.Entities.Publisher;
 
 namespace Gamestore.BLL.DTOs.Publisher;
 
 public static class PublisherMappingExtensions
 {
-    public static PublisherDto AsDto(this PublisherEntity publisher)
+    public static PublisherResponse ToResponse(this PublisherEntity entity)
     {
-        return new PublisherDto(
-            publisher.Id,
-            publisher.CompanyName,
-            publisher.Description,
-            publisher.HomePage);
+        return new PublisherResponse(
+            entity.Id,
+            entity.CompanyName,
+            entity.Description ?? string.Empty,
+            entity.HomePage ?? string.Empty);
     }
 
-    public static PublisherShortDto AsShortDto(this PublisherEntity publisher)
+    public static PublisherShortResponse ToShortResponse(this PublisherEntity entity)
     {
-        return new PublisherShortDto(
-            publisher.Id,
-            publisher.CompanyName);
+        return new PublisherShortResponse(
+            entity.Id,
+            entity.CompanyName);
     }
 
-    public static PublisherEntity AsEntity(this CreatePublisherDto dto)
+    public static PublisherEntity ToEntity(this CreatePublisherRequest request)
     {
         return new PublisherEntity
         {
-            CompanyName = dto.CompanyName,
-            Description = dto.Description,
-            HomePage = dto.HomePage,
+            CompanyName = request.CompanyName,
+            HomePage = request.HomePage,
+            Description = request.Description,
         };
     }
 
-    public static void UpdateEntity(this UpdatePublisherDto dto, PublisherEntity publisher)
+    public static void UpdateEntity(this UpdatePublisherRequest request, PublisherEntity entity)
     {
-        publisher.CompanyName = dto.CompanyName;
-        publisher.Description = dto.Description;
-        publisher.HomePage = dto.HomePage;
+        entity.Id = request.Id;
+        entity.CompanyName = request.CompanyName;
+        entity.HomePage = request.HomePage;
+        entity.Description = request.Description;
     }
 }

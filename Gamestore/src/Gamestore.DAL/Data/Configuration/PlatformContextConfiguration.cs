@@ -1,18 +1,19 @@
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class PlatformContextConfiguration
+public class PlatformContextConfiguration : IEntityTypeConfiguration<Platform>
 {
-    public static void ConfigurePlatforms(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<Platform> builder)
     {
-        modelBuilder.Entity<Platform>()
+        builder
             .HasKey(p => p.Id);
-        modelBuilder.Entity<Platform>()
+        builder
             .Property(p => p.Type)
             .IsRequired();
-        modelBuilder.Entity<Platform>()
+        builder
             .HasIndex(p => p.Type)
             .IsUnique();
     }

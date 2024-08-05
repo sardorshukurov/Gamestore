@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.BLL.Services.PlatformService;
 
@@ -10,28 +10,28 @@ public class PlatformService(
     IRepository<Game> gameRepository,
     IRepository<GamePlatform> gamePlatformRepository) : IPlatformService
 {
-    public async Task<ICollection<PlatformShortDto>> GetAllAsync()
+    public async Task<ICollection<PlatformShortResponse>> GetAllAsync()
     {
         var platforms = (await repository.GetAllAsync())
-            .Select(p => p.AsShortDto())
+            .Select(p => p.ToShortResponse())
             .ToList();
 
         return platforms;
     }
 
-    public async Task<PlatformShortDto?> GetByIdAsync(Guid id)
+    public async Task<PlatformShortResponse?> GetByIdAsync(Guid id)
     {
         var platform = await repository.GetByIdAsync(id);
 
-        return platform?.AsShortDto();
+        return platform?.ToShortResponse();
     }
 
-    public async Task UpdateAsync(UpdatePlatformDto dto)
+    public async Task UpdateAsync(UpdatePlatformRequest request)
     {
-        var platformToUpdate = await repository.GetByIdAsync(dto.Id)
-                               ?? throw new PlatformNotFoundException(dto.Id);
+        var platformToUpdate = await repository.GetByIdAsync(request.Id)
+                               ?? throw new PlatformNotFoundException(request.Id);
 
-        dto.UpdateEntity(platformToUpdate);
+        request.UpdateEntity(platformToUpdate);
 
         await repository.SaveChangesAsync();
     }
@@ -42,15 +42,15 @@ public class PlatformService(
         await repository.SaveChangesAsync();
     }
 
-    public async Task CreateAsync(CreatePlatformDto dto)
+    public async Task CreateAsync(CreatePlatformRequest request)
     {
-        var platformToAdd = dto.AsEntity();
+        var platformToAdd = request.ToEntity();
 
         await repository.CreateAsync(platformToAdd);
         await repository.SaveChangesAsync();
     }
 
-    public async Task<ICollection<PlatformShortDto>> GetAllByGameKeyAsync(string gameKey)
+    public async Task<ICollection<PlatformShortResponse>> GetAllByGameKeyAsync(string gameKey)
     {
         var game = (await gameRepository.GetOneAsync(g => g.Key == gameKey)) ??
                    throw new GameNotFoundException(gameKey);
@@ -59,7 +59,7 @@ public class PlatformService(
             .Select(p => p.PlatformId);
 
         var platforms = (await repository.GetAllByFilterAsync(p => platformIds.Contains(p.Id)))
-            .Select(p => p.AsShortDto())
+            .Select(p => p.ToShortResponse())
             .ToList();
 
         return platforms;

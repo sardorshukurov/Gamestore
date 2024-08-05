@@ -1,5 +1,4 @@
-using Gamestore.DAL.Data.Configuration;
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Data;
@@ -20,18 +19,11 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 
     public DbSet<OrderGame> OrdersGames { get; set; }
 
+    public DbSet<Comment> Comments { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // TODO: better way to configure entities via IEntityTypeConfiguration
-        // and assembly scanning to avoid manual configuration calling it multiple times
-        modelBuilder.ConfigureGames();
-        modelBuilder.ConfigureGenres();
-        modelBuilder.ConfigureGameGenres();
-        modelBuilder.ConfigureGamePlatforms();
-        modelBuilder.ConfigurePlatforms();
-        modelBuilder.ConfigurePublishers();
-        modelBuilder.ConfigureOrders();
-        modelBuilder.ConfigureOrderGame();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MainDbContext).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

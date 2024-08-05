@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text;
-using Gamestore.API.DTOs.Order;
 using Gamestore.API.DTOs.Order.Payment;
+using Gamestore.BLL.DTOs.Order;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -35,57 +35,29 @@ public class OrdersController(
         {
             return NotFound(nex.Message);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderResponse>>> GetPaidAndCancelledOrders()
     {
-        try
-        {
-            var orders = (await orderService.GetPaidAndCancelledOrdersAsync())
-                .Select(o => o.AsResponse());
+        var orders = await orderService.GetPaidAndCancelledOrdersAsync();
 
-            return Ok(orders);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return Ok(orders);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<OrderResponse?>> GetById(Guid id)
     {
-        try
-        {
-            var order = await orderService.GetByIdAsync(id);
+        var order = await orderService.GetByIdAsync(id);
 
-            return order is null ? NotFound($"Order with id {id} not found") : order.AsResponse();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return order is null ? NotFound($"Order with id {id} not found") : order;
     }
 
     [HttpGet("{id}/details")]
     public async Task<ActionResult<IEnumerable<OrderDetailsResponse>>> GetOrderDetails(Guid id)
     {
-        try
-        {
-            var orderDetails = (await orderService.GetOrderDetailsAsync(id))
-                .Select(od => od.AsResponse());
-
-            return Ok(orderDetails);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        var orderDetails = await orderService.GetOrderDetailsAsync(id);
+        return Ok(orderDetails);
     }
 
     [HttpGet("cart")]
@@ -93,18 +65,13 @@ public class OrdersController(
     {
         try
         {
-            var orderDetails = (await orderService.GetCartAsync(_customerId))
-                .Select(od => od.AsResponse());
+            var orderDetails = await orderService.GetCartAsync(_customerId);
 
             return Ok(orderDetails);
         }
         catch (NotFoundException nex)
         {
             return NotFound(nex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
         }
     }
 
@@ -190,7 +157,7 @@ public class OrdersController(
             message.Append(await result.Content.ReadAsStringAsync());
         }
 
-        return BadRequest(message.ToString());
+        return StatusCode(500, message.ToString());
     }
 
     private async Task<IActionResult> ProcessIBoxPayment()
@@ -237,7 +204,7 @@ public class OrdersController(
             message.Append(await result.Content.ReadAsStringAsync());
         }
 
-        return BadRequest(message.ToString());
+        return StatusCode(500, message.ToString());
     }
 
     private async Task<FileContentResult> ProcessBankPayment()

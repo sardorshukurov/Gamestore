@@ -22,7 +22,36 @@ namespace Gamestore.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.Game", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("Gamestore.Domain.Entities.Game", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +90,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.GameGenre", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.GameGenre", b =>
                 {
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier");
@@ -76,7 +105,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("GamesGenres");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.GamePlatform", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.GamePlatform", b =>
                 {
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier");
@@ -91,7 +120,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("GamesPlatforms");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.Genre", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.Genre", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +141,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.Order", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,7 +161,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.OrderGame", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.OrderGame", b =>
                 {
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
@@ -156,7 +185,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("OrdersGames");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.Platform", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.Platform", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,7 +203,7 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("Platforms");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.Publisher", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.Publisher", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,58 +227,76 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("Publishers");
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.Game", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
                 {
-                    b.HasOne("Gamestore.DAL.Entities.Publisher", null)
+                    b.HasOne("Gamestore.Domain.Entities.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gamestore.Domain.Entities.Comment", null)
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId");
+                });
+
+            modelBuilder.Entity("Gamestore.Domain.Entities.Game", b =>
+                {
+                    b.HasOne("Gamestore.Domain.Entities.Publisher", null)
                         .WithMany()
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.GameGenre", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.GameGenre", b =>
                 {
-                    b.HasOne("Gamestore.DAL.Entities.Game", null)
+                    b.HasOne("Gamestore.Domain.Entities.Game", null)
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Gamestore.DAL.Entities.Genre", null)
+                    b.HasOne("Gamestore.Domain.Entities.Genre", null)
                         .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.GamePlatform", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.GamePlatform", b =>
                 {
-                    b.HasOne("Gamestore.DAL.Entities.Game", null)
+                    b.HasOne("Gamestore.Domain.Entities.Game", null)
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Gamestore.DAL.Entities.Platform", null)
+                    b.HasOne("Gamestore.Domain.Entities.Platform", null)
                         .WithMany()
                         .HasForeignKey("PlatformId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Gamestore.DAL.Entities.OrderGame", b =>
+            modelBuilder.Entity("Gamestore.Domain.Entities.OrderGame", b =>
                 {
-                    b.HasOne("Gamestore.DAL.Entities.Order", null)
+                    b.HasOne("Gamestore.Domain.Entities.Order", null)
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Gamestore.DAL.Entities.Game", null)
+                    b.HasOne("Gamestore.Domain.Entities.Game", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

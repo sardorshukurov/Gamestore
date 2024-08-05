@@ -1,8 +1,5 @@
-using Gamestore.API.DTOs.Game;
-using Gamestore.API.DTOs.Genre;
-using Gamestore.BLL.Services.GameService;
+using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -10,150 +7,63 @@ namespace Gamestore.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class GenresController(
-    IGenreService genreService,
-    IGameService gameService,
-    CreateGenreValidator createValidator,
-    UpdateGenreValidator updateValidator) : ControllerBase
+    IGenreService genreService) : ControllerBase
 {
-
-    // TODO: duplicate method it already exists in the GamesController
-    [HttpGet("{id}/games")]
-    [ResponseCache(Duration = 60)]
-    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAllGames(Guid id)
-    {
-        try
-        {
-            var games = (await gameService.GetByGenreAsync(id))
-                .Select(g => g.AsResponse());
-
-            return Ok(games);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
-    }
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateGenreRequest request)
     {
-        try
-        {
-            var result = await createValidator.ValidateAsync(request);
-
-            if (!result.IsValid)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
-
-            await genreService.CreateAsync(request.AsDto());
-            return Ok();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        await genreService.CreateAsync(request);
+        return Ok();
     }
 
     [HttpGet("{id}")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<GenreShortResponse>> GetGenre(Guid id)
     {
-        try
-        {
-            var genre = await genreService.GetByIdAsync(id);
+        var genre = await genreService.GetByIdAsync(id);
 
-            return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre.AsShortResponse());
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return genre is null ? NotFound($"Genre with id {id} not found") : Ok(genre);
     }
 
     [HttpGet]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetAll()
     {
-        try
-        {
-            var genres = (await genreService.GetAllAsync())
-                .Select(g => g.AsShortResponse());
+        var genres = await genreService.GetAllAsync();
 
-            return Ok(genres);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return Ok(genres);
+    }
+
+    [HttpGet("{gameKey}/game")]
+    [ResponseCache(Duration = 60)]
+    public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetGenresByKey(string gameKey)
+    {
+        var genres = await genreService.GetAllByGameKeyAsync(gameKey);
+
+        return Ok(genres);
     }
 
     [HttpGet("{parentId}/genres")]
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<GenreShortResponse>>> GetSubGenres(Guid parentId)
     {
-        try
-        {
-            var genres = (await genreService.GetSubGenresAsync(parentId))
-                .Select(g => g.AsShortResponse());
+        var genres = await genreService.GetSubGenresAsync(parentId);
 
-            return Ok(genres);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return Ok(genres);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update(UpdateGenreRequest request)
     {
-        try
-        {
-            var result = await updateValidator.ValidateAsync(request);
+        await genreService.UpdateAsync(request);
 
-            if (!result.IsValid)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed",
-                    errors = result.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-                });
-            }
-
-            await genreService.UpdateAsync(request.AsDto());
-
-            return NoContent();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await genreService.DeleteAsync(id);
-            return NoContent();
-        }
-        catch (NotFoundException)
-        {
-            return NotFound($"Genre with id {id} not found");
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+        await genreService.DeleteAsync(id);
+        return NoContent();
     }
 }

@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.BLL.Services.PublisherService;
 
@@ -9,28 +9,28 @@ public class PublisherService(
     IRepository<Publisher> repository,
     IRepository<Game> gameRepository) : IPublisherService
 {
-    public async Task<ICollection<PublisherDto>> GetAllAsync()
+    public async Task<ICollection<PublisherResponse>> GetAllAsync()
     {
         var publishers = (await repository.GetAllAsync())
-            .Select(p => p.AsDto())
+            .Select(p => p.ToResponse())
             .ToList();
 
         return publishers;
     }
 
-    public async Task<PublisherDto?> GetByIdAsync(Guid id)
+    public async Task<PublisherResponse?> GetByIdAsync(Guid id)
     {
         var publisher = await repository.GetByIdAsync(id);
 
-        return publisher?.AsDto();
+        return publisher?.ToResponse();
     }
 
-    public async Task UpdateAsync(UpdatePublisherDto dto)
+    public async Task UpdateAsync(UpdatePublisherRequest request)
     {
-        var publisherToUpdate = await repository.GetByIdAsync(dto.Id)
-                                ?? throw new PublisherNotFoundException(dto.Id);
+        var publisherToUpdate = await repository.GetByIdAsync(request.Id)
+                                ?? throw new PublisherNotFoundException(request.Id);
 
-        dto.UpdateEntity(publisherToUpdate);
+        request.UpdateEntity(publisherToUpdate);
 
         await repository.SaveChangesAsync();
     }
@@ -41,28 +41,28 @@ public class PublisherService(
         await repository.SaveChangesAsync();
     }
 
-    public async Task CreateAsync(CreatePublisherDto dto)
+    public async Task CreateAsync(CreatePublisherRequest request)
     {
-        var publisherToAdd = dto.AsEntity();
+        var publisherToAdd = request.ToEntity();
 
         await repository.CreateAsync(publisherToAdd);
         await repository.SaveChangesAsync();
     }
 
-    public async Task<PublisherDto?> GetByCompanyNameAsync(string companyName)
+    public async Task<PublisherResponse?> GetByCompanyNameAsync(string companyName)
     {
         var publisher = await repository
             .GetOneAsync(p => p.CompanyName == companyName);
 
-        return publisher?.AsDto();
+        return publisher?.ToResponse();
     }
 
-    public async Task<PublisherDto?> GetByGameKeyAsync(string gameKey)
+    public async Task<PublisherResponse?> GetByGameKeyAsync(string gameKey)
     {
         var game = await gameRepository.GetOneAsync(g => g.Key == gameKey) ?? throw new GameNotFoundException(gameKey);
 
         var publisher = await repository.GetByIdAsync(game.PublisherId);
 
-        return publisher?.AsDto();
+        return publisher?.ToResponse();
     }
 }

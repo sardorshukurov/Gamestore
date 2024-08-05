@@ -1,35 +1,36 @@
 using Gamestore.BLL.DTOs.Game;
-using PlatformEntity = Gamestore.DAL.Entities.Platform;
+using PlatformEntity = Gamestore.Domain.Entities.Platform;
 
 namespace Gamestore.BLL.DTOs.Platform;
 
 public static class PlatformMappingExtensions
 {
-    public static PlatformDto AsDto(this PlatformEntity platform, ICollection<GameShortDto> games)
+    public static PlatformResponse ToResponse(this PlatformEntity entity, ICollection<GameShortResponse> games)
     {
-        return new PlatformDto(
-            platform.Id,
-            platform.Type,
+        return new PlatformResponse(
+            entity.Id,
+            entity.Type,
             games);
     }
 
-    public static PlatformShortDto AsShortDto(this PlatformEntity platform)
+    public static PlatformShortResponse ToShortResponse(this PlatformEntity dto)
     {
-        return new PlatformShortDto(
-            platform.Id,
-            platform.Type);
+        return new PlatformShortResponse(
+            dto.Id,
+            dto.Type);
     }
 
-    public static PlatformEntity AsEntity(this CreatePlatformDto dto)
+    public static PlatformEntity ToEntity(this CreatePlatformRequest request)
     {
         return new PlatformEntity
         {
-            Type = dto.Type,
+            Type = request.Type,
         };
     }
 
-    public static void UpdateEntity(this UpdatePlatformDto dto, PlatformEntity platform)
+    public static void UpdateEntity(this UpdatePlatformRequest request, PlatformEntity entity)
     {
-        platform.Type = dto.Type;
+        entity.Id = request.Id;
+        entity.Type = request.Type;
     }
 }

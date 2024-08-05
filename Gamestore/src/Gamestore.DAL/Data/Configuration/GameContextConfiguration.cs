@@ -1,36 +1,37 @@
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gamestore.DAL.Data.Configuration;
 
-public static class GameContextConfiguration
+public class GameContextConfiguration : IEntityTypeConfiguration<Game>
 {
-    public static void ConfigureGames(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<Game> builder)
     {
-        modelBuilder.Entity<Game>()
+        builder
             .HasKey(g => g.Id);
-        modelBuilder.Entity<Game>()
+        builder
             .Property(g => g.Name)
             .IsRequired();
-        modelBuilder.Entity<Game>()
+        builder
             .HasIndex(g => g.Key)
             .IsUnique();
-        modelBuilder.Entity<Game>()
+        builder
             .Property(g => g.Description)
             .IsRequired(false);
-        modelBuilder.Entity<Game>()
+        builder
             .Property(g => g.Price)
             .IsRequired();
-        modelBuilder.Entity<Game>()
+        builder
             .Property(g => g.UnitInStock)
             .IsRequired();
-        modelBuilder.Entity<Game>()
+        builder
             .Property(g => g.Discount)
             .IsRequired();
-        modelBuilder.Entity<Game>()
+        builder
             .Property(g => g.PublisherId)
             .IsRequired();
-        modelBuilder.Entity<Game>()
+        builder
             .HasOne<Publisher>()
             .WithMany()
             .HasForeignKey(g => g.PublisherId);

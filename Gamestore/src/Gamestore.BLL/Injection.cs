@@ -1,3 +1,4 @@
+using Gamestore.BLL.Services.CommentService;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
@@ -16,6 +17,7 @@ public static class Injection
         services.AddScoped<IPlatformService, PlatformService>();
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ICommentService, CommentService>();
 
         return services;
     }

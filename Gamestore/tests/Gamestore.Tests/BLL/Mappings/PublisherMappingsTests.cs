@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Publisher;
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.Tests.BLL.Mappings;
 
@@ -13,63 +13,61 @@ public class PublisherMappingsTests
     }
 
     [Fact]
-    public void AsDtoMapsCorrectly()
+    public void AsResponseMapsCorrectly()
     {
         // Arrange
-        var publisher = _fixture.Create<Publisher>();
+        var dto = _fixture.Create<Publisher>();
 
         // Act
-        var dto = publisher.AsDto();
+        var response = dto.ToResponse();
 
         // Assert
-        dto.Id.Should().Be(publisher.Id);
-        dto.CompanyName.Should().Be(publisher.CompanyName);
-        dto.Description.Should().Be(publisher.Description);
-        dto.HomePage.Should().Be(publisher.HomePage);
+        response.Id.Should().Be(dto.Id);
+        response.CompanyName.Should().Be(dto.CompanyName);
+        response.Description.Should().Be(dto.Description);
+        response.HomePage.Should().Be(dto.HomePage);
     }
 
     [Fact]
-    public void AsShortDtoMapsCorrectly()
+    public void AsShortResponseMapsCorrectly()
     {
         // Arrange
-        var publisher = _fixture.Create<Publisher>();
+        var dto = _fixture.Create<Publisher>();
 
         // Act
-        var shortDto = publisher.AsShortDto();
+        var response = dto.ToShortResponse();
 
         // Assert
-        shortDto.Id.Should().Be(publisher.Id);
-        shortDto.CompanyName.Should().Be(publisher.CompanyName);
+        response.Id.Should().Be(dto.Id);
+        response.CompanyName.Should().Be(dto.CompanyName);
     }
 
     [Fact]
-    public void AsEntityMapsCorrectly()
+    public void AsShortResponseFromShortDtoMapsCorrectly()
     {
         // Arrange
-        var dto = _fixture.Create<CreatePublisherDto>();
+        var dto = _fixture.Create<Publisher>();
 
         // Act
-        var publisher = dto.AsEntity();
+        var response = dto.ToShortResponse();
 
         // Assert
-        publisher.CompanyName.Should().Be(dto.CompanyName);
-        publisher.Description.Should().Be(dto.Description);
-        publisher.HomePage.Should().Be(dto.HomePage);
+        response.Id.Should().Be(dto.Id);
+        response.CompanyName.Should().Be(dto.CompanyName);
     }
 
     [Fact]
-    public void UpdateEntityUpdatesCorrectly()
+    public void AsCreatePublisherDtoMapsCorrectly()
     {
         // Arrange
-        var dto = _fixture.Create<UpdatePublisherDto>();
-        var publisher = _fixture.Create<Publisher>();
+        var request = _fixture.Create<CreatePublisherRequest>();
 
         // Act
-        dto.UpdateEntity(publisher);
+        var entity = request.ToEntity();
 
         // Assert
-        publisher.CompanyName.Should().Be(dto.CompanyName);
-        publisher.Description.Should().Be(dto.Description);
-        publisher.HomePage.Should().Be(dto.HomePage);
+        entity.CompanyName.Should().Be(request.CompanyName);
+        entity.HomePage.Should().Be(request.HomePage);
+        entity.Description.Should().Be(request.Description);
     }
 }

@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.Common.Exceptions;
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.BLL.Services.GameService;
 
@@ -11,23 +11,23 @@ public class GameService(
     IRepository<GamePlatform> gamePlatformRepository,
     IRepository<Publisher> publisherRepository) : IGameService
 {
-    public async Task<ICollection<GameDto>> GetAllAsync()
+    public async Task<ICollection<GameResponse>> GetAllAsync()
     {
         var games = (await repository.GetAllAsync())
-            .Select(g => g.AsDto())
+            .Select(g => g.ToResponse())
             .ToList();
 
         return games;
     }
 
-    public async Task<GameDto?> GetByKeyAsync(string key)
+    public async Task<GameResponse?> GetByKeyAsync(string key)
     {
         var game = await repository.GetOneAsync(g => g.Key == key);
 
-        return game?.AsDto();
+        return game?.ToResponse();
     }
 
-    public async Task<ICollection<GameDto>> GetByGenreAsync(Guid genreId)
+    public async Task<ICollection<GameResponse>> GetByGenreAsync(Guid genreId)
     {
         // get all gameIds by genre from GameGenre table
         var gameIds = (await gameGenreRepository
@@ -37,13 +37,13 @@ public class GameService(
         // get all games from ids
         var games = (await repository
             .GetAllByFilterAsync(g => gameIds.Contains(g.Id)))
-            .Select(g => g.AsDto())
+            .Select(g => g.ToResponse())
             .ToList();
 
         return games;
     }
 
-    public async Task<ICollection<GameDto>> GetByPlatformAsync(Guid platformId)
+    public async Task<ICollection<GameResponse>> GetByPlatformAsync(Guid platformId)
     {
         // get all gameIds by platform from GamePlatform table
         var gameIds = (await gamePlatformRepository
@@ -53,62 +53,60 @@ public class GameService(
         // get all games from ids
         var games = (await repository
                 .GetAllByFilterAsync(g => gameIds.Contains(g.Id)))
-            .Select(g => g.AsDto())
+            .Select(g => g.ToResponse())
             .ToList();
 
         return games;
     }
 
-    public async Task<ICollection<GameDto>> GetByPublisherAsync(string companyName)
+    public async Task<ICollection<GameResponse>> GetByPublisherAsync(string companyName)
     {
         var publisher = await publisherRepository.GetOneAsync(p => p.CompanyName == companyName)
                         ?? throw new PublisherNotFoundException(companyName);
 
         var games = (await repository
                 .GetAllByFilterAsync(g => g.PublisherId == publisher.Id))
-            .Select(g => g.AsDto())
+            .Select(g => g.ToResponse())
             .ToList();
 
         return games;
     }
 
-    public async Task<GameDto?> GetByIdAsync(Guid id)
+    public async Task<GameResponse?> GetByIdAsync(Guid id)
     {
         var game = await repository.GetByIdAsync(id);
 
-        return game?.AsDto();
+        return game?.ToResponse();
     }
 
-    public async Task UpdateAsync(UpdateGameDto dto)
+    public async Task UpdateAsync(UpdateGameRequest request)
     {
-        var game = await repository.GetByIdAsync(dto.Id)
-                   ?? throw new GameNotFoundException(dto.Id);
-        dto.UpdateEntity(game);
+        var game = await repository.GetByIdAsync(request.Game.Id)
+                   ?? throw new GameNotFoundException(request.Game.Id);
+        request.UpdateEntity(game);
 
         // delete old genres related to the game
-        await gameGenreRepository.DeleteByFilterAsync(gg => gg.GameId == dto.Id);
+        await gameGenreRepository.DeleteByFilterAsync(gg => gg.GameId == request.Game.Id);
 
         // delete old platforms related to the game
-        await gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == dto.Id);
+        await gamePlatformRepository.DeleteByFilterAsync(gp => gp.GameId == request.Game.Id);
 
         // add all genres
-        // TODO: use `Any` instead of `Count` to check if the collection is not empty
-        // please make this change in all services
-        if (dto.GenresIds.Count != 0)
+        if (request.Genres.Any())
         {
-            foreach (var genreId in dto.GenresIds)
+            foreach (var genreId in request.Genres)
             {
-                var gameGenre = new GameGenre { GameId = dto.Id, GenreId = genreId };
+                var gameGenre = new GameGenre { GameId = request.Game.Id, GenreId = genreId };
                 await gameGenreRepository.CreateAsync(gameGenre);
             }
         }
 
         // add all platforms
-        if (dto.PlatformsIds.Count != 0)
+        if (request.Platforms.Any())
         {
-            foreach (var platformId in dto.PlatformsIds)
+            foreach (var platformId in request.Platforms)
             {
-                var gamePlatform = new GamePlatform { GameId = dto.Id, PlatformId = platformId };
+                var gamePlatform = new GamePlatform { GameId = request.Game.Id, PlatformId = platformId };
                 await gamePlatformRepository.CreateAsync(gamePlatform);
             }
         }
@@ -116,17 +114,16 @@ public class GameService(
         await repository.SaveChangesAsync();
     }
 
-    public async Task CreateAsync(CreateGameDto dto)
+    public async Task CreateAsync(CreateGameRequest request)
     {
-        var game = dto.AsEntity();
+        var game = request.ToEntity();
 
         await repository.CreateAsync(game);
 
         // add all genres
-        // TODO: use `Any` instead of `Count` to check if the collection is not empty
-        if (dto.GenresIds.Count != 0)
+        if (request.Genres.Any())
         {
-            foreach (var genreId in dto.GenresIds)
+            foreach (var genreId in request.Genres)
             {
                 var gameGenre = new GameGenre { GameId = game.Id, GenreId = genreId };
                 await gameGenreRepository.CreateAsync(gameGenre);
@@ -134,9 +131,9 @@ public class GameService(
         }
 
         // add all platforms
-        if (dto.PlatformsIds.Count != 0)
+        if (request.Platforms.Any())
         {
-            foreach (var platformId in dto.PlatformsIds)
+            foreach (var platformId in request.Platforms)
             {
                 var gamePlatform = new GamePlatform { GameId = game.Id, PlatformId = platformId };
                 await gamePlatformRepository.CreateAsync(gamePlatform);

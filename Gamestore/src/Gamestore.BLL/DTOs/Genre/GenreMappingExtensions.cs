@@ -1,40 +1,37 @@
-using Gamestore.BLL.DTOs.Game;
-using GenreEntity = Gamestore.DAL.Entities.Genre;
+using GenreEntity = Gamestore.Domain.Entities.Genre;
 
 namespace Gamestore.BLL.DTOs.Genre;
 
 public static class GenreMappingExtensions
 {
-    public static GenreDto AsDto(this GenreEntity genre, ICollection<GameShortDto> games, GenreShortDto? parentGenre)
+    public static GenreResponse ToResponse(this GenreEntity entity)
     {
-        return new GenreDto(
-            genre.Id,
-            genre.Name,
-            parentGenre?.Id,
-            parentGenre?.Name,
-            games);
+        return new GenreResponse(
+            entity.Id,
+            entity.Name,
+            entity.ParentGenreId);
     }
 
-    public static GenreShortDto AsShortDto(this GenreEntity genre)
+    public static GenreShortResponse ToShortResponse(this GenreEntity entity)
     {
-        return new GenreShortDto(
-            genre.Id,
-            genre.Name,
-            genre.ParentGenreId);
+        return new GenreShortResponse(
+            entity.Id,
+            entity.Name);
     }
 
-    public static GenreEntity AsEntity(this CreateGenreDto dto)
+    public static GenreEntity ToEntity(this CreateGenreRequest request)
     {
-        return new GenreEntity
+        return new GenreEntity()
         {
-            Name = dto.Name,
-            ParentGenreId = dto.ParentGenreId,
+            Name = request.Name,
+            ParentGenreId = request.ParentGenreId,
         };
     }
 
-    public static void UpdateEntity(this UpdateGenreDto dto, GenreEntity genre)
+    public static void UpdateEntity(this UpdateGenreRequest request, GenreEntity entity)
     {
-        genre.Name = dto.Name;
-        genre.ParentGenreId = dto.ParentGenreId;
+        entity.Id = request.Id;
+        entity.Name = request.Name;
+        entity.ParentGenreId = request.ParentGenreId;
     }
 }

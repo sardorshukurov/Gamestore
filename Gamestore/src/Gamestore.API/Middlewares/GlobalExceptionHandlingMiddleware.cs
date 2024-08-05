@@ -1,18 +1,44 @@
 using System.Net;
 using System.Text.Json;
+using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Middlewares;
 
-public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger) : IMiddleware
+public class GlobalExceptionHandlingMiddleware(
+    ILogger<GlobalExceptionHandlingMiddleware> logger,
+    RequestDelegate next,
+    IHostEnvironment env)
 {
-    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger = logger;
-
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
             await next(context);
+        }
+        catch (NotFoundException nfex)
+        {
+            LogException(nfex);
+
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+
+            string json = JsonSerializer.Serialize(nfex.Message);
+
+            await context.Response.WriteAsync(json);
+
+            context.Response.ContentType = "application/json";
+        }
+        catch (BadRequestException brex)
+        {
+            LogException(brex);
+
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+            string json = JsonSerializer.Serialize(brex.Message);
+
+            await context.Response.WriteAsync(json);
+
+            context.Response.ContentType = "application/json";
         }
         catch (Exception ex)
         {
@@ -25,14 +51,14 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
                 Status = (int)HttpStatusCode.InternalServerError,
                 Type = "Server error",
                 Title = "Server error",
-                Detail = "An internal server error has occured",
+                Detail = env.IsDevelopment() ? ex.Message + ex.StackTrace : "An internal server error has occured",
             };
+
+            context.Response.ContentType = "application/json";
 
             string json = JsonSerializer.Serialize(problem);
 
             await context.Response.WriteAsync(json);
-
-            context.Response.ContentType = "application/json";
         }
     }
 
@@ -42,7 +68,7 @@ public class GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMi
 
         while (exception != null)
         {
-            _logger.LogError("{Type}: {Message} {StackTrace}", exception.GetType().Name, exception.Message, exception.StackTrace);
+            logger.LogError("{Type}: {Message} {StackTrace}", exception.GetType().Name, exception.Message, exception.StackTrace);
 
             exception = exception.InnerException;
         }

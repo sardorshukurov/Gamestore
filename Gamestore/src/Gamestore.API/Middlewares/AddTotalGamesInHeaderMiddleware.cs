@@ -1,29 +1,37 @@
-using Gamestore.DAL.Entities;
 using Gamestore.DAL.Repository;
+using Gamestore.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace Gamestore.API.Middlewares;
 
-public class AddTotalGamesInHeaderMiddleware(IRepository<Game> gameRepository, IMemoryCache cache) : IMiddleware
+public class AddTotalGamesInHeaderMiddleware(
+    IServiceScopeFactory serviceScopeFactory,
+    IMemoryCache cache, RequestDelegate next)
 {
-    private readonly IRepository<Game> _gameRepository = gameRepository;
-    private readonly IMemoryCache _cache = cache;
-
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
     {
-        var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
-
-        var gamesCount = await _cache.GetOrCreateAsync("TotalGamesCount", async entry =>
+        // Here we're creating a scope to be able to resolve scoped dependencies:
+        using (var scope = serviceScopeFactory.CreateScope())
         {
-            entry.SetOptions(cacheEntryOptions);
-            return await _gameRepository.CountAsync();
-        });
+            var gameRepository = scope.ServiceProvider.GetRequiredService<IRepository<Game>>();
+            var optionsSnapshot =
+                scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TotalGamesMiddlewareConfig>>();
 
-        context.Response.OnStarting(() =>
-        {
-            context.Response.Headers.Append("x-total-number-of-games", gamesCount.ToString());
-            return Task.CompletedTask;
-        });
+            var cacheEntryOptions = TimeSpan.FromMinutes(optionsSnapshot.Value.CacheExpirationMinutes);
+
+            var gamesCount = await cache.GetOrCreateAsync("TotalGamesCount", async entry =>
+            {
+                entry.SetAbsoluteExpiration(cacheEntryOptions);
+                return await gameRepository.CountAsync();
+            });
+
+            context.Response.OnStarting(() =>
+            {
+                context.Response.Headers.Append("x-total-number-of-games", gamesCount.ToString());
+                return Task.CompletedTask;
+            });
+        }
 
         await next(context);
     }

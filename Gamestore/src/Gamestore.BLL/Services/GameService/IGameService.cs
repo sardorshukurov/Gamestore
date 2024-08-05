@@ -4,21 +4,21 @@ namespace Gamestore.BLL.Services.GameService;
 
 public interface IGameService
 {
-    Task<ICollection<GameDto>> GetAllAsync();
+    Task<ICollection<GameResponse>> GetAllAsync();
 
-    Task<GameDto?> GetByKeyAsync(string key);
+    Task<GameResponse?> GetByKeyAsync(string key);
 
-    Task<ICollection<GameDto>> GetByGenreAsync(Guid genreId);
+    Task<ICollection<GameResponse>> GetByGenreAsync(Guid genreId);
 
-    Task<ICollection<GameDto>> GetByPlatformAsync(Guid platformId);
+    Task<ICollection<GameResponse>> GetByPlatformAsync(Guid platformId);
 
-    Task<ICollection<GameDto>> GetByPublisherAsync(string companyName);
+    Task<ICollection<GameResponse>> GetByPublisherAsync(string companyName);
 
-    Task<GameDto?> GetByIdAsync(Guid id);
+    Task<GameResponse?> GetByIdAsync(Guid id);
 
-    Task UpdateAsync(UpdateGameDto dto);
+    Task UpdateAsync(UpdateGameRequest request);
 
-    Task CreateAsync(CreateGameDto dto);
+    Task CreateAsync(CreateGameRequest request);
 
     Task DeleteByKeyAsync(string key);
 }

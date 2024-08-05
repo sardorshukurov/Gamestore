@@ -1,6 +1,5 @@
-using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Genre;
-using Gamestore.DAL.Entities;
+using Gamestore.Domain.Entities;
 
 namespace Gamestore.Tests.BLL.Mappings;
 
@@ -15,65 +14,76 @@ public class GenreMappingsTests
     }
 
     [Fact]
-    public void AsDtoMapsCorrectly()
+    public void AsResponseShouldReturnMappedGenreResponse()
     {
         // Arrange
-        var genre = _fixture.Create<Genre>();
-        var parentGenre = _fixture.Create<GenreShortDto>();
-        var games = _fixture.Create<ICollection<GameShortDto>>();
+        var dto = _fixture.Create<Genre>();
 
         // Act
-        var dto = genre.AsDto(games, parentGenre);
+        var response = dto.ToResponse();
 
         // Assert
-        dto.Id.Should().Be(genre.Id);
-        dto.Name.Should().Be(genre.Name);
-        dto.ParentGenreId.Should().Be(parentGenre.Id);
-        dto.ParentGenreName.Should().Be(parentGenre.Name);
-        dto.Games.Should().BeEquivalentTo(games);
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
+        response.ParentGenreId.Should().Be(dto.ParentGenreId);
     }
 
     [Fact]
-    public void AsShortDtoMapsCorrectly()
+    public void AsShortResponsFromDtoShouldReturnMappedGenreShortResponse()
     {
         // Arrange
-        var genre = _fixture.Create<Genre>();
+        var dto = _fixture.Create<Genre>();
 
         // Act
-        var shortDto = genre.AsShortDto();
+        var response = dto.ToShortResponse();
 
         // Assert
-        shortDto.Id.Should().Be(genre.Id);
-        shortDto.Name.Should().Be(genre.Name);
-        shortDto.ParentGenreId.Should().Be(genre.ParentGenreId);
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
     }
 
     [Fact]
-    public void AsEntityMapsCorrectly()
+    public void AsShortResponseFromShortDtoShouldReturnMappedGenreShortResponse()
     {
         // Arrange
-        var dto = _fixture.Create<CreateGenreDto>();
+        var dto = _fixture.Create<Genre>();
 
         // Act
-        var genre = dto.AsEntity();
+        var response = dto.ToShortResponse();
 
         // Assert
-        genre.Name.Should().Be(dto.Name);
-        genre.ParentGenreId.Should().Be(dto.ParentGenreId);
+        response.Id.Should().Be(dto.Id);
+        response.Name.Should().Be(dto.Name);
     }
 
     [Fact]
-    public void UpdateEntityUpdatesCorrectly()
+    public void AsCreateGenreDtoShouldReturnMappedDtoFromRequest()
     {
         // Arrange
-        var dto = _fixture.Create<UpdateGenreDto>();
-        var genre = _fixture.Create<Genre>();
+        var request = _fixture.Create<CreateGenreRequest>();
 
         // Act
-        dto.UpdateEntity(genre);
+        var entity = request.ToEntity();
 
         // Assert
-        genre.Name.Should().Be(dto.Name);
-        genre.ParentGenreId.Should().Be(dto.ParentGenreId);
+        request.Name.Should().Be(entity.Name);
+        request.ParentGenreId.Should().Be(entity.ParentGenreId);
+    }
+
+    [Fact]
+    public void AsUpdateGenreDtoShouldReturnMappedDtoFromRequest()
+    {
+        // Arrange
+        var request = _fixture.Create<UpdateGenreRequest>();
+
+        var entity = new Genre();
+
+        // Act
+        request.UpdateEntity(entity);
+
+        // Assert
+        request.Id.Should().Be(entity.Id);
+        request.Name.Should().Be(entity.Name);
+        request.ParentGenreId.Should().Be(entity.ParentGenreId);
     }
 }

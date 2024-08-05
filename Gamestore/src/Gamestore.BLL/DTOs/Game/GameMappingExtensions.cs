@@ -1,51 +1,50 @@
-using GameEntity = Gamestore.DAL.Entities.Game;
+using GameEntity = Gamestore.Domain.Entities.Game;
 
 namespace Gamestore.BLL.DTOs.Game;
 
 public static class GameMappingExtensions
 {
-    public static GameDto AsDto(this GameEntity game)
+    public static GameResponse ToResponse(this GameEntity entity)
     {
-        return new GameDto(
-            game.Id,
-            game.Name,
-            game.Key,
-            game.Description,
-            game.Price,
-            game.Discount,
-            game.UnitInStock);
+        return new GameResponse(
+            entity.Id,
+            entity.Name,
+            entity.Key,
+            entity.Description,
+            entity.Price,
+            entity.Discount,
+            entity.UnitInStock);
     }
 
-    public static GameShortDto AsShortDto(this GameEntity game)
+    public static GameShortResponse ToShortResponse(this GameEntity entity)
     {
-        return new GameShortDto(
-            game.Id,
-            game.Name);
+        return new GameShortResponse(
+            entity.Id,
+            entity.Name);
     }
 
-    // the same here better to name `ToEntity`
-    public static GameEntity AsEntity(this CreateGameDto dto)
+    public static GameEntity ToEntity(this CreateGameRequest request)
     {
         return new GameEntity
         {
-            Name = dto.Name,
-            Key = dto.Key ?? dto.Name,
-            Description = dto.Description,
-            Price = dto.Price,
-            UnitInStock = dto.UnitInStock,
-            Discount = dto.Discount,
-            PublisherId = dto.PublisherId,
+            Name = request.Game.Name,
+            Key = request.Game.Key,
+            Description = request.Game.Description,
+            Price = request.Game.Price,
+            UnitInStock = request.Game.UnitInStock,
+            Discount = request.Game.Discount,
+            PublisherId = request.Publisher,
         };
     }
 
-    public static void UpdateEntity(this UpdateGameDto dto, GameEntity game)
+    public static void UpdateEntity(this UpdateGameRequest request, GameEntity entity)
     {
-        game.Name = dto.Name;
-        game.Key = dto.Key ?? dto.Name;
-        game.Description = dto.Description;
-        game.Price = dto.Price;
-        game.UnitInStock = dto.UnitInStock;
-        game.Discount = dto.Discount;
-        game.PublisherId = dto.PublisherId;
+        entity.Name = request.Game.Name;
+        entity.Key = request.Game.Key;
+        entity.Description = request.Game.Description;
+        entity.Price = request.Game.Price;
+        entity.UnitInStock = request.Game.UnitInStock;
+        entity.Discount = request.Game.Discount;
+        entity.PublisherId = request.Publisher;
     }
 }

@@ -6,45 +6,22 @@ using Gamestore.DAL;
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Data.Seeder;
 using Serilog;
-using Serilog.Events;
-using Serilog.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // configuring logging
-
-// TODO: use the configuration file for better flexibility
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .Enrich.FromLogContext()
-    .Enrich.WithExceptionDetails()
-    .WriteTo.Console()
-    .WriteTo.File(
-        "Logs/log-.txt",
-        rollingInterval: RollingInterval.Day,
-        restrictedToMinimumLevel: LogEventLevel.Information)
-    .WriteTo.File(
-        "Logs/exceptions-.txt",
-        rollingInterval: RollingInterval.Day,
-        restrictedToMinimumLevel: LogEventLevel.Error)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
+builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
+    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
 builder.Services.AddHttpClient("PaymentAPI", client =>
 {
     var uriString = builder.Configuration.GetSection("PaymentMicroservice").Value;
-    // TODO: add validation for uriString if (string.IsNullOrEmpty(uriString))
-    client.BaseAddress = new Uri(uriString!);
+
+    if (!string.IsNullOrEmpty(uriString))
+    {
+        client.BaseAddress = new Uri(uriString);
+    }
 });
-
-// adding middlewares
-
-// TODO: Instead of registering middlewares as transient services, use them directly in the middleware pipeline.
-// just remove this registration
-builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
-builder.Services.AddTransient<AddTotalGamesInHeaderMiddleware>();
-builder.Services.AddTransient<RequestLoggingMiddleware>();
 
 // adding cache
 builder.Services.AddMemoryCache();
@@ -71,8 +48,10 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .WithExposedHeaders("x-total-number-of-games"));    
+            .WithExposedHeaders("x-total-number-of-games"));
 });
+
+builder.Services.Configure<TotalGamesMiddlewareConfig>(builder.Configuration.GetSection("TotalGamesMiddleware"));
 
 var app = builder.Build();
 
@@ -82,13 +61,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.UseCors("CorsPolicy");
+app.UseSerilogRequestLogging(o =>
+    o.MessageTemplate = "Processed {RequestPath} in {Elapsed:0.0000} ms Response {StatusCode}");
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.MapControllers();
 

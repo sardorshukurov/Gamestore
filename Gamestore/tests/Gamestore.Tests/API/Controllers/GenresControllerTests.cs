@@ -1,12 +1,7 @@
 using FluentValidation;
 using Gamestore.API.Controllers;
-using Gamestore.API.DTOs.Game;
-using Gamestore.API.DTOs.Genre;
-using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Genre;
-using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.Tests.API.Controllers;
@@ -14,7 +9,6 @@ namespace Gamestore.Tests.API.Controllers;
 public class GenresControllerTests
 {
     private readonly IFixture _fixture;
-    private readonly Mock<IGameService> _gameServiceMock;
     private readonly Mock<IGenreService> _genreServiceMock;
     private readonly GenresController _controller;
 
@@ -24,51 +18,13 @@ public class GenresControllerTests
     public GenresControllerTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
-        _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
         _genreServiceMock = _fixture.Freeze<Mock<IGenreService>>();
 
         _createValidator = _fixture.Freeze<Mock<CreateGenreValidator>>();
         _updateValidator = _fixture.Freeze<Mock<UpdateGenreValidator>>();
 
         _controller = new GenresController(
-            _genreServiceMock.Object,
-            _gameServiceMock.Object,
-            _createValidator.Object,
-            _updateValidator.Object);
-    }
-
-    [Fact]
-    public async Task GetAllGamesReturnsOkWhenGamesAreFound()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var games = _fixture.Create<ICollection<GameDto>>();
-        _gameServiceMock.Setup(x => x.GetByGenreAsync(id)).ReturnsAsync(games);
-
-        // Act
-        var result = await _controller.GetAllGames(id);
-
-        // Assert
-        result.Result.Should().BeOfType<OkObjectResult>();
-        var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(games.Select(g => g.AsResponse()));
-    }
-
-    [Fact]
-    public async Task GetAllGamesReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        _gameServiceMock.Setup(x => x.GetByGenreAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.GetAllGames(id);
-
-        // Assert
-        result.Result.Should().BeOfType<ObjectResult>();
-        var objectResult = result.Result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
+            _genreServiceMock.Object);
     }
 
     [Fact]
@@ -81,31 +37,14 @@ public class GenresControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreateGenreRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _genreServiceMock.Setup(x => x.CreateAsync(request.AsDto())).Returns(Task.CompletedTask);
+        _genreServiceMock.Setup(x => x.CreateAsync(request)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Create(request);
 
         // Assert
         result.Should().BeOfType<OkResult>();
-        _genreServiceMock.Verify(x => x.CreateAsync(request.AsDto()), Times.Once);
-    }
-
-    [Fact]
-    public async Task CreateReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<CreateGenreRequest>();
-        _genreServiceMock.Setup(x => x.CreateAsync(request.AsDto())).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.Create(request);
-
-        // Assert
-        result.Should().BeOfType<ObjectResult>();
-        var objectResult = result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
+        _genreServiceMock.Verify(x => x.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -113,7 +52,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var genre = _fixture.Create<GenreShortDto>();
+        var genre = _fixture.Create<GenreShortResponse>();
         _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(genre);
 
         // Act
@@ -122,8 +61,8 @@ public class GenresControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genre.AsShortResponse());
-        okResult.Value.Should().BeOfType(genre.AsShortResponse().GetType());
+        okResult.Value.Should().BeEquivalentTo(genre);
+        okResult.Value.Should().BeOfType(genre.GetType());
     }
 
     [Fact]
@@ -131,7 +70,7 @@ public class GenresControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ReturnsAsync((GenreShortDto)null);
+        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ReturnsAsync((GenreShortResponse)null);
 
         // Act
         var result = await _controller.GetGenre(id);
@@ -143,27 +82,10 @@ public class GenresControllerTests
     }
 
     [Fact]
-    public async Task GetGenreReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.GetByIdAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.GetGenre(id);
-
-        // Assert
-        result.Result.Should().BeOfType<ObjectResult>();
-        var objectResult = result.Result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
-    }
-
-    [Fact]
     public async Task GetAllReturnsOkWhenGenresFound()
     {
         // Arrange
-        var genres = _fixture.Create<ICollection<GenreShortDto>>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
         _genreServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(genres);
 
         // Act
@@ -172,23 +94,7 @@ public class GenresControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.AsShortResponse()));
-    }
-
-    [Fact]
-    public async Task GetAllReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        _genreServiceMock.Setup(x => x.GetAllAsync()).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.GetAll();
-
-        // Assert
-        result.Result.Should().BeOfType<ObjectResult>();
-        var objectResult = result.Result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
+        okResult.Value.Should().BeEquivalentTo(genres);
     }
 
     [Fact]
@@ -196,7 +102,7 @@ public class GenresControllerTests
     {
         // Arrange
         var parentId = Guid.NewGuid();
-        var genres = _fixture.Create<ICollection<GenreShortDto>>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
         _genreServiceMock.Setup(x => x.GetSubGenresAsync(parentId)).ReturnsAsync(genres);
 
         // Act
@@ -205,24 +111,7 @@ public class GenresControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
-        okResult.Value.Should().BeEquivalentTo(genres.Select(g => g.AsShortResponse()));
-    }
-
-    [Fact]
-    public async Task GetSubGenresReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var parentId = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.GetSubGenresAsync(parentId)).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.GetSubGenres(parentId);
-
-        // Assert
-        result.Result.Should().BeOfType<ObjectResult>();
-        var objectResult = result.Result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
+        okResult.Value.Should().BeEquivalentTo(genres);
     }
 
     [Fact]
@@ -235,51 +124,13 @@ public class GenresControllerTests
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
-        _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).Returns(Task.CompletedTask);
+        _genreServiceMock.Setup(x => x.UpdateAsync(request)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _controller.Update(request);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task UpdateReturnsNotFoundWhenNotFoundExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdateGenreRequest>();
-
-        _updateValidator
-            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<UpdateGenreRequest>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FluentValidation.Results.ValidationResult());
-
-        _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new NotFoundException("Genre not found"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be("Genre not found");
-    }
-
-    [Fact]
-    public async Task UpdateReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var request = _fixture.Create<UpdateGenreRequest>();
-        _genreServiceMock.Setup(x => x.UpdateAsync(request.AsDto())).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.Update(request);
-
-        // Assert
-        result.Should().BeOfType<ObjectResult>();
-        var objectResult = result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
     }
 
     [Fact]
@@ -297,35 +148,21 @@ public class GenresControllerTests
     }
 
     [Fact]
-    public async Task DeleteReturnsNotFoundWhenNotFoundExceptionThrown()
+    public async Task GetGenresByKeyReturnsOkWhenGenresAreFound()
     {
         // Arrange
-        var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new NotFoundException($"Genre with id {id} not found"));
+        var key = _fixture.Create<string>();
+        var genres = _fixture.Create<ICollection<GenreShortResponse>>();
+        _genreServiceMock
+            .Setup(x => x.GetAllByGameKeyAsync(key))
+            .ReturnsAsync(genres);
 
         // Act
-        var result = await _controller.Delete(id);
+        var result = await _controller.GetGenresByKey(key);
 
         // Assert
-        result.Should().BeOfType<NotFoundObjectResult>();
-        var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult.Value.Should().Be($"Genre with id {id} not found");
-    }
-
-    [Fact]
-    public async Task DeleteReturns500WhenExceptionThrown()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        _genreServiceMock.Setup(x => x.DeleteAsync(id)).ThrowsAsync(new Exception("An internal server error has occured"));
-
-        // Act
-        var result = await _controller.Delete(id);
-
-        // Assert
-        result.Should().BeOfType<ObjectResult>();
-        var objectResult = result as ObjectResult;
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("An internal server error has occured");
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult.Value.Should().BeEquivalentTo(genres);
     }
 }
