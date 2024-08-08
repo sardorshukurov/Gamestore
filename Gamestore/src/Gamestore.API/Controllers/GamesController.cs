@@ -1,5 +1,7 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
+using Gamestore.BLL.Filtration.Games;
+using Gamestore.BLL.Filtration.Games.Extensions;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.OrderService;
 using Microsoft.AspNetCore.Mvc;
@@ -114,5 +116,33 @@ public class GamesController(
     {
         await orderService.AddGameInTheCartAsync(_customerId, key);
         return Ok();
+    }
+
+    [HttpGet("pagination-options")]
+    public ActionResult<IEnumerable<string>> GetPaginationOptions()
+    {
+        var paginationOptions = EnumExtensions.GetPaginationDisplayValues();
+
+        return Ok(paginationOptions);
+    }
+
+    [HttpGet("sorting-options")]
+    public ActionResult<IEnumerable<string>> GetSortingOptions()
+    {
+        var sortingOptions = Enum.GetValues(typeof(SortingOption))
+            .Cast<SortingOption>()
+            .Select(e => e.GetFriendlyName());
+
+        return Ok(sortingOptions);
+    }
+
+    [HttpGet("date-filter-options")]
+    public ActionResult<IEnumerable<string>> GetDateFilterOptions()
+    {
+        var sortingOptions = Enum.GetValues(typeof(DateFilterOption))
+            .Cast<DateFilterOption>()
+            .Select(e => e.GetFriendlyName());
+
+        return Ok(sortingOptions);
     }
 }
