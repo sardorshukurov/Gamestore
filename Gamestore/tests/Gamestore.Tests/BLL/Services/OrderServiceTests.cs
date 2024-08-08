@@ -13,6 +13,7 @@ public class OrderServiceTests
     private readonly Mock<IRepository<Game>> _gameRepositoryMock;
     private readonly Mock<IRepository<Order>> _orderRepositoryMock;
     private readonly Mock<IRepository<OrderGame>> _orderGameRepositoryMock;
+    private readonly Mock<IRepository<PaymentMethod>> _paymentMethodRepositoryMock;
 
     private readonly OrderService _service;
 
@@ -23,12 +24,14 @@ public class OrderServiceTests
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _orderRepositoryMock = _fixture.Freeze<Mock<IRepository<Order>>>();
         _orderGameRepositoryMock = _fixture.Freeze<Mock<IRepository<OrderGame>>>();
+        _paymentMethodRepositoryMock = _fixture.Freeze<Mock<IRepository<PaymentMethod>>>();
         var configurationMock = _fixture.Freeze<Mock<IConfiguration>>();
 
         _service = new OrderService(
             _orderRepositoryMock.Object,
             _orderGameRepositoryMock.Object,
             _gameRepositoryMock.Object,
+            _paymentMethodRepositoryMock.Object,
             configurationMock.Object);
     }
 

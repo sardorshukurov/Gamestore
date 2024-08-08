@@ -29,6 +29,7 @@ public static class Injection
 
         services.AddScoped<IRepository<Order>, Repository<Order>>();
         services.AddScoped<IRepository<OrderGame>, Repository<OrderGame>>();
+        services.AddScoped<IRepository<PaymentMethod>, Repository<PaymentMethod>>();
 
         services.AddScoped<IRepository<Comment>, Repository<Comment>>();
         services.AddScoped<IRepository<Ban>, Repository<Ban>>();
