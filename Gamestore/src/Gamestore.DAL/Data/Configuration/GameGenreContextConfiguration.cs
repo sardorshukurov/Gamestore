@@ -11,12 +11,12 @@ public class GameGenreContextConfiguration : IEntityTypeConfiguration<GameGenre>
         builder
             .HasKey(gg => new { gg.GameId, gg.GenreId });
         builder
-            .HasOne<Game>()
-            .WithMany()
-            .HasForeignKey(gg => gg.GameId);
-        builder
-            .HasOne<Genre>()
+            .HasOne(gg => gg.Genre)
             .WithMany()
             .HasForeignKey(gg => gg.GenreId);
+        builder
+            .HasOne(gg => gg.Game)
+            .WithMany(g => g.GameGenres)
+            .HasForeignKey(gg => gg.GameId);
     }
 }

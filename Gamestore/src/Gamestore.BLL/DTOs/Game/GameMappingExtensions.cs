@@ -34,6 +34,7 @@ public static class GameMappingExtensions
             UnitInStock = request.Game.UnitInStock,
             Discount = request.Game.Discount,
             PublisherId = request.Publisher,
+            PublishingDate = request.Game.PublishedDate,
         };
     }
 
@@ -46,5 +47,6 @@ public static class GameMappingExtensions
         entity.UnitInStock = request.Game.UnitInStock;
         entity.Discount = request.Game.Discount;
         entity.PublisherId = request.Publisher;
+        entity.PublishingDate = request.Game.PublishedDate;
     }
 }

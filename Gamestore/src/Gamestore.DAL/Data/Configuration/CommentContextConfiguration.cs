@@ -28,7 +28,7 @@ public class CommentContextConfiguration : IEntityTypeConfiguration<Comment>
             .HasForeignKey(c => c.ParentCommentId);
         builder
             .HasOne<Game>()
-            .WithMany()
+            .WithMany(g => g.Comments)
             .HasForeignKey(c => c.GameId);
     }
 }

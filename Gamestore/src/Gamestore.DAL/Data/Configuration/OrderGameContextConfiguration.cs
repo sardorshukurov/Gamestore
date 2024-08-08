@@ -11,12 +11,12 @@ public class OrderGameContextConfiguration : IEntityTypeConfiguration<OrderGame>
         builder
             .HasKey(og => new { og.OrderId, og.ProductId });
         builder
-            .HasOne<Game>()
-            .WithMany()
-            .HasForeignKey(og => og.ProductId);
-        builder
-            .HasOne<Order>()
+            .HasOne(og => og.Order)
             .WithMany()
             .HasForeignKey(og => og.OrderId);
+        builder
+            .HasOne(og => og.Product)
+            .WithMany(g => g.OrderGames)
+            .HasForeignKey(og => og.ProductId);
     }
 }

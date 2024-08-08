@@ -1,7 +1,7 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Filtration.Games;
-using Gamestore.BLL.Filtration.Games.Extensions;
+using Gamestore.BLL.Filtration.Games.Options;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.OrderService;
 using Microsoft.AspNetCore.Mvc;
@@ -69,10 +69,11 @@ public class GamesController(
         return game is null ? NotFound($"Game with id {id} not found") : Ok(game);
     }
 
+    // TODO: fix enums mapping errors.
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll([FromQuery] SearchCriteria criteria)
     {
-        var games = await gameService.GetAllAsync();
+        var games = await gameService.GetAllAsync(criteria);
         return Ok(games);
     }
 
@@ -121,7 +122,8 @@ public class GamesController(
     [HttpGet("pagination-options")]
     public ActionResult<IEnumerable<string>> GetPaginationOptions()
     {
-        var paginationOptions = EnumExtensions.GetPaginationDisplayValues();
+        var paginationOptions = Enum.GetValues(typeof(PaginationOption))
+            .Cast<PaginationOption>();
 
         return Ok(paginationOptions);
     }
@@ -130,8 +132,7 @@ public class GamesController(
     public ActionResult<IEnumerable<string>> GetSortingOptions()
     {
         var sortingOptions = Enum.GetValues(typeof(SortingOption))
-            .Cast<SortingOption>()
-            .Select(e => e.GetFriendlyName());
+            .Cast<SortingOption>();
 
         return Ok(sortingOptions);
     }
@@ -139,10 +140,9 @@ public class GamesController(
     [HttpGet("date-filter-options")]
     public ActionResult<IEnumerable<string>> GetDateFilterOptions()
     {
-        var sortingOptions = Enum.GetValues(typeof(DateFilterOption))
-            .Cast<DateFilterOption>()
-            .Select(e => e.GetFriendlyName());
+        var dateFilterOptions = Enum.GetValues(typeof(DateFilterOption))
+            .Cast<DateFilterOption>();
 
-        return Ok(sortingOptions);
+        return Ok(dateFilterOptions);
     }
 }

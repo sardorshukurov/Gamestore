@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Game;
+using Gamestore.BLL.Filtration.Games;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.Common.Exceptions;
 using Gamestore.DAL.Repository;
@@ -38,13 +39,14 @@ public class GameServiceTests
         // Arrange
         var games = _fixture.Create<ICollection<Game>>();
         _gameRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(games);
+        var criteria = _fixture.Create<SearchCriteria>();
 
         // Act
-        var result = await _service.GetAllAsync();
+        var result = await _service.GetAllAsync(criteria);
 
         // Assert
         _gameRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
-        result.Count.Should().Be(games.Count);
+        result.Games.Count.Should().Be(games.Count);
     }
 
     [Fact]

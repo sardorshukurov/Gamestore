@@ -20,7 +20,8 @@ public record UpdateGame(
     string Description,
     double Price,
     int UnitInStock,
-    int Discount);
+    int Discount,
+    DateTime PublishedDate);
 
 public class UpdateGameValidator : AbstractValidator<UpdateGameRequest>
 {
