@@ -1,11 +1,8 @@
-using System.Net;
-using System.Text;
-using Gamestore.API.DTOs.Order.Payment;
 using Gamestore.BLL.DTOs.Order;
+using Gamestore.BLL.DTOs.Order.Payment;
+using Gamestore.BLL.Payments;
 using Gamestore.BLL.Services.OrderService;
-using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace Gamestore.API.Controllers;
 
@@ -16,7 +13,9 @@ public class OrdersController(
     IHttpClientFactory httpClientFactory,
     ILogger<OrdersController> logger) : ControllerBase
 {
-    private const int MaxRetryAttempts = 3;
+    private const string BankPaymentMethod = "Bank";
+    private const string IBoxPaymentMethod = "IBox terminal";
+    private const string VisaPaymentMethod = "Visa";
 
     // httpclient to make calls to payment microservice
     private readonly HttpClient _paymentClient = httpClientFactory.CreateClient("PaymentAPI");
@@ -26,15 +25,8 @@ public class OrdersController(
     [HttpDelete("cart/{key}")]
     public async Task<IActionResult> RemoveGameFromCart(string key)
     {
-        try
-        {
-            await orderService.RemoveGameFromTheCartAsync(_customerId, key);
-            return Ok();
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        await orderService.RemoveGameFromTheCartAsync(_customerId, key);
+        return Ok();
     }
 
     [HttpGet]
@@ -63,148 +55,54 @@ public class OrdersController(
     [HttpGet("cart")]
     public async Task<ActionResult<IEnumerable<OrderDetailsResponse>>> GetCart()
     {
-        try
-        {
-            var orderDetails = await orderService.GetCartAsync(_customerId);
+        var orderDetails = await orderService.GetCartAsync(_customerId);
 
-            return Ok(orderDetails);
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
+        return Ok(orderDetails);
     }
 
     [HttpGet("payment-methods")]
-    public ActionResult<IEnumerable<PaymentMethodResponse>> GetPaymentMethods()
+    public async Task<ActionResult<IEnumerable<PaymentMethodResponse>>> GetPaymentMethods()
     {
-        return Ok(PaymentMethodsHelper.PaymentMethods);
+        return Ok(await orderService.GetPaymentMethodsAsync());
     }
 
     [HttpPost("payment")]
     public async Task<IActionResult> MakePayment(PaymentRequest request)
     {
-        try
+        return request.Method switch
         {
-            return request.Method switch
-            {
-                "Bank" => await ProcessBankPayment(),
-                "IBox terminal" => await ProcessIBoxPayment(),
-                "Visa" => await ProcessVisaPayment(request),
-                _ => BadRequest(),
-            };
-        }
-        catch (NotFoundException nex)
-        {
-            return NotFound(nex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An internal server error has occured");
-        }
+            BankPaymentMethod => await ProcessBankPayment(),
+            IBoxPaymentMethod => await ProcessIBoxPayment(),
+            VisaPaymentMethod => await ProcessVisaPayment(request),
+            _ => BadRequest(),
+        };
+    }
+
+    [HttpPost("{key}/buyGame")]
+    public async Task<IActionResult> BuyGame(string key)
+    {
+        await orderService.AddGameInTheCartAsync(_customerId, key);
+        return Ok();
     }
 
     private async Task<IActionResult> ProcessVisaPayment(PaymentRequest request)
     {
-        var orderId = await orderService.GetCartIdAsync(_customerId);
-        var cartSum = await orderService.GetCartSumAsync(_customerId);
+        var paymentProcessor =
+            new VisaPaymentProcessor(orderService, _paymentClient, _customerId, logger, request.Model);
 
-        // create request for the payment api
-        var requestToPaymentApi = new VisaRequest(
-            cartSum,
-            request.Model.Holder,
-            request.Model.CardNumber,
-            request.Model.MonthExpire,
-            request.Model.Cvv2,
-            request.Model.YearExpire);
+        var result = await paymentProcessor.ProcessPayment();
 
-        // serialize the request
-        var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
-        StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
-
-        var attempt = 0;
-
-        var result = new HttpResponseMessage();
-
-        while (attempt < MaxRetryAttempts)
-        {
-            // make the request
-            result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/visa", stringContent);
-
-            // if successful make the order paid and return ok response
-            if (result.IsSuccessStatusCode)
-            {
-                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
-                await orderService.PayOrderAsync(orderId);
-                return Ok(response);
-            }
-
-            attempt++;
-
-            logger.LogWarning($"Attempt for payment number {attempt}. Result: {await result.Content.ReadAsStringAsync()}");
-
-            // wait before retrying
-            await Task.Delay(TimeSpan.FromSeconds(attempt * 2));
-        }
-
-        await orderService.CancelOrderAsync(orderId);
-
-        var message = new StringBuilder();
-        message.Append($"Payment failed after: {attempt} attempts. ");
-
-        if (result.StatusCode == HttpStatusCode.BadRequest)
-        {
-            message.Append(await result.Content.ReadAsStringAsync());
-        }
-
-        return StatusCode(500, message.ToString());
+        return result.Success ? Ok(result.Message) : StatusCode(500, result.Message);
     }
 
     private async Task<IActionResult> ProcessIBoxPayment()
     {
-        var orderId = await orderService.GetCartIdAsync(_customerId);
-        var cartSum = await orderService.GetCartSumAsync(_customerId);
+        var paymentProcessor =
+            new IBoxPaymentProcessor(orderService, _paymentClient, _customerId, logger);
 
-        var requestToPaymentApi = new IBoxRequest(cartSum, _customerId, orderId);
+        var result = await paymentProcessor.ProcessPayment();
 
-        // serialize the request
-        var serializedRequest = JsonConvert.SerializeObject(requestToPaymentApi);
-        StringContent stringContent = new(serializedRequest, Encoding.UTF8, "application/json");
-
-        var attempt = 0;
-        var result = new HttpResponseMessage();
-
-        while (attempt < MaxRetryAttempts)
-        {
-            // make the request
-            result = await _paymentClient.PostAsync(_paymentClient.BaseAddress + "/ibox", stringContent);
-
-            if (result.IsSuccessStatusCode)
-            {
-                var response = new PaymentResponse(_customerId, orderId, DateTime.Now, cartSum);
-                await orderService.PayOrderAsync(orderId);
-                return Ok(response);
-            }
-
-            attempt++;
-
-            logger.LogWarning($"Attempt for payment number {attempt}. Result: {await result.Content.ReadAsStringAsync()}");
-
-            // wait before retrying
-            await Task.Delay(TimeSpan.FromSeconds(attempt * 2));
-        }
-
-        await orderService.CancelOrderAsync(orderId);
-
-        var message = new StringBuilder();
-        message.Append($"Payment failed after: {attempt} attempts. ");
-
-        if (result.StatusCode == HttpStatusCode.BadRequest)
-        {
-            message.Append(await result.Content.ReadAsStringAsync());
-        }
-
-        return StatusCode(500, message.ToString());
+        return result.Success ? Ok(result.Message) : StatusCode(500, result.Message);
     }
 
     private async Task<FileContentResult> ProcessBankPayment()

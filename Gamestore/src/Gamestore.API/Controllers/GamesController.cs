@@ -1,7 +1,6 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
-using Gamestore.BLL.Services.OrderService;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -10,13 +9,8 @@ namespace Gamestore.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class GamesController(
-    IGameService gameService,
-    IOrderService orderService) : ControllerBase
+    IGameService gameService) : ControllerBase
 {
-    // TODO: what is this used for?
-    // either use nullable types or generate new values, there should be no hardcoded values
-    private readonly Guid _customerId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {
@@ -107,12 +101,5 @@ public class GamesController(
         var serializedGame = JsonConvert.SerializeObject(game);
 
         return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
-    }
-
-    [HttpPost("{key}/buy")]
-    public async Task<IActionResult> BuyGame(string key)
-    {
-        await orderService.AddGameInTheCartAsync(_customerId, key);
-        return Ok();
     }
 }
