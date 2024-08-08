@@ -1,7 +1,7 @@
 using System.Net;
-using System.Text.Json;
 using Gamestore.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Gamestore.API.Middlewares;
 
@@ -16,50 +16,46 @@ public class GlobalExceptionHandlingMiddleware(
         {
             await next(context);
         }
-        catch (NotFoundException nfex)
+        catch (Exception exception)
         {
-            LogException(nfex);
-
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-
-            string json = JsonSerializer.Serialize(nfex.Message);
-
-            await context.Response.WriteAsync(json);
-
-            context.Response.ContentType = "application/json";
+            LogException(exception);
+            await HandleExceptionAsync(context, exception);
         }
-        catch (BadRequestException brex)
+    }
+
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        var statusCode = GetHttpStatusCode(exception);
+
+        var detailMessage = exception.InnerException != null ? exception.InnerException.Message : exception.Message;
+        var problemDetails = new ProblemDetails
         {
-            LogException(brex);
+            Type = exception.GetType().Name,
+            Title = statusCode.ToString(),
+            Status = (int)statusCode,
+            Detail = detailMessage,
+            Instance = $"urn:{context.TraceIdentifier}",
+        };
 
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        var result = JsonConvert.SerializeObject(problemDetails);
 
-            string json = JsonSerializer.Serialize(brex.Message);
+        context.Response.ContentType = "application/problem+json";
+        context.Response.StatusCode = (int)statusCode;
 
-            await context.Response.WriteAsync(json);
-
-            context.Response.ContentType = "application/json";
-        }
-        catch (Exception ex)
+        if (env.IsDevelopment())
         {
-            LogException(ex);
-
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            ProblemDetails problem = new()
-            {
-                Status = (int)HttpStatusCode.InternalServerError,
-                Type = "Server error",
-                Title = "Server error",
-                Detail = env.IsDevelopment() ? ex.Message + ex.StackTrace : "An internal server error has occured",
-            };
-
-            context.Response.ContentType = "application/json";
-
-            string json = JsonSerializer.Serialize(problem);
-
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(result);
         }
+    }
+
+    private static HttpStatusCode GetHttpStatusCode(Exception ex)
+    {
+        return ex switch
+        {
+            NotFoundException => HttpStatusCode.NotFound,
+            BadRequestException => HttpStatusCode.BadRequest,
+            _ => HttpStatusCode.InternalServerError,
+        };
     }
 
     private void LogException(Exception ex)

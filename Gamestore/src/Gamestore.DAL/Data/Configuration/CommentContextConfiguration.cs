@@ -24,7 +24,7 @@ public class CommentContextConfiguration : IEntityTypeConfiguration<Comment>
             .IsRequired();
         builder
             .HasOne<Comment>()
-            .WithMany(c => c.Replies)
+            .WithMany()
             .HasForeignKey(c => c.ParentCommentId);
         builder
             .HasOne<Game>()

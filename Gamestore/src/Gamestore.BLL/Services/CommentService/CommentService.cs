@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Comment;
 using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.Common.Exceptions;
+using Gamestore.Common.Helpers;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -8,10 +9,16 @@ namespace Gamestore.BLL.Services.CommentService;
 
 public class CommentService(
     IRepository<Comment> commentRepository,
-    IRepository<Game> gameRepository) : ICommentService
+    IRepository<Game> gameRepository,
+    IRepository<Ban> banRepository) : ICommentService
 {
     public async Task AddCommentAsync(string gameKey, CreateCommentRequest request)
     {
+        if (!await CanUserCommentAsync(request.Name))
+        {
+            throw new UserIsBannedException(request.Name);
+        }
+
         var game = await GetGameByKeyOrThrow(gameKey);
         string message = request.Body;
 
@@ -54,19 +61,46 @@ public class CommentService(
         return commentResponses;
     }
 
-    public Task DeleteCommentByIdAsync(Guid id)
+    public async Task DeleteCommentByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var commentToDelete = await commentRepository.GetByIdAsync(id) ?? throw new CommentNotFoundException(id);
+
+        commentToDelete.Body = "A comment/quote was deleted";
+
+        await DeleteChildComments(id);
+
+        await commentRepository.SaveChangesAsync();
     }
 
     public ICollection<string> GetBanDurations()
     {
-        return BanDurationResponse.BanDurations;
+        return BanHelper.BanDurations.Values;
     }
 
-    public Task BanUserAsync(BanUserRequest request)
+    public async Task BanUserAsync(BanUserRequest request)
     {
-        throw new NotImplementedException();
+        var endDate = CalculateBanEndDate(request.Duration);
+        var existingBan = await banRepository.GetOneAsync(b => b.UserName == request.User);
+
+        if (existingBan is not null)
+        {
+            existingBan.Duration = request.Duration;
+            existingBan.StartDate = DateTime.Now;
+            existingBan.EndDate = endDate;
+        }
+        else
+        {
+            var ban = new Ban
+            {
+                UserName = request.User,
+                Duration = request.Duration,
+                StartDate = DateTime.Now,
+                EndDate = endDate,
+            };
+            await banRepository.CreateAsync(ban);
+        }
+
+        await banRepository.SaveChangesAsync();
     }
 
     private async Task<ICollection<Comment>> GetAllCommentsByGameIdAsync(Guid gameId)
@@ -113,5 +147,51 @@ public class CommentService(
             comment.Name,
             comment.Body,
             childComments);
+    }
+
+    private async Task DeleteChildComments(Guid parentId)
+    {
+        var childComments = await commentRepository.GetAllByFilterAsync(c => c.ParentCommentId == parentId);
+
+        foreach (var childComment in childComments)
+        {
+            childComment.Body = "A comment/quote was deleted";
+            await commentRepository.UpdateAsync(childComment.Id, childComment);
+
+            await DeleteChildComments(childComment.Id);
+        }
+    }
+
+    private async Task<bool> CanUserCommentAsync(string userName)
+    {
+        var ban = await banRepository.GetOneAsync(b => b.UserName == userName);
+        if (ban is null)
+        {
+            return true;
+        }
+
+        if (ban.EndDate.HasValue && ban.EndDate > DateTime.Now)
+        {
+            return false;
+        }
+        else
+        {
+            await banRepository.DeleteOneAsync(b => b.Id == ban.Id);
+        }
+
+        return true;
+    }
+
+    private static DateTime? CalculateBanEndDate(BanDuration duration)
+    {
+        return duration switch
+        {
+            BanDuration.OneHour => DateTime.Now.AddHours(1),
+            BanDuration.OneDay => DateTime.Now.AddDays(1),
+            BanDuration.OneWeek => DateTime.Now.AddDays(7),
+            BanDuration.OneMonth => DateTime.Now.AddMonths(1),
+            BanDuration.Permanent => null,
+            _ => throw new NotImplementedException(),
+        };
     }
 }

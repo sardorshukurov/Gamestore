@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Comment;
+using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.BLL.Services.CommentService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,5 +24,28 @@ public class CommentsController(
         await commentService.AddCommentAsync(gameKey, request);
 
         return Ok();
+    }
+
+    [HttpGet("ban/durations")]
+    public ActionResult<IEnumerable<string>> GetBanDurations()
+    {
+        var durations = commentService.GetBanDurations();
+
+        return Ok(durations);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteComment(Guid id)
+    {
+        await commentService.DeleteCommentByIdAsync(id);
+
+        return NoContent();
+    }
+
+    [HttpPost("ban")]
+    public async Task<IActionResult> BanUser(BanUserRequest request)
+    {
+        await commentService.BanUserAsync(request);
+        return NoContent();
     }
 }
