@@ -18,6 +18,10 @@ public class PlatformServiceTests
     public PlatformServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
+
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
         _platformRepostioryMock = _fixture.Freeze<Mock<IRepository<Platform>>>();

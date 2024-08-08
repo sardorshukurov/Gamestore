@@ -69,7 +69,6 @@ public class GamesController(
         return game is null ? NotFound($"Game with id {id} not found") : Ok(game);
     }
 
-    // TODO: fix enums mapping errors.
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll([FromQuery] SearchCriteria criteria)
     {

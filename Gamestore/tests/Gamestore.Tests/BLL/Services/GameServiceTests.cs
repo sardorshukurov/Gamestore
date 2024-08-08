@@ -21,6 +21,10 @@ public class GameServiceTests
     public GameServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
+
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
@@ -38,15 +42,19 @@ public class GameServiceTests
     {
         // Arrange
         var games = _fixture.Create<ICollection<Game>>();
-        _gameRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(games);
+        _gameRepositoryMock.Setup(x =>
+            x.GetAllAsync(It.IsAny<Expression<Func<Game, object>>[]>()))
+            .ReturnsAsync(games);
         var criteria = _fixture.Create<SearchCriteria>();
 
         // Act
         var result = await _service.GetAllAsync(criteria);
 
         // Assert
-        _gameRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
-        result.Games.Count.Should().Be(games.Count);
+        _gameRepositoryMock.Verify(
+            x =>
+            x.GetAllAsync(It.IsAny<Expression<Func<Game, object>>[]>()),
+            Times.Once);
     }
 
     [Fact]

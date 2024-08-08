@@ -27,6 +27,7 @@ public class GameService(
             new GenreFilter(gameGenreRepository),
             new PublisherFilter(),
             new PlatformFilter(gamePlatformRepository),
+            new NameFilter(),
             new PriceFilter(),
             new DateFilter(),
             new SortingFilter(),

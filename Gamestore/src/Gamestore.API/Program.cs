@@ -1,7 +1,7 @@
+using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
 using Gamestore.API.Middlewares;
 using Gamestore.BLL;
-using Gamestore.BLL.Converters.GameFilterEnums;
 using Gamestore.Common.Helpers;
 using Gamestore.DAL;
 using Gamestore.DAL.Data;
@@ -31,9 +31,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
     {
-        o.JsonSerializerOptions.Converters.Add(new DateFilterOptionConverter());
-        o.JsonSerializerOptions.Converters.Add(new PaginationOptionConverter());
-        o.JsonSerializerOptions.Converters.Add(new SortingOptionConverter());
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddFluentValidationAutoValidation();
