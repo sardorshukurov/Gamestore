@@ -32,6 +32,7 @@ public static class Injection
         services.AddScoped<IRepository<PaymentMethod>, Repository<PaymentMethod>>();
 
         services.AddScoped<IRepository<Comment>, Repository<Comment>>();
+        services.AddScoped<IRepository<Ban>, Repository<Ban>>();
 
         return services;
     }

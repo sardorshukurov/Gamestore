@@ -27,7 +27,12 @@ builder.Services.AddHttpClient("PaymentAPI", client =>
 builder.Services.AddMemoryCache();
 
 // adding controllers, fluent validation, endpoints, and swagger
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -61,16 +66,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 app.UseSerilogRequestLogging(o =>
     o.MessageTemplate = "Processed {RequestPath} in {Elapsed:0.0000} ms Response {StatusCode}");
-
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
-app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
+
+app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllers();
 
