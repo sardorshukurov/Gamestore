@@ -50,8 +50,8 @@ public static class Injection
 
         services.AddSingleton(serviceProvider =>
         {
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var mongoDbSettings = configuration.GetSection(nameof(MongoDbSettings)) as MongoDbSettings;
+            var configuration = serviceProvider.GetService<IConfiguration>();
+            var mongoDbSettings = configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
             var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
             return mongoClient.GetDatabase(serviceName);
         });

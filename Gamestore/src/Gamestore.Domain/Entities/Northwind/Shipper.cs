@@ -1,6 +1,8 @@
+using Gamestore.Domain.Common;
+
 namespace Gamestore.Domain.Entities.Northwind;
 
-public class Shipper
+public class Shipper : BaseMongoEntity
 {
     public int ShipperId { get; set; }
 
