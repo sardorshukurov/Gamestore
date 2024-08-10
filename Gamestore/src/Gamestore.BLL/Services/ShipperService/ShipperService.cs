@@ -10,6 +10,6 @@ public class ShipperService(IMongoDatabase database) : IShipperService
     public async Task<IEnumerable<dynamic>> GetShippersAsync()
     {
         var shippers = await _shippersCollection.Find(FilterDefinition<BsonDocument>.Empty).ToListAsync();
-        return shippers.Select(shipper => BsonTypeMapper.MapToDotNetValue(shipper).ToBson());
+        return shippers.Select(BsonTypeMapper.MapToDotNetValue);
     }
 }
