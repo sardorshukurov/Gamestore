@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.BLL.Filtration.Games;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.Common.Exceptions;
+using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -15,6 +15,7 @@ public class GameServiceTests
     private readonly Mock<IRepository<GameGenre>> _gameGenreRepositoryMock;
     private readonly Mock<IRepository<GamePlatform>> _gamePlatformRepositoryMock;
     private readonly Mock<IRepository<Publisher>> _publisherRepositoryMock;
+    private readonly Mock<IGamesFilterRepository> _gamesFilterRepositoryMock;
 
     private readonly GameService _service;
 
@@ -29,9 +30,11 @@ public class GameServiceTests
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
         _publisherRepositoryMock = _fixture.Freeze<Mock<IRepository<Publisher>>>();
+        _gamesFilterRepositoryMock = _fixture.Freeze<Mock<IGamesFilterRepository>>();
 
         _service = new GameService(
             _gameRepositoryMock.Object,
+            _gamesFilterRepositoryMock.Object,
             _gameGenreRepositoryMock.Object,
             _gamePlatformRepositoryMock.Object,
             _publisherRepositoryMock.Object);
@@ -51,9 +54,9 @@ public class GameServiceTests
         var result = await _service.GetAllAsync(criteria);
 
         // Assert
-        _gameRepositoryMock.Verify(
+        _gamesFilterRepositoryMock.Verify(
             x =>
-            x.GetAllAsync(It.IsAny<Expression<Func<Game, object>>[]>()),
+            x.GetAsync(criteria),
             Times.Once);
     }
 

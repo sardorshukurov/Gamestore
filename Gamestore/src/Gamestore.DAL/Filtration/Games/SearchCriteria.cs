@@ -1,6 +1,6 @@
-using Gamestore.BLL.Filtration.Games.Options;
+using Gamestore.DAL.Filtration.Games.Options;
 
-namespace Gamestore.BLL.Filtration.Games;
+namespace Gamestore.DAL.Filtration.Games;
 
 public class SearchCriteria
 {
@@ -16,11 +16,11 @@ public class SearchCriteria
 
     public string? Name { get; set; }
 
-    public DateFilterOption? PublishingDate { get; set; }
+    public DateFilterOptions? PublishingDate { get; set; }
 
-    public SortingOption SortBy { get; set; }
+    public SortingOptions SortBy { get; set; } = SortingOptions.MostPopular;
 
     public int Page { get; set; } = 1;
 
-    public PaginationOption PageCount { get; set; }
+    public PaginationOptions PageCount { get; set; } = PaginationOptions.All;
 }

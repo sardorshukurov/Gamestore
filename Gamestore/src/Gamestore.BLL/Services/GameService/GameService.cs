@@ -1,7 +1,6 @@
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.BLL.Filtration.Games;
-using Gamestore.BLL.Filtration.Games.Pipeline;
 using Gamestore.Common.Exceptions;
+using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -9,39 +8,19 @@ namespace Gamestore.BLL.Services.GameService;
 
 public class GameService(
     IRepository<Game> repository,
+    IGamesFilterRepository filterRepository,
     IRepository<GameGenre> gameGenreRepository,
     IRepository<GamePlatform> gamePlatformRepository,
     IRepository<Publisher> publisherRepository) : IGameService
 {
     public async Task<GamesResponse> GetAllAsync(SearchCriteria criteria)
     {
-        var allGames = (await repository.GetAllAsync(
-                g => g.GamePlatforms,
-                g => g.OrderGames,
-                g => g.Comments,
-                g => g.GameGenres))
-            .ToList();
-
-        List<IFilter> filters =
-        [
-            new GenreFilter(gameGenreRepository),
-            new PublisherFilter(),
-            new PlatformFilter(gamePlatformRepository),
-            new NameFilter(),
-            new PriceFilter(),
-            new DateFilter(),
-            new SortingFilter(),
-            new PaginationFilter()
-        ];
-        var pipeline = new GamePipeline(filters);
-
-        var filteredGames = (await pipeline.ProcessAsync(allGames, criteria))
+        var filteredGames = (await filterRepository.GetAsync(criteria))
             .Select(g => g.ToResponse())
             .ToList();
 
         int totalItems = filteredGames.Count;
-        int totalPages = (int)Math.Ceiling(totalItems / (double)criteria.PageCount);
-
+        int totalPages = criteria.PageCount == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)criteria.PageCount);
         return new GamesResponse(filteredGames, totalPages, criteria.Page);
     }
 

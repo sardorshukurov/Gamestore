@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.BLL.Filtration.Games;
+using Gamestore.DAL.Filtration.Games;
 
 namespace Gamestore.BLL.Services.GameService;
 

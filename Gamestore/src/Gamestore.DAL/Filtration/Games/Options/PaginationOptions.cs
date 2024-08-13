@@ -1,6 +1,6 @@
-namespace Gamestore.BLL.Filtration.Games.Options;
+namespace Gamestore.DAL.Filtration.Games.Options;
 
-public enum PaginationOption
+public enum PaginationOptions
 {
     Ten = 10,
     Twenty = 20,

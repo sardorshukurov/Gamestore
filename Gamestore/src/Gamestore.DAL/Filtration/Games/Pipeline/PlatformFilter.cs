@@ -1,7 +1,7 @@
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
-namespace Gamestore.BLL.Filtration.Games.Pipeline;
+namespace Gamestore.DAL.Filtration.Games.Pipeline;
 
 public class PlatformFilter(IRepository<GamePlatform> gamePlatformRepository) : IFilter
 {

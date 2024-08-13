@@ -1,9 +1,9 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.BLL.Filtration.Games;
-using Gamestore.BLL.Filtration.Games.Options;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.OrderService;
+using Gamestore.DAL.Filtration.Games;
+using Gamestore.DAL.Filtration.Games.Options;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -121,8 +121,8 @@ public class GamesController(
     [HttpGet("pagination-options")]
     public ActionResult<IEnumerable<string>> GetPaginationOptions()
     {
-        var paginationOptions = Enum.GetValues(typeof(PaginationOption))
-            .Cast<PaginationOption>();
+        var paginationOptions = Enum.GetValues(typeof(PaginationOptions))
+            .Cast<PaginationOptions>();
 
         return Ok(paginationOptions);
     }
@@ -130,8 +130,8 @@ public class GamesController(
     [HttpGet("sorting-options")]
     public ActionResult<IEnumerable<string>> GetSortingOptions()
     {
-        var sortingOptions = Enum.GetValues(typeof(SortingOption))
-            .Cast<SortingOption>();
+        var sortingOptions = Enum.GetValues(typeof(SortingOptions))
+            .Cast<SortingOptions>();
 
         return Ok(sortingOptions);
     }
@@ -139,8 +139,8 @@ public class GamesController(
     [HttpGet("date-filter-options")]
     public ActionResult<IEnumerable<string>> GetDateFilterOptions()
     {
-        var dateFilterOptions = Enum.GetValues(typeof(DateFilterOption))
-            .Cast<DateFilterOption>();
+        var dateFilterOptions = Enum.GetValues(typeof(DateFilterOptions))
+            .Cast<DateFilterOptions>();
 
         return Ok(dateFilterOptions);
     }

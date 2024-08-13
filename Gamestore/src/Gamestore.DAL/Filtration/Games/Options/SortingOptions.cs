@@ -1,6 +1,6 @@
-namespace Gamestore.BLL.Filtration.Games.Options;
+namespace Gamestore.DAL.Filtration.Games.Options;
 
-public enum SortingOption
+public enum SortingOptions
 {
     MostPopular,
     MostCommented,
