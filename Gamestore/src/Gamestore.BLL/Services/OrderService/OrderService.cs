@@ -56,6 +56,15 @@ public class OrderService(
         return orders;
     }
 
+    public async Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(DateTime start, DateTime end)
+    {
+        var orders = (await orderRepository.GetAllByFilterAsync(
+                o => o.Date >= start && o.Date <= end))
+            .Select(o => o.ToResponse());
+
+        return orders;
+    }
+
     public async Task<OrderResponse?> GetByIdAsync(Guid orderId)
     {
         var order = await orderRepository.GetOneAsync(o => o.Id == orderId);

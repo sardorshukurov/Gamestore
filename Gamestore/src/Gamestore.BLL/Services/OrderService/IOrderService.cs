@@ -11,6 +11,8 @@ public interface IOrderService
 
     Task<IEnumerable<OrderResponse>> GetPaidAndCancelledOrdersAsync();
 
+    Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(DateTime start, DateTime end);
+
     Task<OrderResponse?> GetByIdAsync(Guid orderId);
 
     Task<IEnumerable<OrderDetailsResponse>> GetOrderDetailsAsync(Guid orderId);

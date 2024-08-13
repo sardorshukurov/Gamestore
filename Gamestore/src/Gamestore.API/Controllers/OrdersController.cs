@@ -60,6 +60,16 @@ public class OrdersController(
         return Ok(orderDetails);
     }
 
+    [HttpGet("history")]
+    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersHistory([FromQuery] DateTime? start, [FromQuery] DateTime? end)
+    {
+        var orders = await orderService.GetOrdersHistoryAsync(
+            start ?? DateTime.MinValue,
+            end ?? DateTime.MaxValue);
+
+        return Ok(orders);
+    }
+
     [HttpGet("payment-methods")]
     public async Task<ActionResult<IEnumerable<PaymentMethodResponse>>> GetPaymentMethods()
     {
