@@ -5,6 +5,7 @@ using Gamestore.Common.Helpers;
 using Gamestore.DAL;
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Data.Seeder;
+using Gamestore.DAL.Interceptors;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,8 @@ builder.Services
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<UpdateEntitiesInterceptor>();
 
 // adding dbContext, repositories and bll services
 builder.Services.AddAppDbContext(builder.Configuration);

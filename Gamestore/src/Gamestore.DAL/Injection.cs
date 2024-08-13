@@ -1,4 +1,5 @@
 using Gamestore.DAL.Data;
+using Gamestore.DAL.Interceptors;
 using Gamestore.DAL.Repository;
 using Gamestore.DAL.Settings;
 using Gamestore.Domain.Common;
@@ -17,8 +18,10 @@ public static class Injection
 {
     public static IServiceCollection AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<MainDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("MSSQL")));
+        services.AddDbContext<MainDbContext>((serviceProvider, options) =>
+            options.UseSqlServer(configuration.GetConnectionString("MSSQL"))
+                .AddInterceptors(
+                    serviceProvider.GetService<UpdateEntitiesInterceptor>()!));
 
         return services;
     }
