@@ -1,15 +1,12 @@
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Filtration.Games.Pipeline;
-using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Filtration.Games;
 
 public class GamesFilterRepository(
-    MainDbContext dbContext,
-    IRepository<GameGenre> gameGenreRepository,
-    IRepository<GamePlatform> gamePlatformRepository) : IGamesFilterRepository
+    MainDbContext dbContext) : IGamesFilterRepository
 {
     public async Task<ICollection<Game>> GetAsync(SearchCriteria criteria)
     {
@@ -22,9 +19,9 @@ public class GamesFilterRepository(
 
         List<IFilter> filters =
         [
-            new GenreFilter(gameGenreRepository),
+            new GenreFilter(dbContext),
             new PublisherFilter(),
-            new PlatformFilter(gamePlatformRepository),
+            new PlatformFilter(dbContext),
             new NameFilter(),
             new PriceFilter(),
             new DateFilter(),

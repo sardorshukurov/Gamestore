@@ -1,9 +1,10 @@
-using Gamestore.DAL.Repository;
+using Gamestore.DAL.Data;
 using Gamestore.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Filtration.Games.Pipeline;
 
-public class PlatformFilter(IRepository<GamePlatform> gamePlatformRepository) : IFilter
+public class PlatformFilter(MainDbContext dbContext) : IFilter
 {
     public async Task<IEnumerable<Game>> ApplyAsync(IEnumerable<Game> games, SearchCriteria criteria)
     {
@@ -13,9 +14,11 @@ public class PlatformFilter(IRepository<GamePlatform> gamePlatformRepository) : 
             var gameIds = enumerable.Select(g => g.Id);
 
             var gamePlatforms =
-                await gamePlatformRepository.GetAllByFilterAsync(
-                    gp => gameIds.Contains(gp.GameId)
-                          && criteria.Platforms.Contains(gp.PlatformId));
+                await dbContext.GamesPlatforms.Where(
+                        gp => gameIds.Contains(gp.GameId)
+                              && criteria.Platforms.Contains(gp.PlatformId))
+                    .ToListAsync();
+
             var filteredGameIds = gamePlatforms.Select(gp => gp.GameId).Distinct();
             games = enumerable.Where(game => filteredGameIds.Contains(game.Id));
         }
