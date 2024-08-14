@@ -84,8 +84,8 @@ namespace Gamestore.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
+                    b.Property<float>("Discount")
+                        .HasColumnType("real");
 
                     b.Property<string>("Key")
                         .IsRequired()
@@ -101,7 +101,17 @@ namespace Gamestore.DAL.Migrations
                     b.Property<Guid>("PublisherId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("QuantityPerUnit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReorderLevel")
+                        .HasColumnType("int");
+
                     b.Property<int>("UnitInStock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitOnOrder")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -150,12 +160,20 @@ namespace Gamestore.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid?>("ParentGenreId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Picture")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
@@ -177,6 +195,44 @@ namespace Gamestore.DAL.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Freight")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("RequiredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ShipAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipCity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipCountry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShipPostalCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShipRegion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShipVia")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ShippedVia")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -193,8 +249,8 @@ namespace Gamestore.DAL.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
+                    b.Property<float>("Discount")
+                        .HasColumnType("real");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -256,14 +312,50 @@ namespace Gamestore.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Fax")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("HomePage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

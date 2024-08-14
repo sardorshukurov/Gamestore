@@ -14,9 +14,15 @@ public class Game : IBaseEntity
 
     public double Price { get; set; }
 
+    public string QuantityPerUnit { get; set; }
+
+    public int ReorderLevel { get; set; }
+
     public int UnitInStock { get; set; }
 
-    public int Discount { get; set; }
+    public int UnitOnOrder { get; set; }
+
+    public float Discount { get; set; }
 
     public Guid PublisherId { get; set; }
 }

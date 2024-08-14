@@ -20,7 +20,7 @@ public class Supplier : BaseMongoEntity
 
     public string Fax { get; set; }
 
-    public string HomePage { get; set; }
+    public string? HomePage { get; set; }
 
     public string Phone { get; set; }
 

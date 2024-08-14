@@ -6,5 +6,5 @@ public record GameResponse(
     string Key,
     string? Description,
     double Price,
-    int Discount,
+    float Discount,
     int UnitInStock);

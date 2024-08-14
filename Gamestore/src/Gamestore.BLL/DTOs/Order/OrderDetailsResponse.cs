@@ -4,4 +4,4 @@ public record OrderDetailsResponse(
     Guid ProductId,
     double Price,
     int Quantity,
-    int Discount);
+    float Discount);
