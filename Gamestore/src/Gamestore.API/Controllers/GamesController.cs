@@ -1,7 +1,6 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
-using Gamestore.BLL.Services.OrderService;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Filtration.Games.Options;
 using Microsoft.AspNetCore.Mvc;
@@ -104,13 +103,6 @@ public class GamesController(
         var serializedGame = JsonConvert.SerializeObject(game);
 
         return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
-    }
-
-    [HttpPost("{key}/buy")]
-    public async Task<IActionResult> BuyGame(string key)
-    {
-        await orderService.AddGameInTheCartAsync(_customerId, key);
-        return Ok();
     }
 
     [HttpGet("pagination-options")]
