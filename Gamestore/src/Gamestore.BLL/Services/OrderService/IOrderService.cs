@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Order;
+using Gamestore.BLL.DTOs.Order.Payment;
 
 namespace Gamestore.BLL.Services.OrderService;
 
@@ -25,4 +26,6 @@ public interface IOrderService
     Task<double> GetCartSumAsync(Guid customerId);
 
     Task<Guid> GetCartIdAsync(Guid customerId);
+
+    Task<IEnumerable<PaymentMethodResponse>> GetPaymentMethodsAsync();
 }

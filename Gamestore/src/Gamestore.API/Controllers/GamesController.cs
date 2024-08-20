@@ -12,13 +12,8 @@ namespace Gamestore.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class GamesController(
-    IGameService gameService,
-    IOrderService orderService) : ControllerBase
+    IGameService gameService) : ControllerBase
 {
-    // TODO: what is this used for?
-    // either use nullable types or generate new values, there should be no hardcoded values
-    private readonly Guid _customerId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {

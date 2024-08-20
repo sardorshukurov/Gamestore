@@ -15,7 +15,6 @@ public class GamesControllerTests
     private readonly IFixture _fixture;
 
     private readonly Mock<IGameService> _gameServiceMock;
-    private readonly Mock<IOrderService> _orderServiceMock;
 
     private readonly Mock<CreateGameValidator> _createValidator;
     private readonly Mock<UpdateGameValidator> _updateValidator;
@@ -27,14 +26,12 @@ public class GamesControllerTests
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
         _gameServiceMock = _fixture.Freeze<Mock<IGameService>>();
-        _orderServiceMock = _fixture.Freeze<Mock<IOrderService>>();
 
         _createValidator = _fixture.Freeze<Mock<CreateGameValidator>>();
         _updateValidator = _fixture.Freeze<Mock<UpdateGameValidator>>();
 
         _controller = new GamesController(
-            _gameServiceMock.Object,
-            _orderServiceMock.Object);
+            _gameServiceMock.Object);
     }
 
     [Fact]

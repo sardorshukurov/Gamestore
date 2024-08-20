@@ -21,6 +21,10 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
 
     public DbSet<Comment> Comments { get; set; }
 
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
+
+    public DbSet<Ban> Bans { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MainDbContext).Assembly);

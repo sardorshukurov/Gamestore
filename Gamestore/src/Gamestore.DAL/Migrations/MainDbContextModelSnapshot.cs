@@ -22,6 +22,30 @@ namespace Gamestore.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Gamestore.Domain.Entities.Ban", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Bans");
+                });
+
             modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -188,6 +212,29 @@ namespace Gamestore.DAL.Migrations
                     b.ToTable("OrdersGames");
                 });
 
+            modelBuilder.Entity("Gamestore.Domain.Entities.PaymentMethod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentMethods");
+                });
+
             modelBuilder.Entity("Gamestore.Domain.Entities.Platform", b =>
                 {
                     b.Property<Guid>("Id")
@@ -239,7 +286,7 @@ namespace Gamestore.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Gamestore.Domain.Entities.Comment", null)
-                        .WithMany("Replies")
+                        .WithMany()
                         .HasForeignKey("ParentCommentId");
                 });
 
