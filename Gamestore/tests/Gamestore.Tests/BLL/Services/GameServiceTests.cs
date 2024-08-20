@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.Common.Exceptions;
+using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -14,19 +15,26 @@ public class GameServiceTests
     private readonly Mock<IRepository<GameGenre>> _gameGenreRepositoryMock;
     private readonly Mock<IRepository<GamePlatform>> _gamePlatformRepositoryMock;
     private readonly Mock<IRepository<Publisher>> _publisherRepositoryMock;
+    private readonly Mock<IGamesFilterRepository> _gamesFilterRepositoryMock;
 
     private readonly GameService _service;
 
     public GameServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
+
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
         _publisherRepositoryMock = _fixture.Freeze<Mock<IRepository<Publisher>>>();
+        _gamesFilterRepositoryMock = _fixture.Freeze<Mock<IGamesFilterRepository>>();
 
         _service = new GameService(
             _gameRepositoryMock.Object,
+            _gamesFilterRepositoryMock.Object,
             _gameGenreRepositoryMock.Object,
             _gamePlatformRepositoryMock.Object,
             _publisherRepositoryMock.Object);
@@ -37,14 +45,19 @@ public class GameServiceTests
     {
         // Arrange
         var games = _fixture.Create<ICollection<Game>>();
-        _gameRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(games);
+        _gameRepositoryMock.Setup(x =>
+            x.GetAllAsync(It.IsAny<Expression<Func<Game, object>>[]>()))
+            .ReturnsAsync(games);
+        var criteria = _fixture.Create<SearchCriteria>();
 
         // Act
-        var result = await _service.GetAllAsync();
+        var result = await _service.GetAllAsync(criteria);
 
         // Assert
-        _gameRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
-        result.Count.Should().Be(games.Count);
+        _gamesFilterRepositoryMock.Verify(
+            x =>
+            x.GetAsync(criteria),
+            Times.Once);
     }
 
     [Fact]

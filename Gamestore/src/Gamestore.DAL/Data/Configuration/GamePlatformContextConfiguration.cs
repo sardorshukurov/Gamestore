@@ -11,12 +11,12 @@ public class GamePlatformContextConfiguration : IEntityTypeConfiguration<GamePla
         builder
             .HasKey(gp => new { gp.GameId, gp.PlatformId });
         builder
-            .HasOne<Game>()
-            .WithMany()
-            .HasForeignKey(gp => gp.GameId);
-        builder
-            .HasOne<Platform>()
+            .HasOne(gp => gp.Platform)
             .WithMany()
             .HasForeignKey(gp => gp.PlatformId);
+        builder
+            .HasOne(gp => gp.Game)
+            .WithMany(g => g.GamePlatforms)
+            .HasForeignKey(gp => gp.GameId);
     }
 }

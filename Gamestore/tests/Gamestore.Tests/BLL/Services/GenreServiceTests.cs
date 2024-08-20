@@ -18,6 +18,10 @@ public class GenreServiceTests
     public GenreServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
+
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gameGenreRepositoryMock = _fixture.Freeze<Mock<IRepository<GameGenre>>>();
         _genreRepositoryMock = _fixture.Freeze<Mock<IRepository<Genre>>>();

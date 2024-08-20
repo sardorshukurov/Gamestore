@@ -1,10 +1,11 @@
 using Gamestore.BLL.DTOs.Game;
+using Gamestore.DAL.Filtration.Games;
 
 namespace Gamestore.BLL.Services.GameService;
 
 public interface IGameService
 {
-    Task<ICollection<GameResponse>> GetAllAsync();
+    Task<GamesResponse> GetAllAsync(SearchCriteria criteria);
 
     Task<GameResponse?> GetByKeyAsync(string key);
 

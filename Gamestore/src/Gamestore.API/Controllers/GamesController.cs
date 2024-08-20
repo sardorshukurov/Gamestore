@@ -1,6 +1,9 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
+using Gamestore.BLL.Services.OrderService;
+using Gamestore.DAL.Filtration.Games;
+using Gamestore.DAL.Filtration.Games.Options;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -62,9 +65,9 @@ public class GamesController(
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll([FromQuery] SearchCriteria criteria)
     {
-        var games = await gameService.GetAllAsync();
+        var games = await gameService.GetAllAsync(criteria);
         return Ok(games);
     }
 
@@ -101,5 +104,39 @@ public class GamesController(
         var serializedGame = JsonConvert.SerializeObject(game);
 
         return File(Encoding.UTF8.GetBytes(serializedGame), "text/plain", fileName);
+    }
+
+    [HttpPost("{key}/buy")]
+    public async Task<IActionResult> BuyGame(string key)
+    {
+        await orderService.AddGameInTheCartAsync(_customerId, key);
+        return Ok();
+    }
+
+    [HttpGet("pagination-options")]
+    public ActionResult<IEnumerable<string>> GetPaginationOptions()
+    {
+        var paginationOptions = Enum.GetValues(typeof(PaginationOptions))
+            .Cast<PaginationOptions>();
+
+        return Ok(paginationOptions);
+    }
+
+    [HttpGet("sorting-options")]
+    public ActionResult<IEnumerable<string>> GetSortingOptions()
+    {
+        var sortingOptions = Enum.GetValues(typeof(SortingOptions))
+            .Cast<SortingOptions>();
+
+        return Ok(sortingOptions);
+    }
+
+    [HttpGet("date-filter-options")]
+    public ActionResult<IEnumerable<string>> GetDateFilterOptions()
+    {
+        var dateFilterOptions = Enum.GetValues(typeof(DateFilterOptions))
+            .Cast<DateFilterOptions>();
+
+        return Ok(dateFilterOptions);
     }
 }

@@ -20,6 +20,9 @@ public class OrderServiceTests
     public OrderServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
 
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _orderRepositoryMock = _fixture.Freeze<Mock<IRepository<Order>>>();

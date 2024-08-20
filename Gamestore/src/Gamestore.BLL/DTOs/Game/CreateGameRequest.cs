@@ -19,7 +19,8 @@ public record CreateGame(
     string Description,
     double Price,
     int UnitInStock,
-    int Discount);
+    int Discount,
+    DateTime PublishedDate);
 
 public class CreateGameValidator : AbstractValidator<CreateGameRequest>
 {

@@ -18,5 +18,15 @@ public class Game : IBaseEntity
 
     public int Discount { get; set; }
 
+    public DateTime PublishingDate { get; set; }
+
     public Guid PublisherId { get; set; }
+
+    public virtual ICollection<GameGenre> GameGenres { get; set; }
+
+    public virtual ICollection<GamePlatform> GamePlatforms { get; set; }
+
+    public virtual ICollection<OrderGame> OrderGames { get; set; }
+
+    public virtual ICollection<Comment> Comments { get; set; }
 }

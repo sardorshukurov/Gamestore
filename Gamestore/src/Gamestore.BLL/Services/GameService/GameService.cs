@@ -1,5 +1,6 @@
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.Common.Exceptions;
+using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -7,17 +8,20 @@ namespace Gamestore.BLL.Services.GameService;
 
 public class GameService(
     IRepository<Game> repository,
+    IGamesFilterRepository filterRepository,
     IRepository<GameGenre> gameGenreRepository,
     IRepository<GamePlatform> gamePlatformRepository,
     IRepository<Publisher> publisherRepository) : IGameService
 {
-    public async Task<ICollection<GameResponse>> GetAllAsync()
+    public async Task<GamesResponse> GetAllAsync(SearchCriteria criteria)
     {
-        var games = (await repository.GetAllAsync())
+        var filteredGames = (await filterRepository.GetAsync(criteria))
             .Select(g => g.ToResponse())
             .ToList();
 
-        return games;
+        int totalItems = filteredGames.Count;
+        int totalPages = criteria.PageCount == 0 ? 1 : (int)Math.Ceiling(totalItems / (double)criteria.PageCount);
+        return new GamesResponse(filteredGames, totalPages, criteria.Page);
     }
 
     public async Task<GameResponse?> GetByKeyAsync(string key)

@@ -1,4 +1,5 @@
 using Gamestore.DAL.Data;
+using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ public static class Injection
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IRepository<Game>, Repository<Game>>();
+        services.AddScoped<IGamesFilterRepository, GamesFilterRepository>();
+
         services.AddScoped<IRepository<Genre>, Repository<Genre>>();
         services.AddScoped<IRepository<Platform>, Repository<Platform>>();
         services.AddScoped<IRepository<GameGenre>, Repository<GameGenre>>();

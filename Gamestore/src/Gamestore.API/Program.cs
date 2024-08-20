@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
 using Gamestore.API.Middlewares;
 using Gamestore.BLL;
@@ -27,12 +28,12 @@ builder.Services.AddHttpClient("PaymentAPI", client =>
 builder.Services.AddMemoryCache();
 
 // adding controllers, fluent validation, endpoints, and swagger
-builder.Services
-    .AddControllers()
-    .AddJsonOptions(opts =>
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
     {
-        opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
