@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 

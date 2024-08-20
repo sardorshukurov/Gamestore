@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Comment;
 using Gamestore.BLL.DTOs.Comment.Ban;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.BadRequest;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.Common.Helpers;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;

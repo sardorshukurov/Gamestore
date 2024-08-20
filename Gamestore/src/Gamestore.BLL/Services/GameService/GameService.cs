@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Game;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;

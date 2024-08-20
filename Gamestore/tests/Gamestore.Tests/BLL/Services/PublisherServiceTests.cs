@@ -1,6 +1,6 @@
 using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.PublisherService;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
