@@ -25,4 +25,6 @@ public class Product : BaseMongoEntity
     public int UnitsOnOrder { get; set; }
 
     public string GameKey { get; set; }
+
+    public Guid GameStoreId { get; set; }
 }

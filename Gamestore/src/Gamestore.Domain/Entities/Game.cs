@@ -25,4 +25,6 @@ public class Game : IBaseEntity
     public float Discount { get; set; }
 
     public Guid PublisherId { get; set; }
+
+    public int? OriginalId { get; set; }
 }
