@@ -1,4 +1,5 @@
 using Gamestore.BLL.Services.CommentService;
+using Gamestore.BLL.Services.GameManager;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
@@ -14,6 +15,8 @@ public static class Injection
     public static IServiceCollection AddBusinessLogicServices(this IServiceCollection services)
     {
         services.AddScoped<IGameService, GameService>();
+        services.AddScoped<IGameManager, GameManager>();
+
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IPlatformService, PlatformService>();
         services.AddScoped<IPublisherService, PublisherService>();

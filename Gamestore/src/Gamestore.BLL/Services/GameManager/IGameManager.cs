@@ -9,5 +9,7 @@ public interface IGameManager
 
     Task<IEnumerable<GameResponse>> GetAllGamesAsync();
 
-    Task DuplicateProductToGameStore(int productId);
+    Task AddGameInTheCartAsync(Guid customerId, string gameKey);
+
+    Task RemoveGameFromTheCartAsync(Guid customerId, string gameKey);
 }

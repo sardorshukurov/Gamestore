@@ -1,4 +1,5 @@
 using GameEntity = Gamestore.Domain.Entities.Game;
+using NorthwindProductEntity = Gamestore.Domain.Entities.Northwind.Product;
 
 namespace Gamestore.BLL.DTOs.Game;
 
@@ -46,5 +47,22 @@ public static class GameMappingExtensions
         entity.UnitInStock = request.Game.UnitInStock;
         entity.Discount = request.Game.Discount;
         entity.PublisherId = request.Publisher;
+    }
+
+    public static GameEntity ToGamestoreEntity(this NorthwindProductEntity entity)
+    {
+        return new GameEntity
+        {
+            Name = entity.ProductName,
+            Key = entity.GameKey,
+            Price = entity.UnitPrice,
+            QuantityPerUnit = entity.QuantityPerUnit,
+            ReorderLevel = entity.ReorderLevel,
+            UnitInStock = entity.UnitsInStock,
+            UnitOnOrder = entity.UnitsOnOrder,
+            Discount = entity.Discountinued / 100,
+            PublisherId = Guid.Empty,
+            OriginalId = entity.ProductId,
+        };
     }
 }

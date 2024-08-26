@@ -27,7 +27,7 @@ public class OrdersController(
     [HttpDelete("cart/{key}")]
     public async Task<IActionResult> RemoveGameFromCart(string key)
     {
-        await orderService.RemoveGameFromTheCartAsync(_customerId, key);
+        await gameManager.RemoveGameFromTheCartAsync(_customerId, key);
         return Ok();
     }
 
@@ -93,7 +93,7 @@ public class OrdersController(
     [HttpPost("{key}/buyGame")]
     public async Task<IActionResult> BuyGame(string key)
     {
-        await orderService.AddGameInTheCartAsync(_customerId, key);
+        await gameManager.AddGameInTheCartAsync(_customerId, key);
         return Ok();
     }
 

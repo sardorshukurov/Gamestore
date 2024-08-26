@@ -6,6 +6,7 @@ using Gamestore.DAL;
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Data.Seeder;
 using Gamestore.DAL.Interceptors;
+using Gamestore.Domain.Entities.Northwind;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +48,8 @@ builder.Services.AddBusinessLogicServices();
 
 // adding mongodb
 builder.Services
-    .AddMongo("Northwind");
+    .AddMongo("Northwind")
+    .AddMongoRepository<Order>("orders");
 
 // adding validators
 builder.Services.RegisterValidators();
