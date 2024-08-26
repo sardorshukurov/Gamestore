@@ -3,6 +3,7 @@ using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
+using Gamestore.DAL.Filtration.Games;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -36,12 +37,12 @@ public class GamesControllerTests
     public async Task GetAllShouldReturnOkResponse()
     {
         // Arrange
-        var gamesDtoMock = _fixture.Create<ICollection<GameResponse>>();
+        var gamesResponse = _fixture.Create<GamesResponse>();
 
-        _gameServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(gamesDtoMock);
+        _gameServiceMock.Setup(x => x.GetAllAsync(It.IsAny<SearchCriteria>())).ReturnsAsync(gamesResponse);
 
         // Act
-        var result = await _controller.GetAll();
+        var result = await _controller.GetAll(It.IsAny<SearchCriteria>());
 
         // Assert
         result.Should().NotBeNull();
@@ -50,11 +51,11 @@ public class GamesControllerTests
         var okResult = result.Result as OkObjectResult;
         okResult.Value.Should().NotBeNull();
 
-        var gamesResponse = okResult.Value as IEnumerable<GameResponse>;
-        gamesResponse.Should().NotBeNull();
-        gamesResponse.Should().HaveCount(gamesDtoMock.Count);
+        var response = okResult.Value as GamesResponse;
+        response.Should().NotBeNull();
+        response.Games.Should().HaveCount(gamesResponse.Games.Count);
 
-        _gameServiceMock.Verify(x => x.GetAllAsync(), Times.Once);
+        _gameServiceMock.Verify(x => x.GetAllAsync(It.IsAny<SearchCriteria>()), Times.Once);
     }
 
     [Fact]

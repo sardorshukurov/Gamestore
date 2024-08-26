@@ -1,4 +1,4 @@
-namespace Gamestore.Common.Exceptions;
+namespace Gamestore.Common.Exceptions.NotFound;
 
 public class GameNotFoundException : NotFoundException
 {

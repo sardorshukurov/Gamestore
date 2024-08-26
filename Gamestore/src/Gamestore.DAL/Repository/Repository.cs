@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,6 +1,6 @@
 using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.PublisherService;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -18,6 +18,9 @@ public class PublisherServiceTests
     public PublisherServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
 
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _publisherRepostioryMock = _fixture.Freeze<Mock<IRepository<Publisher>>>();

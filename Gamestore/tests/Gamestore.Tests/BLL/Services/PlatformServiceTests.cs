@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 
@@ -18,6 +18,10 @@ public class PlatformServiceTests
     public PlatformServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior(recursionDepth: 1));
+
         _gameRepositoryMock = _fixture.Freeze<Mock<IRepository<Game>>>();
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
         _platformRepostioryMock = _fixture.Freeze<Mock<IRepository<Platform>>>();

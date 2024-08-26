@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Order;
 using Gamestore.BLL.DTOs.Order.Payment;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.BadRequest;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 using Microsoft.Extensions.Configuration;

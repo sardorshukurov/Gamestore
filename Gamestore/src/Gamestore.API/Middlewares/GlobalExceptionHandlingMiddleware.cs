@@ -1,5 +1,6 @@
 using System.Net;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.BadRequest;
+using Gamestore.Common.Exceptions.NotFound;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
