@@ -6,7 +6,6 @@ using Gamestore.DAL;
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Data.Seeder;
 using Gamestore.DAL.Interceptors;
-using MongoDB.Driver;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,8 +72,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-NorthwindHelper.FillProductGuids(app.Services.GetService<MongoClient>()!);
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 

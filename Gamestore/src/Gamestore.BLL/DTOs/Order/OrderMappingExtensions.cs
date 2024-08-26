@@ -1,3 +1,4 @@
+using NorthwindOrderEntity = Gamestore.Domain.Entities.Northwind.Order;
 using OrderEntity = Gamestore.Domain.Entities.Order;
 using OrderGameEntity = Gamestore.Domain.Entities.OrderGame;
 
@@ -8,9 +9,19 @@ public static class OrderMappingExtensions
     public static OrderResponse ToResponse(this OrderEntity entity)
     {
         return new OrderResponse(
-            entity.Id,
-            entity.CustomerId,
-            entity.Date);
+            entity.Id.ToString(),
+            entity.CustomerId.ToString(),
+            entity.Date,
+            OrderSource.GameStore);
+    }
+
+    public static OrderResponse ToResponse(this NorthwindOrderEntity entity)
+    {
+        return new OrderResponse(
+            entity.OrderId.ToString(),
+            entity.CustomerId.ToString(),
+            entity.OrderDate,
+            OrderSource.Northwind);
     }
 
     public static OrderDetailsResponse ToResponse(this OrderGameEntity entity)

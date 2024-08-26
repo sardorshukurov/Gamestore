@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Order;
 using Gamestore.BLL.DTOs.Order.Payment;
 using Gamestore.BLL.Payments;
+using Gamestore.BLL.Services.GameManager;
 using Gamestore.BLL.Services.OrderService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,8 @@ namespace Gamestore.API.Controllers;
 public class OrdersController(
     IOrderService orderService,
     IHttpClientFactory httpClientFactory,
-    ILogger<OrdersController> logger) : ControllerBase
+    ILogger<OrdersController> logger,
+    IGameManager gameManager) : ControllerBase
 {
     private const string BankPaymentMethod = "Bank";
     private const string IBoxPaymentMethod = "IBox terminal";
@@ -63,7 +65,7 @@ public class OrdersController(
     [HttpGet("history")]
     public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersHistory([FromQuery] DateTime? start, [FromQuery] DateTime? end)
     {
-        var orders = await orderService.GetOrdersHistoryAsync(
+        var orders = await gameManager.GetOrdersHistoryAsync(
             start ?? DateTime.MinValue,
             end ?? DateTime.MaxValue);
 

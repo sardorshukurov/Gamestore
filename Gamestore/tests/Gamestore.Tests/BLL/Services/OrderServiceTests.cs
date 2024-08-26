@@ -123,7 +123,7 @@ public class OrderServiceTests
         var result = await _service.GetByIdAsync(orderId);
 
         // Assert
-        Assert.Equal(order.Id, result.Id);
+        Assert.Equal(order.Id, Guid.Parse(result.Id));
         _orderRepositoryMock.Verify(
             x => x.GetOneAsync(
             It.IsAny<Expression<Func<Order, bool>>>()),

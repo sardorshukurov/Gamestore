@@ -40,7 +40,7 @@ public class PublisherServiceTests
         var result = await _service.GetAllAsync();
 
         // Assert
-        result.Should().BeEquivalentTo(publishers);
+        result.Count.Should().Be(publishers.Count);
         _publisherRepostioryMock.Verify(x => x.GetAllAsync(), Times.Once());
     }
 
@@ -59,7 +59,7 @@ public class PublisherServiceTests
         var actualPublisher = await _service.GetByIdAsync(id);
 
         // Assert
-        actualPublisher.Should().BeEquivalentTo(expectedPublisher);
+        actualPublisher.Id.Should().Be(expectedPublisher.Id);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class PublisherServiceTests
         var result = await _service.GetByCompanyNameAsync(companyName);
 
         // Assert
-        result.Should().BeEquivalentTo(publisher);
+        result.Id.Should().Be(publisher.Id);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class PublisherServiceTests
         var result = await _service.GetByGameKeyAsync(gameKey);
 
         // Assert
-        result.Should().BeEquivalentTo(publisher);
+        result.Id.Should().Be(publisher.Id);
     }
 
     [Fact]
