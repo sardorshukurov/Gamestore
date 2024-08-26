@@ -22,7 +22,7 @@ public class Game : IBaseEntity
 
     public int UnitOnOrder { get; set; }
 
-    public float Discount { get; set; }
+    public int Discount { get; set; }
 
     public DateTime PublishingDate { get; set; }
 

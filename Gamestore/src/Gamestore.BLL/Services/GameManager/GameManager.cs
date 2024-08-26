@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.DTOs.Order;
-using Gamestore.Common.Exceptions;
+using Gamestore.Common.Exceptions.BadRequest;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities;
 using Gamestore.Domain.Entities.Northwind;

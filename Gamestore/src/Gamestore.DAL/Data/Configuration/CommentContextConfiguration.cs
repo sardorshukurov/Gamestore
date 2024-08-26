@@ -22,10 +22,10 @@ public class CommentContextConfiguration : IEntityTypeConfiguration<Comment>
         builder
             .Property(c => c.GameId)
             .IsRequired();
-        builder
-            .HasOne<Comment>()
-            .WithMany()
-            .HasForeignKey(c => c.ParentCommentId);
+        builder.HasMany(c => c.Replies)
+            .WithOne()
+            .HasForeignKey(c => c.ParentCommentId)
+            .IsRequired(false);
         builder
             .HasOne<Game>()
             .WithMany(g => g.Comments)

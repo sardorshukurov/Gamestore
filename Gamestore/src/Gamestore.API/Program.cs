@@ -50,7 +50,8 @@ builder.Services.AddBusinessLogicServices();
 // adding mongodb
 builder.Services
     .AddMongo("Northwind")
-    .AddMongoRepository<Order>("orders");
+    .AddMongoRepository<Order>("orders")
+    .AddMongoRepository<Product>("products");
 
 // adding validators
 builder.Services.RegisterValidators();
