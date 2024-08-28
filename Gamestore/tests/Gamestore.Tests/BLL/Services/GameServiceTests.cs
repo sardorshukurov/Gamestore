@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Gamestore.BLL.DTOs.Game;
+using Gamestore.BLL.Services.GameManager;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Filtration.Games;
@@ -16,6 +17,7 @@ public class GameServiceTests
     private readonly Mock<IRepository<GamePlatform>> _gamePlatformRepositoryMock;
     private readonly Mock<IRepository<Publisher>> _publisherRepositoryMock;
     private readonly Mock<IGamesFilterRepository> _gamesFilterRepositoryMock;
+    private readonly Mock<IGameManager> _gameManagerMock;
 
     private readonly GameService _service;
 
@@ -31,13 +33,15 @@ public class GameServiceTests
         _gamePlatformRepositoryMock = _fixture.Freeze<Mock<IRepository<GamePlatform>>>();
         _publisherRepositoryMock = _fixture.Freeze<Mock<IRepository<Publisher>>>();
         _gamesFilterRepositoryMock = _fixture.Freeze<Mock<IGamesFilterRepository>>();
+        _gameManagerMock = _fixture.Freeze<Mock<IGameManager>>();
 
         _service = new GameService(
             _gameRepositoryMock.Object,
             _gamesFilterRepositoryMock.Object,
             _gameGenreRepositoryMock.Object,
             _gamePlatformRepositoryMock.Object,
-            _publisherRepositoryMock.Object);
+            _publisherRepositoryMock.Object,
+            _gameManagerMock.Object);
     }
 
     [Fact]
