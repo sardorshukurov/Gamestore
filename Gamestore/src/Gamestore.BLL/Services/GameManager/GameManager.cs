@@ -35,9 +35,27 @@ public class GameManager(
         return result;
     }
 
-    public Task<IEnumerable<GameResponse>> GetAllGamesAsync()
+    public async Task<IEnumerable<GameResponse>> GetAllGamesAsync()
     {
-        throw new NotImplementedException();
+        var northwindGames = (await productNorthwindRepository.GetAllAsync())
+            .Select(ng => ng.ToGamestoreEntity())
+            .ToList();
+
+        var games = await gameRepository.GetAllAsync();
+
+        var gameMap = new Dictionary<string, Game>();
+
+        foreach (var game in games)
+        {
+            gameMap.TryAdd(game.Key, game);
+        }
+
+        foreach (var ng in northwindGames)
+        {
+            gameMap.TryAdd(ng.Key, ng);
+        }
+
+        return gameMap.Values.Select(g => g.ToResponse());
     }
 
     public async Task AddGameInTheCartAsync(Guid customerId, string gameKey)

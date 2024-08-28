@@ -5,6 +5,8 @@ namespace Gamestore.BLL.Services.GameService;
 
 public interface IGameService
 {
+    Task<ICollection<GameResponse>> GetFromBothDBsAsync();
+
     Task<GamesResponse> GetAllAsync(SearchCriteria criteria);
 
     Task<GameResponse?> GetByKeyAsync(string key);

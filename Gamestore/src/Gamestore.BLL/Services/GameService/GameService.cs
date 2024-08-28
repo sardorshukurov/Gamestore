@@ -1,4 +1,5 @@
 using Gamestore.BLL.DTOs.Game;
+using Gamestore.BLL.Services.GameManager;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
@@ -11,8 +12,14 @@ public class GameService(
     IGamesFilterRepository filterRepository,
     IRepository<GameGenre> gameGenreRepository,
     IRepository<GamePlatform> gamePlatformRepository,
-    IRepository<Publisher> publisherRepository) : IGameService
+    IRepository<Publisher> publisherRepository,
+    IGameManager gameManager) : IGameService
 {
+    public async Task<ICollection<GameResponse>> GetFromBothDBsAsync()
+    {
+        return (await gameManager.GetAllGamesAsync()).ToList();
+    }
+
     public async Task<GamesResponse> GetAllAsync(SearchCriteria criteria)
     {
         var filteredGames = (await filterRepository.GetAsync(criteria))

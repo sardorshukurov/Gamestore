@@ -70,6 +70,13 @@ public class GamesController(
         return Ok(games);
     }
 
+    [HttpGet("from-both")]
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
+    {
+        var games = await gameService.GetFromBothDBsAsync();
+        return Ok(games);
+    }
+
     [HttpPut]
     public async Task<IActionResult> Update(UpdateGameRequest request)
     {
