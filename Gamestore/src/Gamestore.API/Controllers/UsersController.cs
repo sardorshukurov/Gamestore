@@ -16,29 +16,14 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<ActionResult<IEnumerable<UserResponse>>> Get()
         => Ok(await userService.GetAllAsync());
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        await userService.DeleteUserAsync(id);
-        return NoContent();
-    }
-
-    [HttpGet("roles")]
-    public async Task<ActionResult<IEnumerable<UserRoleResponse>>> GetRoles()
-        => Ok(await userService.GetRolesAsync());
-
-    [HttpGet("roles/{id}")]
-    public async Task<ActionResult<UserRoleResponse>> GetRole(Guid id)
-        => Ok(await userService.GetRoleByIdAsync(id));
-
     [HttpGet("{id}/roles")]
     public async Task<ActionResult<IEnumerable<UserRoleResponse>>> GetUserRoles(Guid id)
         => Ok(await userService.GetUserRolesAsync(id));
 
-    [HttpDelete("roles/{id}")]
-    public async Task<ActionResult<UserRoleResponse>> DeleteRole(Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
-        await userService.DeleteRoleAsync(id);
+        await userService.DeleteUserAsync(id);
         return NoContent();
     }
 
