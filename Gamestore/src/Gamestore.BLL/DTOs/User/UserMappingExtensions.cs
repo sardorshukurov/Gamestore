@@ -18,4 +18,15 @@ public static class UserMappingExtensions
             entity.Id,
             entity.Name ?? string.Empty);
     }
+
+    public static UserEntity ToEntity(this RegisterUserRequest request, ICollection<UserRoleEntity> roles)
+    {
+        return new UserEntity
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Roles = roles,
+        };
+    }
 }

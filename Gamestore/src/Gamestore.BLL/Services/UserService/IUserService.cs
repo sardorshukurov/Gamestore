@@ -6,6 +6,8 @@ public interface IUserService
 {
     Task<AuthResponse> LoginAsync(AuthRequest request);
 
+    Task RegisterAsync(RegisterUserRequest request);
+
     Task<IEnumerable<UserResponse>> GetAllAsync();
 
     Task DeleteUserAsync(Guid userId);

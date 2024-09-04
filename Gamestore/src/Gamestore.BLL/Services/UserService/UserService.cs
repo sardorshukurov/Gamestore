@@ -91,7 +91,40 @@ public class UserService(
             throw new BadRequestException(result.Content.ToString() ?? string.Empty);
         }
 
-        throw new Exception();
+        throw new Exception("Internal server error");
+    }
+
+    public async Task RegisterAsync(RegisterUserRequest request)
+    {
+        var roles = (await userRoleRepository
+            .GetAllByFilterAsync(ur => request.Roles.Contains(ur.Id)))
+            .ToList();
+        var entity = request.ToEntity(roles);
+
+        var requestToService = new RegisterClientRequest(
+            entity.Email,
+            entity.FirstName,
+            entity.LastName,
+            request.Password,
+            request.Password);
+
+        var serializedObject = JsonConvert.SerializeObject(requestToService);
+        var serializedRequest = new StringContent(serializedObject, Encoding.UTF8, "application/json");
+        var result = await _authClient.PostAsync("/api/users", serializedRequest);
+
+        if (result.IsSuccessStatusCode)
+        {
+            await userRepository.CreateAsync(entity);
+            await userRepository.SaveChangesAsync();
+        }
+        else if (result.StatusCode == HttpStatusCode.BadRequest)
+        {
+            throw new BadRequestException(result.Content.ToString() ?? string.Empty);
+        }
+        else
+        {
+            throw new Exception("Internal server error");
+        }
     }
 
     public async Task DeleteUserAsync(Guid userId)
@@ -190,4 +223,11 @@ public class UserService(
         string Email,
         string FirstName,
         string LastName);
+
+    private record RegisterClientRequest(
+        string Email,
+        string FirstName,
+        string LastName,
+        string Password,
+        string ConfirmPassword);
 }

@@ -8,7 +8,7 @@ namespace Gamestore.API.Controllers;
 [ApiController]
 public class UsersController(IUserService userService) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(AuthRequest request)
         => Ok(await userService.LoginAsync(request));
 
@@ -36,5 +36,12 @@ public class UsersController(IUserService userService) : ControllerBase
     {
         await userService.DeleteRoleAsync(id);
         return NoContent();
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Post(RegisterUserRequest request)
+    {
+        await userService.RegisterAsync(request);
+        return Ok();
     }
 }
