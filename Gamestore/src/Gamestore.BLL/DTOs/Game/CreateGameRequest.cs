@@ -1,9 +1,9 @@
 using FluentValidation;
 using Gamestore.DAL.Repository;
-using GameEntity = Gamestore.Domain.Entities.Game;
-using GenreEntity = Gamestore.Domain.Entities.Genre;
-using PlatformEntity = Gamestore.Domain.Entities.Platform;
-using PublisherEntity = Gamestore.Domain.Entities.Publisher;
+using GameEntity = Gamestore.Domain.Entities.Games.Game;
+using GenreEntity = Gamestore.Domain.Entities.Games.Genre;
+using PlatformEntity = Gamestore.Domain.Entities.Games.Platform;
+using PublisherEntity = Gamestore.Domain.Entities.Games.Publisher;
 
 namespace Gamestore.BLL.DTOs.Game;
 

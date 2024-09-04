@@ -1,4 +1,4 @@
-using CommentEntity = Gamestore.Domain.Entities.Comment;
+using CommentEntity = Gamestore.Domain.Entities.Comments.Comment;
 
 namespace Gamestore.BLL.DTOs.Comment;
 

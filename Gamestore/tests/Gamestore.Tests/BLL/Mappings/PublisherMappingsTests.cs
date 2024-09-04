@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Publisher;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.Tests.BLL.Mappings;
 

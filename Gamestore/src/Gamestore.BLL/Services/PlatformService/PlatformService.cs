@@ -1,7 +1,7 @@
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.BLL.Services.PlatformService;
 

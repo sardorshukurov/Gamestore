@@ -1,4 +1,4 @@
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.DAL.Filtration.Games.Pipeline;
 

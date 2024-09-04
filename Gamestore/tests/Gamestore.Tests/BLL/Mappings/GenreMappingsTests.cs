@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Genre;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.Tests.BLL.Mappings;
 

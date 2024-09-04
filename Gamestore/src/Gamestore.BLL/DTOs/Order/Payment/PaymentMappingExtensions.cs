@@ -1,4 +1,4 @@
-using PaymentMethodEntity = Gamestore.Domain.Entities.PaymentMethod;
+using PaymentMethodEntity = Gamestore.Domain.Entities.Orders.PaymentMethod;
 
 namespace Gamestore.BLL.DTOs.Order.Payment;
 

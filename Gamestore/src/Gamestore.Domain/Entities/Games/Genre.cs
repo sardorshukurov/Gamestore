@@ -1,6 +1,6 @@
 using Gamestore.Domain.Common;
 
-namespace Gamestore.Domain.Entities;
+namespace Gamestore.Domain.Entities.Games;
 
 public class Genre : IBaseEntity
 {
@@ -9,4 +9,8 @@ public class Genre : IBaseEntity
     public string Name { get; set; }
 
     public Guid? ParentGenreId { get; set; }
+
+    public string? Description { get; set; }
+
+    public byte[]? Picture { get; set; }
 }

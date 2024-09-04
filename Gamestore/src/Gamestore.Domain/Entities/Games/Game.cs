@@ -1,6 +1,8 @@
 using Gamestore.Domain.Common;
+using Gamestore.Domain.Entities.Comments;
+using Gamestore.Domain.Entities.Orders;
 
-namespace Gamestore.Domain.Entities;
+namespace Gamestore.Domain.Entities.Games;
 
 public class Game : IBaseEntity
 {
@@ -14,7 +16,13 @@ public class Game : IBaseEntity
 
     public double Price { get; set; }
 
+    public string QuantityPerUnit { get; set; }
+
+    public int ReorderLevel { get; set; }
+
     public int UnitInStock { get; set; }
+
+    public int UnitOnOrder { get; set; }
 
     public int Discount { get; set; }
 
@@ -29,4 +37,6 @@ public class Game : IBaseEntity
     public virtual ICollection<OrderGame> OrderGames { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; }
+
+    public int? OriginalId { get; set; }
 }

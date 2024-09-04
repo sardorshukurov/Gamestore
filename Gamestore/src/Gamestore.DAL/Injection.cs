@@ -1,7 +1,9 @@
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Comments;
+using Gamestore.Domain.Entities.Games;
+using Gamestore.Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

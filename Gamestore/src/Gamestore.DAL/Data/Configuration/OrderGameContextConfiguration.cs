@@ -1,4 +1,4 @@
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

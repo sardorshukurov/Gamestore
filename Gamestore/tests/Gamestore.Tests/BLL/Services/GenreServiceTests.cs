@@ -3,7 +3,7 @@ using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.Tests.BLL.Services;
 

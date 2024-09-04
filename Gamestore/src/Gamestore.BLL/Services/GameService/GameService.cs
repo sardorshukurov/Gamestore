@@ -2,7 +2,7 @@ using Gamestore.BLL.DTOs.Game;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.BLL.Services.GameService;
 

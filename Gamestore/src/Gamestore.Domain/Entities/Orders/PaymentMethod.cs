@@ -1,6 +1,6 @@
 using Gamestore.Domain.Common;
 
-namespace Gamestore.Domain.Entities;
+namespace Gamestore.Domain.Entities.Orders;
 
 public class PaymentMethod : IBaseEntity
 {

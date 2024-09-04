@@ -1,5 +1,5 @@
 using Gamestore.DAL.Data;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Filtration.Games.Pipeline;

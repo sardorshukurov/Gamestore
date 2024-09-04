@@ -1,4 +1,5 @@
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
+using Gamestore.Domain.Entities.Orders;
 
 namespace Gamestore.DAL.Data.Seeder;
 

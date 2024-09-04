@@ -1,5 +1,5 @@
 using Gamestore.BLL.DTOs.Game;
-using PlatformEntity = Gamestore.Domain.Entities.Platform;
+using PlatformEntity = Gamestore.Domain.Entities.Games.Platform;
 
 namespace Gamestore.BLL.DTOs.Platform;
 

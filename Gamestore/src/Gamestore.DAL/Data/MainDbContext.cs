@@ -1,4 +1,7 @@
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Comments;
+using Gamestore.Domain.Entities.Games;
+using Gamestore.Domain.Entities.Orders;
+using Gamestore.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.DAL.Data;
@@ -24,6 +27,10 @@ public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
 
     public DbSet<Ban> Bans { get; set; }
+
+    public DbSet<User> Users { get; set; }
+
+    public DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

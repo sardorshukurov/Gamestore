@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
+using Gamestore.Domain.Entities.Orders;
 using Microsoft.Extensions.Configuration;
 
 namespace Gamestore.Tests.BLL.Services;

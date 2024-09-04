@@ -3,7 +3,7 @@ using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.Tests.BLL.Services;
 

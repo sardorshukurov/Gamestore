@@ -1,5 +1,5 @@
-using OrderEntity = Gamestore.Domain.Entities.Order;
-using OrderGameEntity = Gamestore.Domain.Entities.OrderGame;
+using OrderEntity = Gamestore.Domain.Entities.Orders.Order;
+using OrderGameEntity = Gamestore.Domain.Entities.Orders.OrderGame;
 
 namespace Gamestore.BLL.DTOs.Order;
 

@@ -1,6 +1,6 @@
 using FluentValidation;
 using Gamestore.DAL.Repository;
-using GenreEntity = Gamestore.Domain.Entities.Genre;
+using GenreEntity = Gamestore.Domain.Entities.Games.Genre;
 
 namespace Gamestore.BLL.DTOs.Genre;
 

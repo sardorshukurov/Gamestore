@@ -1,4 +1,4 @@
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Comments;
 
 namespace Gamestore.Common.Helpers;
 

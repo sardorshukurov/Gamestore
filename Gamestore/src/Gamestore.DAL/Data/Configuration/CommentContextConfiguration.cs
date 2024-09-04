@@ -1,4 +1,5 @@
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Comments;
+using Gamestore.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

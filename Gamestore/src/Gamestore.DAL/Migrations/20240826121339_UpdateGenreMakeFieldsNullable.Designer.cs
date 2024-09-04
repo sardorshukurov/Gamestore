@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gamestore.DAL.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20240805123227_AddPaymentMethodEntity")]
-    partial class AddPaymentMethodEntity
+    [Migration("20240826121339_UpdateGenreMakeFieldsNullable")]
+    partial class UpdateGenreMakeFieldsNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,30 @@ namespace Gamestore.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Gamestore.Domain.Entities.Ban", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Bans");
+                });
 
             modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
                 {
@@ -63,8 +87,8 @@ namespace Gamestore.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
+                    b.Property<float>("Discount")
+                        .HasColumnType("real");
 
                     b.Property<string>("Key")
                         .IsRequired()
@@ -74,13 +98,26 @@ namespace Gamestore.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OriginalId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<Guid>("PublisherId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("QuantityPerUnit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReorderLevel")
+                        .HasColumnType("int");
+
                     b.Property<int>("UnitInStock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitOnOrder")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -129,12 +166,18 @@ namespace Gamestore.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid?>("ParentGenreId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Picture")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
@@ -156,6 +199,44 @@ namespace Gamestore.DAL.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Freight")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("RequiredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ShipAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipCity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipCountry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShipPostalCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShipRegion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShipVia")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ShippedVia")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -172,8 +253,8 @@ namespace Gamestore.DAL.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
+                    b.Property<float>("Discount")
+                        .HasColumnType("real");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -235,14 +316,50 @@ namespace Gamestore.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Fax")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("HomePage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -262,7 +379,7 @@ namespace Gamestore.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Gamestore.Domain.Entities.Comment", null)
-                        .WithMany("Replies")
+                        .WithMany()
                         .HasForeignKey("ParentCommentId");
                 });
 
@@ -318,11 +435,6 @@ namespace Gamestore.DAL.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Gamestore.Domain.Entities.Comment", b =>
-                {
-                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

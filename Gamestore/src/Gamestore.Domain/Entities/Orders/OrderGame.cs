@@ -1,4 +1,6 @@
-namespace Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Games;
+
+namespace Gamestore.Domain.Entities.Orders;
 
 public class OrderGame
 {
@@ -14,5 +16,5 @@ public class OrderGame
 
     public int Quantity { get; set; }
 
-    public int Discount { get; set; }
+    public float Discount { get; set; }
 }

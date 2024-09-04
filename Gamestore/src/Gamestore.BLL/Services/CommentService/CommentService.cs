@@ -4,7 +4,8 @@ using Gamestore.Common.Exceptions.BadRequest;
 using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.Common.Helpers;
 using Gamestore.DAL.Repository;
-using Gamestore.Domain.Entities;
+using Gamestore.Domain.Entities.Comments;
+using Gamestore.Domain.Entities.Games;
 
 namespace Gamestore.BLL.Services.CommentService;
 
