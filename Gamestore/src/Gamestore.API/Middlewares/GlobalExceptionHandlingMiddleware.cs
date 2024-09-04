@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Authentication;
 using Gamestore.Common.Exceptions.BadRequest;
 using Gamestore.Common.Exceptions.NotFound;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,7 @@ public class GlobalExceptionHandlingMiddleware(
         {
             NotFoundException => HttpStatusCode.NotFound,
             BadRequestException => HttpStatusCode.BadRequest,
+            AuthenticationException => HttpStatusCode.Unauthorized,
             _ => HttpStatusCode.InternalServerError,
         };
     }

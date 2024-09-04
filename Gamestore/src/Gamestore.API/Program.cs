@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
 using Gamestore.API.Middlewares;
@@ -6,6 +7,8 @@ using Gamestore.Common.Helpers;
 using Gamestore.DAL;
 using Gamestore.DAL.Data;
 using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +17,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
     loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
+// adding payment microservice
 builder.Services.AddHttpClient("PaymentAPI", client =>
 {
     var uriString = builder.Configuration.GetSection("PaymentMicroservice").Value;
+
+    if (!string.IsNullOrEmpty(uriString))
+    {
+        client.BaseAddress = new Uri(uriString);
+    }
+});
+
+// adding authorization microservice
+builder.Services.AddHttpClient("AuthAPI", client =>
+{
+    var uriString = builder.Configuration.GetSection("AuthMicroservice").Value;
 
     if (!string.IsNullOrEmpty(uriString))
     {
@@ -57,7 +72,27 @@ builder.Services.AddCors(options =>
             .WithExposedHeaders("x-total-number-of-games"));
 });
 
+// configuring totla games middleware
 builder.Services.Configure<TotalGamesMiddlewareConfig>(builder.Configuration.GetSection("TotalGamesMiddleware"));
+
+// adding authentication and authorization
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration.GetSection("Issuer").Value,
+            ValidAudience = builder.Configuration.GetSection("Audience").Value,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtKey").Value!)),
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -78,6 +113,9 @@ app.UseCors("CorsPolicy");
 
 app.UseMiddleware<AddTotalGamesInHeaderMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
