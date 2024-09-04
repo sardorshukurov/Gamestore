@@ -129,10 +129,19 @@ public static class BaseData
         new UserRole
         {
             Name = "Admin",
+            Permissions =
+            Permissions.AddGame
+            | Permissions.DeleteGame
+            | Permissions.UpdateGame
+            | Permissions.ViewGame,
         },
         new UserRole
         {
             Name = "Manager",
+            Permissions =
+            Permissions.AddGame
+            | Permissions.UpdateGame
+            | Permissions.ViewGame,
         },
     ];
 }

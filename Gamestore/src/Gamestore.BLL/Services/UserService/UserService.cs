@@ -201,6 +201,14 @@ public class UserService(
         return role.ToResponse();
     }
 
+    public async Task<Permissions> GetRolePermissionsAsync(Guid roleId)
+    {
+        var role = await userRoleRepository.GetByIdAsync(roleId)
+            ?? throw new UserRoleNotFoundException(roleId);
+
+        return role.Permissions;
+    }
+
     public async Task DeleteRoleAsync(Guid roleId)
     {
         var role = await userRoleRepository.GetByIdAsync(roleId)

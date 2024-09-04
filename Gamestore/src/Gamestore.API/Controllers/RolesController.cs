@@ -27,4 +27,8 @@ public class RolesController(IUserService userService) : ControllerBase
         await userService.DeleteRoleAsync(id);
         return NoContent();
     }
+
+    [HttpGet("{id}/permissions")]
+    public async Task<ActionResult<Permissions>> GetPermissions(Guid id)
+        => await userService.GetRolePermissionsAsync(id);
 }
