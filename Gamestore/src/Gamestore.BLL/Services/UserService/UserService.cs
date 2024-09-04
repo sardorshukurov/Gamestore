@@ -185,6 +185,14 @@ public class UserService(
     public async Task<IEnumerable<UserRoleResponse>> GetRolesAsync()
         => (await userRoleRepository.GetAllAsync()).Select(ur => ur.ToResponse());
 
+    public async Task<IEnumerable<UserRoleResponse>> GetUserRolesAsync(Guid userId)
+    {
+        var user = await userRepository.GetOneAsync(u => u.Id == userId, u => u.Roles)
+            ?? throw new UserNotFoundException(userId);
+
+        return user.Roles.Select(r => r.ToResponse());
+    }
+
     public async Task<UserRoleResponse> GetRoleByIdAsync(Guid id)
     {
         var role = await userRoleRepository.GetByIdAsync(id)

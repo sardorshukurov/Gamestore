@@ -31,6 +31,10 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<ActionResult<UserRoleResponse>> GetRole(Guid id)
         => Ok(await userService.GetRoleByIdAsync(id));
 
+    [HttpGet("{id}/roles")]
+    public async Task<ActionResult<IEnumerable<UserRoleResponse>>> GetUserRoles(Guid id)
+        => Ok(await userService.GetUserRolesAsync(id));
+
     [HttpDelete("roles/{id}")]
     public async Task<ActionResult<UserRoleResponse>> DeleteRole(Guid id)
     {
