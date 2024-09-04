@@ -41,6 +41,7 @@ public static class Injection
         services.AddScoped<IRepository<Ban>, Repository<Ban>>();
 
         services.AddScoped<IRepository<User>, Repository<User>>();
+        services.AddScoped<IRepository<UserRole>, Repository<UserRole>>();
 
         return services;
     }

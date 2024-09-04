@@ -1,9 +1,11 @@
 ﻿namespace Gamestore.Domain.Entities.Users;
 
+[Flags]
 public enum Permissions
 {
-    AddGame,
-    DeleteGame,
-    ViewGame,
-    UpdateGame,
+    None = 0,
+    AddGame = 1,
+    DeleteGame = 2,
+    ViewGame = 4,
+    UpdateGame = 8,
 }

@@ -9,4 +9,8 @@ public interface IUserService
     Task<IEnumerable<UserResponse>> GetAllAsync();
 
     Task DeleteUserAsync(Guid userId);
+
+    Task<IEnumerable<UserRoleResponse>> GetRolesAsync();
+
+    Task<UserRoleResponse> GetRoleByIdAsync(Guid id);
 }

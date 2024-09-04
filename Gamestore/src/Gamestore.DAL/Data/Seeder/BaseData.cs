@@ -1,5 +1,6 @@
 using Gamestore.Domain.Entities.Games;
 using Gamestore.Domain.Entities.Orders;
+using Gamestore.Domain.Entities.Users;
 
 namespace Gamestore.DAL.Data.Seeder;
 
@@ -120,6 +121,18 @@ public static class BaseData
             ImageUrl = "https://static-00.iconduck.com/assets.00/visa-icon-2048x628-6yzgq2vq.png",
             Title = "Visa",
             Description = "Visa Payment",
+        },
+    ];
+
+    public static readonly IEnumerable<UserRole> UserRoles =
+    [
+        new UserRole
+        {
+            Name = "Admin",
+        },
+        new UserRole
+        {
+            Name = "Manager",
         },
     ];
 }

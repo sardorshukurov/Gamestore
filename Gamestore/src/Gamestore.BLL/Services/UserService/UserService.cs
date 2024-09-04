@@ -18,7 +18,8 @@ namespace Gamestore.BLL.Services.UserService;
 public class UserService(
     IHttpClientFactory httpClientFactory,
     IConfiguration configuration,
-    IRepository<User> userRepository) : IUserService
+    IRepository<User> userRepository,
+    IRepository<UserRole> userRoleRepository) : IUserService
 {
     private readonly HttpClient _authClient = httpClientFactory.CreateClient("AuthAPI");
 
@@ -103,12 +104,23 @@ public class UserService(
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
-            RequestUri = new Uri($"{_authClient.BaseAddress}/api/users"),
+            RequestUri = new Uri($"{_authClient.BaseAddress}api/users"),
             Content = serializedRequest,
         };
         await _authClient.SendAsync(request);
         await userRepository.DeleteByIdAsync(userId);
         await userRepository.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<UserRoleResponse>> GetRolesAsync()
+        => (await userRoleRepository.GetAllAsync()).Select(ur => ur.ToResponse());
+
+    public async Task<UserRoleResponse> GetRoleByIdAsync(Guid id)
+    {
+        var role = await userRoleRepository.GetByIdAsync(id)
+            ?? throw new UserRoleNotFoundException(id);
+
+        return role.ToResponse();
     }
 
     // TODO: add user roles

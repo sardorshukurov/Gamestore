@@ -8,6 +8,7 @@ public static class DbSeeder
         var childGenres = BaseData.ChildGenres;
         var platforms = BaseData.Platforms;
         var paymentMethods = BaseData.PaymentMethods;
+        var userRoles = BaseData.UserRoles;
 
         if (!context.Genres.Any())
         {
@@ -35,6 +36,14 @@ public static class DbSeeder
             foreach (var paymentMethod in paymentMethods)
             {
                 context.PaymentMethods.Add(paymentMethod);
+            }
+        }
+
+        if (!context.UserRoles.Any())
+        {
+            foreach (var userRole in userRoles)
+            {
+                context.UserRoles.Add(userRole);
             }
         }
 
