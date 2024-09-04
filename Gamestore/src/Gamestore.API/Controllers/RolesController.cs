@@ -1,5 +1,5 @@
-﻿using Gamestore.BLL.DTOs.User;
-using Gamestore.BLL.Services.UserService;
+﻿using Gamestore.BLL.DTOs.Role;
+using Gamestore.BLL.Services.RoleService;
 using Gamestore.Domain.Entities.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,15 +7,15 @@ namespace Gamestore.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RolesController(IUserService userService) : ControllerBase
+public class RolesController(IRoleService roleService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserRoleResponse>>> GetRoles()
-    => Ok(await userService.GetRolesAsync());
+    => Ok(await roleService.GetRolesAsync());
 
     [HttpGet("{id}")]
     public async Task<ActionResult<UserRoleResponse>> GetRole(Guid id)
-        => Ok(await userService.GetRoleByIdAsync(id));
+        => Ok(await roleService.GetRoleByIdAsync(id));
 
     [HttpGet("permissions")]
     public ActionResult<IEnumerable<Permissions>> GetPermissions()
@@ -24,11 +24,18 @@ public class RolesController(IUserService userService) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<UserRoleResponse>> DeleteRole(Guid id)
     {
-        await userService.DeleteRoleAsync(id);
+        await roleService.DeleteRoleAsync(id);
         return NoContent();
     }
 
     [HttpGet("{id}/permissions")]
     public async Task<ActionResult<Permissions>> GetPermissions(Guid id)
-        => await userService.GetRolePermissionsAsync(id);
+        => await roleService.GetRolePermissionsAsync(id);
+
+    [HttpPost]
+    public async Task<IActionResult> Post(CreateRoleRequest request)
+    {
+        await roleService.AddRoleAsync(request);
+        return Ok();
+    }
 }

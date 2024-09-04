@@ -4,6 +4,7 @@ using Gamestore.BLL.Services.GenreService;
 using Gamestore.BLL.Services.OrderService;
 using Gamestore.BLL.Services.PlatformService;
 using Gamestore.BLL.Services.PublisherService;
+using Gamestore.BLL.Services.RoleService;
 using Gamestore.BLL.Services.UserService;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,7 @@ public static class Injection
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IRoleService, RoleService>();
 
         return services;
     }

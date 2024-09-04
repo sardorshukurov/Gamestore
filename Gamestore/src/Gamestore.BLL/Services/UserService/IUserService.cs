@@ -1,5 +1,5 @@
-﻿using Gamestore.BLL.DTOs.User;
-using Gamestore.Domain.Entities.Users;
+﻿using Gamestore.BLL.DTOs.Role;
+using Gamestore.BLL.DTOs.User;
 
 namespace Gamestore.BLL.Services.UserService;
 
@@ -15,13 +15,5 @@ public interface IUserService
 
     Task DeleteUserAsync(Guid userId);
 
-    Task<IEnumerable<UserRoleResponse>> GetRolesAsync();
-
     Task<IEnumerable<UserRoleResponse>> GetUserRolesAsync(Guid userId);
-
-    Task<UserRoleResponse> GetRoleByIdAsync(Guid id);
-
-    Task<Permissions> GetRolePermissionsAsync(Guid roleId);
-
-    Task DeleteRoleAsync(Guid roleId);
 }

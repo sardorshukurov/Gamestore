@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using Gamestore.BLL.DTOs.Role;
 using Gamestore.BLL.DTOs.User;
 using Gamestore.Common.Exceptions.BadRequest;
 using Gamestore.Common.Exceptions.NotFound;
@@ -182,40 +183,12 @@ public class UserService(
         await userRepository.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<UserRoleResponse>> GetRolesAsync()
-        => (await userRoleRepository.GetAllAsync()).Select(ur => ur.ToResponse());
-
     public async Task<IEnumerable<UserRoleResponse>> GetUserRolesAsync(Guid userId)
     {
         var user = await userRepository.GetOneAsync(u => u.Id == userId, u => u.Roles)
             ?? throw new UserNotFoundException(userId);
 
         return user.Roles.Select(r => r.ToResponse());
-    }
-
-    public async Task<UserRoleResponse> GetRoleByIdAsync(Guid id)
-    {
-        var role = await userRoleRepository.GetByIdAsync(id)
-            ?? throw new UserRoleNotFoundException(id);
-
-        return role.ToResponse();
-    }
-
-    public async Task<Permissions> GetRolePermissionsAsync(Guid roleId)
-    {
-        var role = await userRoleRepository.GetByIdAsync(roleId)
-            ?? throw new UserRoleNotFoundException(roleId);
-
-        return role.Permissions;
-    }
-
-    public async Task DeleteRoleAsync(Guid roleId)
-    {
-        var role = await userRoleRepository.GetByIdAsync(roleId)
-            ?? throw new UserRoleNotFoundException(roleId);
-
-        await userRoleRepository.DeleteByIdAsync(role.Id);
-        await userRoleRepository.SaveChangesAsync();
     }
 
     // TODO: add user roles

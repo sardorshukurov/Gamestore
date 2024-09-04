@@ -12,13 +12,6 @@ public static class UserMappingExtensions
             entity.FirstName ?? string.Empty);
     }
 
-    public static UserRoleResponse ToResponse(this UserRoleEntity entity)
-    {
-        return new UserRoleResponse(
-            entity.Id,
-            entity.Name ?? string.Empty);
-    }
-
     public static UserEntity ToEntity(this RegisterUserRequest request, ICollection<UserRoleEntity> roles)
     {
         return new UserEntity
