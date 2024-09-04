@@ -19,4 +19,10 @@ public static class RoleMappingExtensions
             Permissions = request.Permissions,
         };
     }
+
+    public static void UpdateEntity(this UpdateRoleRequest request, UserRoleEntity entity)
+    {
+        entity.Name = request.Name;
+        entity.Permissions = request.Permissions;
+    }
 }

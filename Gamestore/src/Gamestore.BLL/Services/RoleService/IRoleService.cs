@@ -14,4 +14,6 @@ public interface IRoleService
     Task DeleteRoleAsync(Guid roleId);
 
     Task AddRoleAsync(CreateRoleRequest request);
+
+    Task UpdateRoleAsync(UpdateRoleRequest request);
 }

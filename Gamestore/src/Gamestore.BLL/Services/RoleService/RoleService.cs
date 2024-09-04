@@ -43,4 +43,14 @@ public class RoleService(IRepository<UserRole> userRoleRepository) : IRoleServic
         await userRoleRepository.CreateAsync(entity);
         await userRoleRepository.SaveChangesAsync();
     }
+
+    public async Task UpdateRoleAsync(UpdateRoleRequest request)
+    {
+        var entity = await userRoleRepository.GetByIdAsync(request.Id)
+            ?? throw new UserRoleNotFoundException(request.Id);
+
+        request.UpdateEntity(entity);
+
+        await userRoleRepository.SaveChangesAsync();
+    }
 }

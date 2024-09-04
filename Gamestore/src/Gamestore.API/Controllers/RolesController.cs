@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class RolesController(IRoleService roleService) : ControllerBase
 {
@@ -37,5 +37,12 @@ public class RolesController(IRoleService roleService) : ControllerBase
     {
         await roleService.AddRoleAsync(request);
         return Ok();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Put(UpdateRoleRequest request)
+    {
+        await roleService.UpdateRoleAsync(request);
+        return NoContent();
     }
 }
