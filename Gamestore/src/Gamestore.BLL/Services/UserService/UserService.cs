@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Gamestore.BLL.DTOs.User;
 using Gamestore.Common.Exceptions.BadRequest;
+using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities.Users;
 using Microsoft.Extensions.Configuration;
@@ -90,6 +91,24 @@ public class UserService(
         }
 
         throw new Exception();
+    }
+
+    public async Task DeleteUserAsync(Guid userId)
+    {
+        var user = await userRepository.GetByIdAsync(userId)
+            ?? throw new UserNotFoundException(userId);
+
+        var serializedRequest = new StringContent(JsonConvert.SerializeObject(user.Email), Encoding.UTF8, "application/json");
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri($"{_authClient.BaseAddress}/api/users"),
+            Content = serializedRequest,
+        };
+        await _authClient.SendAsync(request);
+        await userRepository.DeleteByIdAsync(userId);
+        await userRepository.SaveChangesAsync();
     }
 
     // TODO: add user roles

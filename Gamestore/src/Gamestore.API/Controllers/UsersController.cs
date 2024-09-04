@@ -15,4 +15,11 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserResponse>>> Get()
         => Ok(await userService.GetAllAsync());
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await userService.DeleteUserAsync(id);
+        return NoContent();
+    }
 }
