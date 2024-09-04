@@ -4,7 +4,7 @@ namespace Gamestore.Domain.Entities.Users;
 
 public class User : IBaseEntity
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public string FirstName { get; set; } = string.Empty;
 

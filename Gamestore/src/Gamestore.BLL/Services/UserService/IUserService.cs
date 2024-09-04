@@ -4,5 +4,7 @@ namespace Gamestore.BLL.Services.UserService;
 
 public interface IUserService
 {
-    Task<AuthResponse> Login(AuthRequest request);
+    Task<AuthResponse> LoginAsync(AuthRequest request);
+
+    Task<IEnumerable<UserResponse>> GetAllAsync();
 }

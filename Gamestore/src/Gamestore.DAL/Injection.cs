@@ -4,6 +4,7 @@ using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities.Comments;
 using Gamestore.Domain.Entities.Games;
 using Gamestore.Domain.Entities.Orders;
+using Gamestore.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,8 @@ public static class Injection
 
         services.AddScoped<IRepository<Comment>, Repository<Comment>>();
         services.AddScoped<IRepository<Ban>, Repository<Ban>>();
+
+        services.AddScoped<IRepository<User>, Repository<User>>();
 
         return services;
     }
