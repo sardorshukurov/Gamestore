@@ -29,4 +29,15 @@ public static class UserMappingExtensions
             Roles = roles,
         };
     }
+
+    public static void UpdateEntity(
+        this UpdateUserRequest request,
+        UserEntity entity,
+        ICollection<UserRoleEntity> roles)
+    {
+        entity.FirstName = request.FirstName;
+        entity.LastName = request.LastName;
+        entity.Email = request.Email;
+        entity.Roles = roles;
+    }
 }

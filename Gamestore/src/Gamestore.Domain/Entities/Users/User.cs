@@ -12,6 +12,6 @@ public class User : IBaseEntity
 
     public string Email { get; set; } = string.Empty;
 
-    public ICollection<UserRole> Roles { get; set; } =
+    public virtual ICollection<UserRole> Roles { get; set; } =
         [];
 }

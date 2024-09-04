@@ -8,6 +8,8 @@ public interface IUserService
 
     Task RegisterAsync(RegisterUserRequest request);
 
+    Task UpdateUserAsync(UpdateUserRequest request);
+
     Task<IEnumerable<UserResponse>> GetAllAsync();
 
     Task DeleteUserAsync(Guid userId);

@@ -3,19 +3,19 @@ using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities.Users;
 
 namespace Gamestore.BLL.DTOs.User;
-
-public record RegisterUserRequest(
+public record UpdateUserRequest(
     string FirstName,
     string LastName,
     string Email,
+    string OriginalEmail,
     ICollection<Guid> RoleIds,
     string Password);
 
-public class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
+public class UpdateUserValidator : AbstractValidator<UpdateUserRequest>
 {
     private readonly IRepository<UserRole> _userRoleRepository;
 
-    public RegisterUserValidator(
+    public UpdateUserValidator(
         IRepository<UserRole> userRoleRepository)
     {
         _userRoleRepository = userRoleRepository;
@@ -33,6 +33,10 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
         RuleFor(u => u.Email)
             .NotEmpty()
             .WithMessage("Email required");
+
+        RuleFor(u => u.OriginalEmail)
+            .NotEmpty()
+            .WithMessage("Original email required");
 
         RuleFor(u => u.RoleIds)
             .Must((roleIds) => ContainExistingRoles(roleIds).Result)

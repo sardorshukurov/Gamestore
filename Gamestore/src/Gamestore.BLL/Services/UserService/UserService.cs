@@ -97,7 +97,7 @@ public class UserService(
     public async Task RegisterAsync(RegisterUserRequest request)
     {
         var roles = (await userRoleRepository
-            .GetAllByFilterAsync(ur => request.Roles.Contains(ur.Id)))
+            .GetAllByFilterAsync(ur => request.RoleIds.Contains(ur.Id), true))
             .ToList();
         var entity = request.ToEntity(roles);
 
@@ -115,6 +115,43 @@ public class UserService(
         if (result.IsSuccessStatusCode)
         {
             await userRepository.CreateAsync(entity);
+            await userRepository.SaveChangesAsync();
+        }
+        else if (result.StatusCode == HttpStatusCode.BadRequest)
+        {
+            throw new BadRequestException(result.Content.ToString() ?? string.Empty);
+        }
+        else
+        {
+            throw new Exception("Internal server error");
+        }
+    }
+
+    public async Task UpdateUserAsync(UpdateUserRequest request)
+    {
+        var user = await userRepository.GetOneAsync(u => u.Email == request.OriginalEmail, u => u.Roles)
+            ?? throw new UserNotFoundException(request.OriginalEmail);
+
+        var roles = (await userRoleRepository
+            .GetAllByFilterAsync(ur => request.RoleIds.Contains(ur.Id), true))
+            .ToList();
+
+        request.UpdateEntity(user, roles);
+
+        var requestToService = new UpdateUserClientRequest(
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            request.Password,
+            request.Password);
+
+        var serializedObject = JsonConvert.SerializeObject(requestToService);
+        var serializedRequest = new StringContent(serializedObject, Encoding.UTF8, "application/json");
+        var result = await _authClient.PutAsync($"/api/users?originalEmail={request.OriginalEmail}", serializedRequest);
+
+        if (result.IsSuccessStatusCode)
+        {
+            await userRepository.UpdateAsync(user.Id, user);
             await userRepository.SaveChangesAsync();
         }
         else if (result.StatusCode == HttpStatusCode.BadRequest)
@@ -225,6 +262,13 @@ public class UserService(
         string LastName);
 
     private record RegisterClientRequest(
+        string Email,
+        string FirstName,
+        string LastName,
+        string Password,
+        string ConfirmPassword);
+
+    private record UpdateUserClientRequest(
         string Email,
         string FirstName,
         string LastName,

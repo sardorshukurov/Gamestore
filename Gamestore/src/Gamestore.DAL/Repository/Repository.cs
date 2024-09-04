@@ -99,7 +99,7 @@ public class Repository<T> : IRepository<T>
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includeProperties)
+    public async Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool needsTracking = false, params Expression<Func<T, object>>[] includeProperties)
     {
         IQueryable<T> query = _dbSet;
         foreach (var includeProperty in includeProperties)
@@ -107,7 +107,11 @@ public class Repository<T> : IRepository<T>
             query = query.Include(includeProperty);
         }
 
-        return await query.AsNoTracking()
+        return needsTracking
+            ? await query
+                .Where(filter)
+                .ToListAsync()
+            : (IEnumerable<T>)await query.AsNoTracking()
             .Where(filter)
             .ToListAsync();
     }

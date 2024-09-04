@@ -44,4 +44,11 @@ public class UsersController(IUserService userService) : ControllerBase
         await userService.RegisterAsync(request);
         return Ok();
     }
+
+    [HttpPut]
+    public async Task<IActionResult> Put(UpdateUserRequest request)
+    {
+        await userService.UpdateUserAsync(request);
+        return NoContent();
+    }
 }

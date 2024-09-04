@@ -19,5 +19,8 @@ public class UserContextConfiguration : IEntityTypeConfiguration<User>
         builder
             .Property(u => u.LastName)
             .IsRequired();
+        builder
+            .HasMany(u => u.Roles)
+            .WithMany();
     }
 }
