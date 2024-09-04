@@ -123,6 +123,15 @@ public class UserService(
         return role.ToResponse();
     }
 
+    public async Task DeleteRoleAsync(Guid roleId)
+    {
+        var role = await userRoleRepository.GetByIdAsync(roleId)
+            ?? throw new UserRoleNotFoundException(roleId);
+
+        await userRoleRepository.DeleteByIdAsync(role.Id);
+        await userRoleRepository.SaveChangesAsync();
+    }
+
     // TODO: add user roles
     private string GenerateJwtToken(AuthClientResponse user)
     {
