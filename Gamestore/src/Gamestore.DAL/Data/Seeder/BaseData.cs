@@ -128,20 +128,43 @@ public static class BaseData
     [
         new UserRole
         {
-            Name = "Admin",
+            Name = "Administrator",
             Permissions =
-            Permissions.AddGame
-            | Permissions.DeleteGame
-            | Permissions.UpdateGame
-            | Permissions.ViewGame,
+            Permissions.ManageUsers
+            | Permissions.ManageRoles
+            | Permissions.ManageBusinessEntities
+            | Permissions.EditOrders
+            | Permissions.ViewOrders
+            | Permissions.ChangeOrderStatusToShipped
+            | Permissions.ManageGameComments
+            | Permissions.BanUsers
+            | Permissions.Comment,
         },
         new UserRole
         {
             Name = "Manager",
             Permissions =
-            Permissions.AddGame
-            | Permissions.UpdateGame
-            | Permissions.ViewGame,
+            Permissions.ManageBusinessEntities
+            | Permissions.EditOrders
+            | Permissions.ViewOrders
+            | Permissions.ChangeOrderStatusToShipped
+            | Permissions.ManageGameComments
+            | Permissions.BanUsers
+            | Permissions.Comment,
+        },
+        new UserRole
+        {
+            Name = "Moderator",
+            Permissions =
+            Permissions.ManageGameComments
+            | Permissions.BanUsers
+            | Permissions.Comment,
+        },
+        new UserRole
+        {
+            Name = "User",
+            Permissions =
+            Permissions.Comment,
         },
     ];
 }

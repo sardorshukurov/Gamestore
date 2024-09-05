@@ -244,7 +244,6 @@ public class OrderService(
         await orderGameRepository.SaveChangesAsync();
     }
 
-
     /// <summary>
     /// Gets the game by game key or throws an exception.
     /// </summary>

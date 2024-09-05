@@ -3,6 +3,7 @@ using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Filtration.Games.Options;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -21,6 +22,7 @@ public class GamesController(
     }
 
     [HttpGet("{key}/key")]
+    [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<GameResponse>> GetByKey(string key)
     {
         var game = await gameService.GetByKeyAsync(key);

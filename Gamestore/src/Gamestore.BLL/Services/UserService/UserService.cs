@@ -79,7 +79,10 @@ public class UserService(
             var user = (await result
                 .Content
                 .ReadFromJsonAsync<AuthClientResponse>())!;
-            var token = GenerateJwtToken(user);
+
+            var userRoles = (await userRepository.GetOneAsync(u => u.Email == user.Email, u => u.Roles)).Roles
+                .Select(r => r.Name);
+            var token = GenerateJwtToken(user, userRoles);
 
             return new AuthResponse(token);
         }
@@ -191,8 +194,7 @@ public class UserService(
         return user.Roles.Select(r => r.ToResponse());
     }
 
-    // TODO: add user roles
-    private string GenerateJwtToken(AuthClientResponse user)
+    private string GenerateJwtToken(AuthClientResponse user, IEnumerable<string> roles)
     {
         var authClaims = new List<Claim>()
         {
@@ -202,6 +204,11 @@ public class UserService(
             new(JwtRegisteredClaimNames.Sub, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
+
+        foreach (string role in roles)
+        {
+            authClaims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
             configuration["JwtKey"]!));
