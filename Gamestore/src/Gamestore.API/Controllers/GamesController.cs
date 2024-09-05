@@ -70,6 +70,13 @@ public class GamesController(
         return Ok(games);
     }
 
+    [HttpGet("all")]
+    public async Task<ActionResult<IEnumerable<GameResponse>>> GetAll()
+    {
+        var games = await gameService.GetAllAsync();
+        return Ok(games);
+    }
+
     [HttpPut]
     public async Task<IActionResult> Update(UpdateGameRequest request)
     {

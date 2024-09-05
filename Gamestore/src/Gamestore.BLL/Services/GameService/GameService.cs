@@ -3,6 +3,7 @@ using Gamestore.Common.Exceptions.NotFound;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities.Games;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gamestore.BLL.Services.GameService;
 
@@ -13,6 +14,17 @@ public class GameService(
     IRepository<GamePlatform> gamePlatformRepository,
     IRepository<Publisher> publisherRepository) : IGameService
 {
+    public async Task<ICollection<GameResponse>> GetAllAsync()
+    {
+        var allGames = await repository.GetAllAsync(
+            g => g.GameGenres,
+            g => g.GamePlatforms,
+            g => g.OrderGames,
+            g => g.Comments);
+
+        return allGames.Select(g => g.ToResponse()).ToList();
+    }
+
     public async Task<GamesResponse> GetAllAsync(SearchCriteria criteria)
     {
         var filteredGames = (await filterRepository.GetAsync(criteria))
