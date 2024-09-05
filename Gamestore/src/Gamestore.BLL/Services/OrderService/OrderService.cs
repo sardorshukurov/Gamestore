@@ -222,20 +222,28 @@ public class OrderService(
         var game = await GetGameOrElseThrow(gameKey);
         EnsureGameIsInStock(game);
 
-        var orderGame = new OrderGame
-        {
-            OrderId = order.Id,
-            ProductId = game.Id,
-            Price = game.Price,
-            Quantity = 1,
-        };
-
-        game.UnitInStock--;
+        await AddGameToOrder(game, order);
 
         await gameRepository.UpdateAsync(game.Id, game);
-        await orderGameRepository.CreateAsync(orderGame);
         await orderGameRepository.SaveChangesAsync();
     }
+
+    public async Task RemoveGameFromOrderAsync(Guid orderId, Guid gameId)
+    {
+        var orderGame = await orderGameRepository.GetOneAsync(og => og.OrderId == orderId
+            && og.ProductId == gameId)
+            ?? throw new OrderNotFoundException($"Order detail for order with id {orderId} with product {gameId} not found");
+
+        var game = await gameRepository.GetByIdAsync(gameId)!;
+        game.UnitInStock += orderGame.Quantity;
+
+        await orderGameRepository.DeleteOneAsync(og => og.OrderId == orderId
+            && og.ProductId == gameId);
+        await gameRepository.UpdateAsync(game.Id, game);
+
+        await orderGameRepository.SaveChangesAsync();
+    }
+
 
     /// <summary>
     /// Gets the game by game key or throws an exception.

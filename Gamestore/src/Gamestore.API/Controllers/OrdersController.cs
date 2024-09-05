@@ -106,6 +106,13 @@ public class OrdersController(
         return Ok();
     }
 
+    [HttpDelete("{orderId}/details/{gameId}")]
+    public async Task<IActionResult> RemoveGameFromOrder(Guid orderId, Guid gameId)
+    {
+        await orderService.RemoveGameFromOrderAsync(orderId, gameId);
+        return NoContent();
+    }
+
     private async Task<IActionResult> ProcessVisaPayment(PaymentRequest request)
     {
         var paymentProcessor =

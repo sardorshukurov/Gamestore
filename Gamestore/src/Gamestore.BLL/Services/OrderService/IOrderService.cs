@@ -34,4 +34,6 @@ public interface IOrderService
     Task ShipOrderAsync(Guid orderId);
 
     Task AddGameToOrderAsync(Guid orderId, string gameKey);
+
+    Task RemoveGameFromOrderAsync(Guid orderId, Guid gameId);
 }
