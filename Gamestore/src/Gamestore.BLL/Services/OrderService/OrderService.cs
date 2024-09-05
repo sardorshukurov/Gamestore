@@ -201,6 +201,42 @@ public class OrderService(
         await orderGameRepository.SaveChangesAsync();
     }
 
+    public async Task ShipOrderAsync(Guid orderId)
+    {
+        var order = await orderRepository.GetOneAsync(
+            o => o.Status == OrderStatus.Paid)
+            ?? throw new OrderNotFoundException($"Paid order with id {orderId} not found");
+
+        order.Status = OrderStatus.Shipped;
+
+        await orderRepository.UpdateAsync(order.Id, order);
+        await orderRepository.SaveChangesAsync();
+    }
+
+    public async Task AddGameToOrderAsync(Guid orderId, string gameKey)
+    {
+        var order = await orderRepository.GetOneAsync(o => o.Id == orderId
+            && o.Status == OrderStatus.Open)
+            ?? throw new OrderNotFoundException($"Open order with id {orderId} not found");
+
+        var game = await GetGameOrElseThrow(gameKey);
+        EnsureGameIsInStock(game);
+
+        var orderGame = new OrderGame
+        {
+            OrderId = order.Id,
+            ProductId = game.Id,
+            Price = game.Price,
+            Quantity = 1,
+        };
+
+        game.UnitInStock--;
+
+        await gameRepository.UpdateAsync(game.Id, game);
+        await orderGameRepository.CreateAsync(orderGame);
+        await orderGameRepository.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Gets the game by game key or throws an exception.
     /// </summary>

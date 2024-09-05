@@ -92,6 +92,20 @@ public class OrdersController(
         return NoContent();
     }
 
+    [HttpPost("{id}/ship")]
+    public async Task<IActionResult> ShipOrder(Guid id)
+    {
+        await orderService.ShipOrderAsync(id);
+        return Ok();
+    }
+
+    [HttpPost("{orderId}/details/{gameKey}")]
+    public async Task<IActionResult> AddGameAsOrderDetail(Guid orderId, string gameKey)
+    {
+        await orderService.AddGameToOrderAsync(orderId, gameKey);
+        return Ok();
+    }
+
     private async Task<IActionResult> ProcessVisaPayment(PaymentRequest request)
     {
         var paymentProcessor =

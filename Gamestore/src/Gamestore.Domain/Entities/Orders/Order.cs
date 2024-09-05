@@ -8,6 +8,7 @@ public enum OrderStatus
     Checkout,
     Paid,
     Cancelled,
+    Shipped,
 }
 
 public class Order : IBaseEntity

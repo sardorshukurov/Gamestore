@@ -30,4 +30,8 @@ public interface IOrderService
     Task<IEnumerable<PaymentMethodResponse>> GetPaymentMethodsAsync();
 
     Task UpdateOrderDetailQuantityAsync(Guid customerId, Guid productId, int count);
+
+    Task ShipOrderAsync(Guid orderId);
+
+    Task AddGameToOrderAsync(Guid orderId, string gameKey);
 }
