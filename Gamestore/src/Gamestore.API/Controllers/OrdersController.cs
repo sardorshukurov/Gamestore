@@ -85,6 +85,13 @@ public class OrdersController(
         return Ok();
     }
 
+    [HttpPatch("/details/{productId}/quantity")]
+    public async Task<IActionResult> UpdateQuantity(Guid productId, int count)
+    {
+        await orderService.UpdateOrderDetailQuantityAsync(_customerId, productId, count);
+        return NoContent();
+    }
+
     private async Task<IActionResult> ProcessVisaPayment(PaymentRequest request)
     {
         var paymentProcessor =

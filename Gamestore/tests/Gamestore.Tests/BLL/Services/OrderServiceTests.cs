@@ -98,7 +98,7 @@ public class OrderServiceTests
         // Arrange
         var orders = _fixture.Create<IEnumerable<Order>>().ToList();
         _orderRepositoryMock.Setup(x => x.GetAllByFilterAsync(
-                It.IsAny<Expression<Func<Order, bool>>>()))
+                It.IsAny<Expression<Func<Order, bool>>>(), false))
             .ReturnsAsync(orders);
 
         // Act
@@ -108,7 +108,7 @@ public class OrderServiceTests
         Assert.Equal(orders.Count, result.Count());
         _orderRepositoryMock.Verify(
             x => x.GetAllByFilterAsync(
-            It.IsAny<Expression<Func<Order, bool>>>()),
+            It.IsAny<Expression<Func<Order, bool>>>(), false),
             Times.Once);
     }
 
@@ -142,7 +142,7 @@ public class OrderServiceTests
         var orderGames = _fixture.Create<IEnumerable<OrderGame>>().ToList();
 
         _orderGameRepositoryMock.Setup(x => x.GetAllByFilterAsync(
-                It.IsAny<Expression<Func<OrderGame, bool>>>()))
+                It.IsAny<Expression<Func<OrderGame, bool>>>(), false))
             .ReturnsAsync(orderGames);
 
         // Act
@@ -152,7 +152,7 @@ public class OrderServiceTests
         Assert.Equal(orderGames.Count, result.Count());
         _orderGameRepositoryMock.Verify(
             x => x.GetAllByFilterAsync(
-            It.IsAny<Expression<Func<OrderGame, bool>>>()),
+            It.IsAny<Expression<Func<OrderGame, bool>>>(), false),
             Times.Once);
     }
 
@@ -168,7 +168,7 @@ public class OrderServiceTests
                 It.IsAny<Expression<Func<Order, bool>>>()))
             .ReturnsAsync(order);
         _orderGameRepositoryMock.Setup(x => x.GetAllByFilterAsync(
-                It.IsAny<Expression<Func<OrderGame, bool>>>()))
+                It.IsAny<Expression<Func<OrderGame, bool>>>(), false))
             .ReturnsAsync(orderGames);
 
         // Act
@@ -182,7 +182,7 @@ public class OrderServiceTests
             Times.Once);
         _orderGameRepositoryMock.Verify(
             x => x.GetAllByFilterAsync(
-            It.IsAny<Expression<Func<OrderGame, bool>>>()),
+            It.IsAny<Expression<Func<OrderGame, bool>>>(), false),
             Times.Once);
     }
 
@@ -199,7 +199,7 @@ public class OrderServiceTests
                 It.IsAny<Expression<Func<Order, bool>>>()))
             .ReturnsAsync(order);
         _orderGameRepositoryMock.Setup(x => x.GetAllByFilterAsync(
-                It.IsAny<Expression<Func<OrderGame, bool>>>()))
+                It.IsAny<Expression<Func<OrderGame, bool>>>(), false))
             .ReturnsAsync(orderGames);
         _gameRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(game);
 
@@ -248,7 +248,7 @@ public class OrderServiceTests
                 It.IsAny<Expression<Func<Order, bool>>>()))
             .ReturnsAsync(order);
         _orderGameRepositoryMock.Setup(x => x.GetAllByFilterAsync(
-                It.IsAny<Expression<Func<OrderGame, bool>>>()))
+                It.IsAny<Expression<Func<OrderGame, bool>>>(), false))
             .ReturnsAsync(orderGames);
 
         // Act
@@ -270,7 +270,7 @@ public class OrderServiceTests
                 It.IsAny<Expression<Func<Order, bool>>>()))
             .ReturnsAsync(order);
         _orderGameRepositoryMock.Setup(x => x.GetAllByFilterAsync(
-                It.IsAny<Expression<Func<OrderGame, bool>>>()))
+                It.IsAny<Expression<Func<OrderGame, bool>>>(), false))
             .ReturnsAsync(orderGames);
 
         // Act

@@ -16,7 +16,7 @@ public class Game : IBaseEntity
 
     public double Price { get; set; }
 
-    public string QuantityPerUnit { get; set; }
+    public string QuantityPerUnit { get; set; } = string.Empty;
 
     public int ReorderLevel { get; set; }
 

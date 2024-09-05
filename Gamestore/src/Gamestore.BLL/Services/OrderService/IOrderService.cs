@@ -28,4 +28,6 @@ public interface IOrderService
     Task<Guid> GetCartIdAsync(Guid customerId);
 
     Task<IEnumerable<PaymentMethodResponse>> GetPaymentMethodsAsync();
+
+    Task UpdateOrderDetailQuantityAsync(Guid customerId, Guid productId, int count);
 }

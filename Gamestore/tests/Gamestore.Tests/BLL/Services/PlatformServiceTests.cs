@@ -154,8 +154,8 @@ public class PlatformServiceTests
         var platforms = platformIds.Select(id => new Platform { Id = id }).ToList();
 
         _gameRepositoryMock.Setup(x => x.GetOneAsync(g => g.Key == gameKey)).ReturnsAsync(game);
-        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GameId == game.Id)).ReturnsAsync(platformIds.Select(id => new GamePlatform { PlatformId = id }).ToList());
-        _platformRepostioryMock.Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Platform, bool>>>())).ReturnsAsync(platforms);
+        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GameId == game.Id, false)).ReturnsAsync(platformIds.Select(id => new GamePlatform { PlatformId = id }).ToList());
+        _platformRepostioryMock.Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Platform, bool>>>(), false)).ReturnsAsync(platforms);
 
         // Act
         var result = await _service.GetAllByGameKeyAsync(gameKey);
@@ -185,8 +185,8 @@ public class PlatformServiceTests
         game.Key = gameKey;
 
         _gameRepositoryMock.Setup(x => x.GetOneAsync(g => g.Key == gameKey)).ReturnsAsync(game);
-        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GameId == game.Id)).ReturnsAsync([]);
-        _platformRepostioryMock.Setup(x => x.GetAllByFilterAsync(p => It.IsAny<IEnumerable<Guid>>().Contains(p.Id))).ReturnsAsync([]);
+        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GameId == game.Id, false)).ReturnsAsync([]);
+        _platformRepostioryMock.Setup(x => x.GetAllByFilterAsync(p => It.IsAny<IEnumerable<Guid>>().Contains(p.Id), false)).ReturnsAsync([]);
 
         // Act
         var result = await _service.GetAllByGameKeyAsync(gameKey);

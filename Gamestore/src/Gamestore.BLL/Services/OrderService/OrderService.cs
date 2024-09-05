@@ -182,6 +182,25 @@ public class OrderService(
         return paymentMethods;
     }
 
+    public async Task UpdateOrderDetailQuantityAsync(Guid customerId, Guid productId, int count)
+    {
+        var order = await GetOpenOrderByCustomerIdOrElseThrow(customerId);
+        var orderDetail = await orderGameRepository
+            .GetOneAsync(
+                og => og.OrderId == order.Id && og.ProductId == productId,
+                og => og.Product)
+            ?? throw new OrderNotFoundException($"Order detail with product id {productId} not found");
+
+        var game = await GetGameOrElseThrow(orderDetail.Product.Key);
+        EnsureGameIsInStock(game, count - orderDetail.Quantity);
+
+        game.UnitInStock += orderDetail.Quantity - count;
+        orderDetail.Quantity = count;
+
+        await gameRepository.UpdateAsync(game.Id, game);
+        await orderGameRepository.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Gets the game by game key or throws an exception.
     /// </summary>
@@ -198,9 +217,9 @@ public class OrderService(
     /// </summary>
     /// <param name="game">The game.</param>
     /// <exception cref="NotEnoughGamesInStockException">Exception is thrown when there is not enough units (less than 1).</exception>
-    private static void EnsureGameIsInStock(Game game)
+    private static void EnsureGameIsInStock(Game game, int count = 1)
     {
-        if (game.UnitInStock < 1)
+        if (game.UnitInStock < count)
         {
             throw new NotEnoughGamesInStockException($"There are not enough {game.Name} games in stock");
         }

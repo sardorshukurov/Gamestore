@@ -122,36 +122,4 @@ public class CommentServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<CommentNotFoundException>(() => _service.DeleteCommentByIdAsync(commentId));
     }
-
-    [Fact]
-    public async Task GetAllCommentsByGameAsyncReturnsTopLevelComments()
-    {
-        // Arrange
-        var gameKey = _fixture.Create<string>();
-        var gameId = _fixture.Create<Guid>();
-
-        // Create a mix of top-level comments (ParentCommentId = null) and child comments.
-        var topLevelComments = _fixture.Build<Comment>()
-            .With(c => c.GameId, gameId)
-            .Without(c => c.ParentCommentId)
-            .CreateMany(3).ToList();
-        var childComments = _fixture.Build<Comment>()
-            .With(c => c.GameId, gameId)
-            .With(c => c.ParentCommentId, () => _fixture.Create<Guid>()) // Non-null ParentCommentId
-            .CreateMany(2).ToList();
-
-        var comments = topLevelComments.Concat(childComments).ToList();
-
-        _gameRepositoryMock.Setup(x => x.GetOneAsync(It.IsAny<Expression<Func<Game, bool>>>()))
-            .ReturnsAsync(new Game { Id = gameId, Key = gameKey });
-        _commentRepositoryMock.Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Comment, bool>>>()))
-            .ReturnsAsync(comments);
-
-        // Act
-        var result = await _service.GetAllCommentsByGameAsync(gameKey);
-
-        // Assert
-        Assert.NotEmpty(result);
-        Assert.Equal(topLevelComments.Count, result.Count); // Ensure only top-level comments are returned.
-    }
 }

@@ -105,10 +105,10 @@ public class GameServiceTests
         var games = gameGenre.Select(gg => new Game { Id = gg.GameId })
             .ToList();
 
-        _gameGenreRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GenreId == genreId))
+        _gameGenreRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.GenreId == genreId, false))
             .ReturnsAsync(gameGenre);
         _gameRepositoryMock
-            .Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Game, bool>>>()))
+            .Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Game, bool>>>(), false))
             .ReturnsAsync(games);
 
         // Act
@@ -126,7 +126,7 @@ public class GameServiceTests
         var emptyGameGenreCollection = new List<GameGenre>();
 
         _gameGenreRepositoryMock
-            .Setup(x => x.GetAllByFilterAsync(gg => gg.GenreId == genreId))
+            .Setup(x => x.GetAllByFilterAsync(gg => gg.GenreId == genreId, false))
             .ReturnsAsync(emptyGameGenreCollection);
 
         // Act
@@ -151,8 +151,8 @@ public class GameServiceTests
 
         var games = gamePlatforms.Select(gg => new Game { Id = gg.GameId }).ToList();
 
-        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.PlatformId == platformId)).ReturnsAsync(gamePlatforms);
-        _gameRepositoryMock.Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(games);
+        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.PlatformId == platformId, false)).ReturnsAsync(gamePlatforms);
+        _gameRepositoryMock.Setup(x => x.GetAllByFilterAsync(It.IsAny<Expression<Func<Game, bool>>>(), false)).ReturnsAsync(games);
 
         // Act
         var result = await _service.GetByPlatformAsync(platformId);
@@ -167,7 +167,7 @@ public class GameServiceTests
         // Arrange
         var platformId = Guid.NewGuid();
 
-        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.PlatformId == platformId)).ReturnsAsync([]);
+        _gamePlatformRepositoryMock.Setup(x => x.GetAllByFilterAsync(gg => gg.PlatformId == platformId, false)).ReturnsAsync([]);
 
         // Act
         var result = await _service.GetByPlatformAsync(platformId);
