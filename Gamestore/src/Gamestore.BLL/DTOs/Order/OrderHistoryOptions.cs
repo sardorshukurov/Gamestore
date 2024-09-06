@@ -1,17 +1,8 @@
-﻿using FluentValidation;
+﻿namespace Gamestore.BLL.DTOs.Order;
 
-namespace Gamestore.BLL.DTOs.Order;
-
-public record OrderHistoryOptions(
-    DateTime? Start,
-    DateTime? End);
-
-public class OrderHistoryOptionsValidator : AbstractValidator<OrderHistoryOptions>
+public class OrderHistoryOptions
 {
-    public OrderHistoryOptionsValidator()
-    {
-        RuleFor(oh => oh.End)
-            .GreaterThan(oh => oh.Start)
-            .WithMessage("End date must be greater than start date.");
-    }
+    public DateTime? Start { get; set; } = DateTime.MinValue;
+
+    public DateTime? End { get; set; } = DateTime.MaxValue;
 }

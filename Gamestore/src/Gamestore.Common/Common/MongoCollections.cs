@@ -1,6 +1,6 @@
 ﻿namespace Gamestore.Common.Common;
 
-public static class MongoCollectionsHolder
+public static class MongoCollections
 {
     public const string Shippers = "shippers";
 

@@ -18,11 +18,11 @@ public class GameManager(
     IRepository<OrderGame> orderGameRepository)
     : IGameManager
 {
-    public async Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(DateTime start, DateTime end)
+    public async Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(OrderHistoryOptions orderHistoryOptions)
     {
         // Defining tasks without awaiting them immediately allows them to run concurrently
-        var orderTask = orderRepository.GetAllByFilterAsync(o => o.Date >= start && o.Date <= end);
-        var northwindOrderTask = orderNorthwindRepository.GetAllByFilterAsync(o => o.OrderDate >= start && o.OrderDate <= end);
+        var orderTask = orderRepository.GetAllByFilterAsync(o => o.Date >= orderHistoryOptions.Start && o.Date <= orderHistoryOptions.End);
+        var northwindOrderTask = orderNorthwindRepository.GetAllByFilterAsync(o => o.OrderDate >= orderHistoryOptions.Start && o.OrderDate <= orderHistoryOptions.End);
 
         // Await all tasks to complete
         await Task.WhenAll(orderTask, northwindOrderTask);
@@ -38,11 +38,14 @@ public class GameManager(
 
     public async Task<IEnumerable<GameResponse>> GetAllGamesAsync()
     {
-        var northwindGames = (await productNorthwindRepository.GetAllAsync())
-            .Select(ng => ng.ToGamestoreEntity())
-            .ToList();
+        var northwindGamesTask = productNorthwindRepository.GetAllAsync();
 
-        var games = await gameRepository.GetAllAsync();
+        var gameStoreGamesTask = gameRepository.GetAllAsync();
+
+        await Task.WhenAll(northwindGamesTask, gameStoreGamesTask);
+
+        var northwindGames = northwindGamesTask.Result.Select(ng => ng.ToGamestoreEntity()).ToList();
+        var games = gameStoreGamesTask.Result;
 
         var gameMap = new Dictionary<string, Game>();
 

@@ -5,7 +5,7 @@ namespace Gamestore.BLL.Services.GameManager;
 
 public interface IGameManager
 {
-    Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(DateTime start, DateTime end);
+    Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(OrderHistoryOptions orderHistoryOptions);
 
     Task<IEnumerable<GameResponse>> GetAllGamesAsync();
 

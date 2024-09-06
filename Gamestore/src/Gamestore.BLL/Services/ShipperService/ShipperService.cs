@@ -7,7 +7,7 @@ namespace Gamestore.BLL.Services.ShipperService;
 public class ShipperService(IMongoDatabase database) : IShipperService
 {
     private readonly IMongoCollection<BsonDocument> _shippersCollection =
-        database.GetCollection<BsonDocument>(MongoCollectionsHolder.Shippers);
+        database.GetCollection<BsonDocument>(MongoCollections.Shippers);
 
     public async Task<IEnumerable<object>> GetShippersAsync()
     {

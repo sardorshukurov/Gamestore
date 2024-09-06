@@ -63,11 +63,9 @@ public class OrdersController(
     }
 
     [HttpGet("history")]
-    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersHistory([FromQuery] DateTime? start, [FromQuery] DateTime? end)
+    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersHistory([FromQuery] OrderHistoryOptions query)
     {
-        var orders = await gameManager.GetOrdersHistoryAsync(
-            start ?? DateTime.MinValue,
-            end ?? DateTime.MaxValue);
+        var orders = await gameManager.GetOrdersHistoryAsync(query);
 
         return Ok(orders);
     }
