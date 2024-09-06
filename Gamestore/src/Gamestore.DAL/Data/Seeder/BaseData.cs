@@ -128,7 +128,7 @@ public static class BaseData
     [
         new UserRole
         {
-            Name = "Administrator",
+            Name = UserRolesHolder.Administrator,
             Permissions =
             Permissions.ManageUsers
             | Permissions.ManageRoles
@@ -142,7 +142,7 @@ public static class BaseData
         },
         new UserRole
         {
-            Name = "Manager",
+            Name = UserRolesHolder.Manager,
             Permissions =
             Permissions.ManageBusinessEntities
             | Permissions.EditOrders
@@ -154,7 +154,7 @@ public static class BaseData
         },
         new UserRole
         {
-            Name = "Moderator",
+            Name = UserRolesHolder.Moderator,
             Permissions =
             Permissions.ManageGameComments
             | Permissions.BanUsers
@@ -162,7 +162,7 @@ public static class BaseData
         },
         new UserRole
         {
-            Name = "User",
+            Name = UserRolesHolder.User,
             Permissions =
             Permissions.Comment,
         },

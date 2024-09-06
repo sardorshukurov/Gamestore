@@ -1,5 +1,7 @@
 using Gamestore.BLL.DTOs.Platform;
 using Gamestore.BLL.Services.PlatformService;
+using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -10,6 +12,7 @@ public class PlatformsController(
     IPlatformService platformService) : ControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Create(CreatePlatformRequest request)
     {
         await platformService.CreateAsync(request);
@@ -44,6 +47,7 @@ public class PlatformsController(
     }
 
     [HttpPut]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Update(UpdatePlatformRequest request)
     {
         await platformService.UpdateAsync(request);
@@ -52,6 +56,7 @@ public class PlatformsController(
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await platformService.DeleteAsync(id);

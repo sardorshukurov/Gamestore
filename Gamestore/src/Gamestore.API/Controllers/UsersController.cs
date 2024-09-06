@@ -1,6 +1,8 @@
 ﻿using Gamestore.BLL.DTOs.Role;
 using Gamestore.BLL.DTOs.User;
 using Gamestore.BLL.Services.UserService;
+using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -22,6 +24,7 @@ public class UsersController(IUserService userService) : ControllerBase
         => Ok(await userService.GetUserRolesAsync(id));
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await userService.DeleteUserAsync(id);
@@ -36,6 +39,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}")]
     public async Task<IActionResult> Put(UpdateUserRequest request)
     {
         await userService.UpdateUserAsync(request);

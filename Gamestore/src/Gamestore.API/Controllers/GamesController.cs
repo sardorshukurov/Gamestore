@@ -1,6 +1,7 @@
 using System.Text;
 using Gamestore.BLL.DTOs.Game;
 using Gamestore.BLL.Services.GameService;
+using Gamestore.DAL.Data.Seeder;
 using Gamestore.DAL.Filtration.Games;
 using Gamestore.DAL.Filtration.Games.Options;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ public class GamesController(
     IGameService gameService) : ControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Create(CreateGameRequest request)
     {
         await gameService.CreateAsync(request);
@@ -22,7 +24,6 @@ public class GamesController(
     }
 
     [HttpGet("{key}/key")]
-    [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<GameResponse>> GetByKey(string key)
     {
         var game = await gameService.GetByKeyAsync(key);
@@ -80,6 +81,7 @@ public class GamesController(
     }
 
     [HttpPut]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Update(UpdateGameRequest request)
     {
         var gameDto = request;
@@ -89,6 +91,7 @@ public class GamesController(
     }
 
     [HttpDelete("{key}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Delete(string key)
     {
         await gameService.DeleteByKeyAsync(key);

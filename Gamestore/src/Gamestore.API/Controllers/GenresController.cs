@@ -1,5 +1,7 @@
 using Gamestore.BLL.DTOs.Genre;
 using Gamestore.BLL.Services.GenreService;
+using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -10,6 +12,7 @@ public class GenresController(
     IGenreService genreService) : ControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Create(CreateGenreRequest request)
     {
         await genreService.CreateAsync(request);
@@ -53,6 +56,7 @@ public class GenresController(
     }
 
     [HttpPut]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Update(UpdateGenreRequest request)
     {
         await genreService.UpdateAsync(request);
@@ -61,6 +65,7 @@ public class GenresController(
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await genreService.DeleteAsync(id);

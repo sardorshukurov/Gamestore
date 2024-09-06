@@ -1,5 +1,7 @@
 using Gamestore.BLL.DTOs.Publisher;
 using Gamestore.BLL.Services.PublisherService;
+using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -48,6 +50,7 @@ public class PublishersController(
     }
 
     [HttpPut]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Update(UpdatePublisherRequest request)
     {
         await publisherService.UpdateAsync(request);
@@ -56,6 +59,7 @@ public class PublishersController(
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await publisherService.DeleteAsync(id);

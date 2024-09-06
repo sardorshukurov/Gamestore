@@ -1,6 +1,8 @@
 using Gamestore.BLL.DTOs.Comment;
 using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.BLL.Services.CommentService;
+using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -19,6 +21,7 @@ public class CommentsController(
     }
 
     [HttpPost("{gameKey}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}, {UserRolesHolder.User}")]
     public async Task<IActionResult> AddComment(string gameKey, CreateCommentRequest request)
     {
         await commentService.AddCommentAsync(gameKey, request);
@@ -35,6 +38,7 @@ public class CommentsController(
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> DeleteComment(Guid id)
     {
         await commentService.DeleteCommentByIdAsync(id);
@@ -43,6 +47,7 @@ public class CommentsController(
     }
 
     [HttpPost("ban")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> BanUser(BanUserRequest request)
     {
         await commentService.BanUserAsync(request);

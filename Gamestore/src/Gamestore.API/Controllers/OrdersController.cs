@@ -2,6 +2,8 @@ using Gamestore.BLL.DTOs.Order;
 using Gamestore.BLL.DTOs.Order.Payment;
 using Gamestore.BLL.Payments;
 using Gamestore.BLL.Services.OrderService;
+using Gamestore.DAL.Data.Seeder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.API.Controllers;
@@ -23,6 +25,7 @@ public class OrdersController(
     private readonly Guid _customerId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
     [HttpDelete("cart/{key}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> RemoveGameFromCart(string key)
     {
         await orderService.RemoveGameFromTheCartAsync(_customerId, key);
@@ -67,6 +70,7 @@ public class OrdersController(
     }
 
     [HttpPost("payment")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}, {UserRolesHolder.User}")]
     public async Task<IActionResult> MakePayment(PaymentRequest request)
     {
         return request.Method switch
@@ -79,6 +83,7 @@ public class OrdersController(
     }
 
     [HttpPost("{key}/buyGame")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}, {UserRolesHolder.User}")]
     public async Task<IActionResult> BuyGame(string key)
     {
         await orderService.AddGameInTheCartAsync(_customerId, key);
@@ -86,6 +91,7 @@ public class OrdersController(
     }
 
     [HttpPatch("/details/{productId}/quantity")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> UpdateQuantity(Guid productId, int count)
     {
         await orderService.UpdateOrderDetailQuantityAsync(_customerId, productId, count);
@@ -93,6 +99,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id}/ship")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> ShipOrder(Guid id)
     {
         await orderService.ShipOrderAsync(id);
@@ -100,6 +107,7 @@ public class OrdersController(
     }
 
     [HttpPost("{orderId}/details/{gameKey}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> AddGameAsOrderDetail(Guid orderId, string gameKey)
     {
         await orderService.AddGameToOrderAsync(orderId, gameKey);
@@ -107,6 +115,7 @@ public class OrdersController(
     }
 
     [HttpDelete("{orderId}/details/{gameId}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}")]
     public async Task<IActionResult> RemoveGameFromOrder(Guid orderId, Guid gameId)
     {
         await orderService.RemoveGameFromOrderAsync(orderId, gameId);
