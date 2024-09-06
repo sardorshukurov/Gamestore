@@ -16,10 +16,17 @@ public class UsersController(IUserService userService) : ControllerBase
         => Ok(await userService.LoginAsync(request));
 
     [HttpGet]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}")]
     public async Task<ActionResult<IEnumerable<UserResponse>>> Get()
         => Ok(await userService.GetAllAsync());
 
+    [HttpGet("{id}")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}")]
+    public async Task<ActionResult<IEnumerable<UserResponse>>> Get(Guid id)
+    => Ok(await userService.GetByIdAsync(id));
+
     [HttpGet("{id}/roles")]
+    [Authorize(Roles = $"{UserRolesHolder.Administrator}")]
     public async Task<ActionResult<IEnumerable<UserRoleResponse>>> GetUserRoles(Guid id)
         => Ok(await userService.GetUserRolesAsync(id));
 

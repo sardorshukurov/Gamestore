@@ -16,4 +16,6 @@ public interface IUserService
     Task DeleteUserAsync(Guid userId);
 
     Task<IEnumerable<UserRoleResponse>> GetUserRolesAsync(Guid userId);
+
+    Task<UserResponse> GetByIdAsync(Guid id);
 }

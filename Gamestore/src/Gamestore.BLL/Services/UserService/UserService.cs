@@ -69,6 +69,12 @@ public class UserService(
         return (await userRepository.GetAllAsync()).Select(u => u.ToResponse());
     }
 
+    public async Task<UserResponse> GetByIdAsync(Guid id)
+    {
+        var user = await userRepository.GetByIdAsync(id) ?? throw new UserNotFoundException(id);
+        return user.ToResponse();
+    }
+
     public async Task<AuthResponse> LoginAsync(AuthRequest request)
     {
         var serializedObject = JsonConvert.SerializeObject(request);
