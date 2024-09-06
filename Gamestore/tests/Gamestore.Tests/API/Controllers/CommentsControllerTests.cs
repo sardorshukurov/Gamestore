@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using FluentValidation;
 using Gamestore.API.Controllers;
 using Gamestore.BLL.DTOs.Comment;
 using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.BLL.Services.CommentService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gamestore.Tests.API.Controllers;
@@ -64,6 +66,23 @@ public class CommentsControllerTests
         // Arrange
         var request = _fixture.Create<CreateCommentRequest>();
         var gameKey = _fixture.Create<string>();
+        var userName = _fixture.Create<string>();
+        var userId = _fixture.Create<Guid>();
+
+        // Mock User Identity
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, userName),
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        // Assigning mocked User to controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = claimsPrincipal },
+        };
 
         _createValidator
             .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<CreateCommentRequest>>(), It.IsAny<CancellationToken>()))
@@ -72,7 +91,9 @@ public class CommentsControllerTests
         _commentServiceMock
             .Setup(x => x.AddCommentAsync(
                 It.IsAny<string>(),
-                It.IsAny<CreateCommentRequest>()))
+                It.IsAny<CreateCommentRequest>(),
+                It.IsAny<string>(),
+                It.IsAny<Guid>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -85,7 +106,11 @@ public class CommentsControllerTests
         result.Should().BeAssignableTo<OkResult>();
         _commentServiceMock.Verify(
             x =>
-                x.AddCommentAsync(It.IsAny<string>(), It.IsAny<CreateCommentRequest>()),
+                x.AddCommentAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CreateCommentRequest>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>()),
             Times.Once);
     }
 
@@ -95,8 +120,25 @@ public class CommentsControllerTests
         // Arrange
         var gameKey = _fixture.Create<string>();
         var request = _fixture.Create<CreateCommentRequest>();
+        var userName = _fixture.Create<string>();
+        var userId = _fixture.Create<Guid>();
 
-        _commentServiceMock.Setup(x => x.AddCommentAsync(gameKey, request))
+        // Mock User Identity
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, userName),
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        // Assigning mocked User to controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = claimsPrincipal },
+        };
+
+        _commentServiceMock.Setup(x => x.AddCommentAsync(gameKey, request, userName, userId))
             .ThrowsAsync(new Exception("Internal service error"));
 
         // Act

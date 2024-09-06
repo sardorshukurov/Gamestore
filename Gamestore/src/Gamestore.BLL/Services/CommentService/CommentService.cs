@@ -14,11 +14,11 @@ public class CommentService(
     IRepository<Game> gameRepository,
     IRepository<Ban> banRepository) : ICommentService
 {
-    public async Task AddCommentAsync(string gameKey, CreateCommentRequest request)
+    public async Task AddCommentAsync(string gameKey, CreateCommentRequest request, string userName, Guid userId)
     {
-        if (!await CanUserCommentAsync(request.Name))
+        if (!await CanUserCommentAsync(userId))
         {
-            throw new UserIsBannedException(request.Name);
+            throw new UserIsBannedException(userName);
         }
 
         var game = await GetGameByKeyOrThrow(gameKey);
@@ -39,7 +39,7 @@ public class CommentService(
             };
         }
 
-        var commentToAdd = request.ToEntity(message, game.Id);
+        var commentToAdd = request.ToEntity(message, game.Id, userName);
 
         await commentRepository.CreateAsync(commentToAdd);
         await commentRepository.SaveChangesAsync();
@@ -82,7 +82,7 @@ public class CommentService(
     public async Task BanUserAsync(BanUserRequest request)
     {
         var endDate = CalculateBanEndDate(request.Duration);
-        var existingBan = await banRepository.GetOneAsync(b => b.UserName == request.User);
+        var existingBan = await banRepository.GetOneAsync(b => b.UserId == request.UserId);
 
         if (existingBan is not null)
         {
@@ -94,7 +94,7 @@ public class CommentService(
         {
             var ban = new Ban
             {
-                UserName = request.User,
+                UserId = request.UserId,
                 Duration = request.Duration,
                 StartDate = DateTime.Now,
                 EndDate = endDate,
@@ -164,9 +164,9 @@ public class CommentService(
         }
     }
 
-    private async Task<bool> CanUserCommentAsync(string userName)
+    private async Task<bool> CanUserCommentAsync(Guid userId)
     {
-        var ban = await banRepository.GetOneAsync(b => b.UserName == userName);
+        var ban = await banRepository.GetOneAsync(b => b.UserId == userId);
         if (ban is null)
         {
             return true;

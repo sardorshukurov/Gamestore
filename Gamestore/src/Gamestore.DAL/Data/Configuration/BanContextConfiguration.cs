@@ -11,7 +11,7 @@ public class BanContextConfiguration : IEntityTypeConfiguration<Ban>
         builder
             .HasKey(b => b.Id);
         builder
-            .Property(b => b.UserName)
+            .Property(b => b.UserId)
             .IsRequired();
         builder
             .Property(b => b.Duration)

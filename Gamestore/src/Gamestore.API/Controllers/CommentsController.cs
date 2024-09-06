@@ -1,6 +1,7 @@
 using Gamestore.BLL.DTOs.Comment;
 using Gamestore.BLL.DTOs.Comment.Ban;
 using Gamestore.BLL.Services.CommentService;
+using Gamestore.Common.Helpers;
 using Gamestore.DAL.Data.Seeder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class CommentsController(
     [Authorize(Roles = $"{UserRolesHolder.Administrator}, {UserRolesHolder.Manager}, {UserRolesHolder.User}")]
     public async Task<IActionResult> AddComment(string gameKey, CreateCommentRequest request)
     {
-        await commentService.AddCommentAsync(gameKey, request);
+        await commentService.AddCommentAsync(gameKey, request, UserHelper.GetUserName(User), UserHelper.GetUserId(User));
 
         return Ok();
     }

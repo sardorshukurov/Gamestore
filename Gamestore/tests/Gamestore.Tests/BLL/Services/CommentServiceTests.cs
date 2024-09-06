@@ -36,7 +36,7 @@ public class CommentServiceTests
     public async Task AddCommentAsyncShouldAddComment()
     {
         // Assert
-        var createCommentRequest = new CreateCommentRequest("Name", "Body", null, null);
+        var createCommentRequest = new CreateCommentRequest("Body", null, null);
         var gameKey = _fixture.Create<string>();
 
         _commentRepositoryMock.Setup(
@@ -45,7 +45,7 @@ public class CommentServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.AddCommentAsync(gameKey, createCommentRequest);
+        await _service.AddCommentAsync(gameKey, createCommentRequest, string.Empty, Guid.NewGuid());
 
         // Assert
         _commentRepositoryMock.Verify(
@@ -61,35 +61,34 @@ public class CommentServiceTests
     public async Task AddCommentAsyncShouldThrowUserIsBannedExceptionIfUserIsBanned()
     {
         // Arrange
-        var bannedUserName = _fixture.Create<string>();
+        var bannedUserId = _fixture.Create<Guid>();
         var createCommentRequest = _fixture.Build<CreateCommentRequest>()
-            .With(c => c.Name, bannedUserName)
             .Create();
         var gameKey = _fixture.Create<string>();
 
         _banRepositoryMock.Setup(x => x.GetOneAsync(It.IsAny<Expression<Func<Ban, bool>>>()))
             .ReturnsAsync(new Ban
             {
-                UserName = bannedUserName,
+                UserId = bannedUserId,
                 EndDate = DateTime.Today.AddDays(1),
             });
 
         // Act & Assert
-        await Assert.ThrowsAsync<UserIsBannedException>(() => _service.AddCommentAsync(gameKey, createCommentRequest));
+        await Assert.ThrowsAsync<UserIsBannedException>(() => _service.AddCommentAsync(gameKey, createCommentRequest, string.Empty, bannedUserId));
     }
 
     [Fact]
     public async Task AddCommentAsyncShouldProceedIfUserIsNotBanned()
     {
         // Arrange
-        var createCommentRequest = new CreateCommentRequest("Name", "Body", null, null);
+        var createCommentRequest = new CreateCommentRequest("Body", null, null);
         var gameKey = _fixture.Create<string>();
 
         _banRepositoryMock.Setup(x => x.GetOneAsync(It.IsAny<Expression<Func<Ban, bool>>>()))
             .ReturnsAsync((Ban)null); // No active bans found
 
         // Act
-        await _service.AddCommentAsync(gameKey, createCommentRequest);
+        await _service.AddCommentAsync(gameKey, createCommentRequest, string.Empty, Guid.NewGuid());
 
         // Assert
         _commentRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<Comment>()), Times.Once());

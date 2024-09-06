@@ -4,11 +4,11 @@ namespace Gamestore.BLL.DTOs.Comment;
 
 public static class CommentMappingExtensions
 {
-    public static CommentEntity ToEntity(this CreateCommentRequest request, string bodyMessage, Guid gameId)
+    public static CommentEntity ToEntity(this CreateCommentRequest request, string bodyMessage, Guid gameId, string userName)
     {
         return new CommentEntity
         {
-            Name = request.Name,
+            Name = userName,
             Body = bodyMessage,
             ParentCommentId = request.ParentId,
             GameId = gameId,

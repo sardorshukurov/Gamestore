@@ -3,5 +3,5 @@ using Gamestore.Domain.Entities.Comments;
 namespace Gamestore.BLL.DTOs.Comment.Ban;
 
 public record BanUserRequest(
-    string User,
+    Guid UserId,
     BanDuration Duration);

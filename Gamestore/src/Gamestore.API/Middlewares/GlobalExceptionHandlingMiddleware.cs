@@ -57,6 +57,7 @@ public class GlobalExceptionHandlingMiddleware(
             NotFoundException => HttpStatusCode.NotFound,
             BadRequestException => HttpStatusCode.BadRequest,
             AuthenticationException => HttpStatusCode.Unauthorized,
+            UnauthorizedAccessException => HttpStatusCode.Unauthorized,
             _ => HttpStatusCode.InternalServerError,
         };
     }

@@ -5,7 +5,7 @@ namespace Gamestore.BLL.Services.CommentService;
 
 public interface ICommentService
 {
-    Task AddCommentAsync(string gameKey, CreateCommentRequest request);
+    Task AddCommentAsync(string gameKey, CreateCommentRequest request, string userName, Guid userId);
 
     Task<ICollection<CommentResponse>> GetAllCommentsByGameAsync(string gameKey);
 

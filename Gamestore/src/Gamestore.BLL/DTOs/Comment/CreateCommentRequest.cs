@@ -5,7 +5,6 @@ using CommentEntity = Gamestore.Domain.Entities.Comments.Comment;
 namespace Gamestore.BLL.DTOs.Comment;
 
 public record CreateCommentRequest(
-    string Name,
     string Body,
     Guid? ParentId,
     CommentAction? Action);
@@ -18,10 +17,6 @@ public class CreateCommentValidator : AbstractValidator<CreateCommentRequest>
         IRepository<CommentEntity> commentRepository)
     {
         _commentRepository = commentRepository;
-
-        RuleFor(c => c.Name)
-            .NotEmpty()
-            .WithMessage("Comment name is required");
 
         RuleFor(c => c.Body)
             .NotEmpty()

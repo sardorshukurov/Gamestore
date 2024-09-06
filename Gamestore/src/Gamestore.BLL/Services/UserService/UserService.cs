@@ -8,6 +8,7 @@ using Gamestore.BLL.DTOs.Role;
 using Gamestore.BLL.DTOs.User;
 using Gamestore.Common.Exceptions.BadRequest;
 using Gamestore.Common.Exceptions.NotFound;
+using Gamestore.DAL.Data.Seeder;
 using Gamestore.DAL.Repository;
 using Gamestore.Domain.Entities.Users;
 using Microsoft.Extensions.Configuration;
@@ -80,9 +81,22 @@ public class UserService(
                 .Content
                 .ReadFromJsonAsync<AuthClientResponse>())!;
 
-            var userRoles = (await userRepository.GetOneAsync(u => u.Email == user.Email, u => u.Roles)).Roles
-                .Select(r => r.Name);
-            var token = GenerateJwtToken(user, userRoles);
+            var localUser = await userRepository.GetOneAsync(u => u.Email == user.Email, u => u.Roles);
+
+            if (localUser is null)
+            {
+                var registerUser = new RegisterUserRequest(
+                    user.FirstName,
+                    user.LastName,
+                    user.Email,
+                    [(await userRoleRepository.GetOneAsync(ur => ur.Name == UserRolesHolder.User)!).Id],
+                    request.Password);
+                await RegisterAsync(registerUser);
+
+                localUser = await userRepository.GetOneAsync(u => u.Email == user.Email, u => u.Roles);
+            }
+
+            var token = GenerateJwtToken(user, localUser!);
 
             return new AuthResponse(token);
         }
@@ -194,18 +208,18 @@ public class UserService(
         return user.Roles.Select(r => r.ToResponse());
     }
 
-    private string GenerateJwtToken(AuthClientResponse user, IEnumerable<string> roles)
+    private string GenerateJwtToken(AuthClientResponse user, User localUser)
     {
         var authClaims = new List<Claim>()
         {
             new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-            new(ClaimTypes.NameIdentifier, user.Email),
+            new(ClaimTypes.NameIdentifier, localUser.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Sub, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
-        foreach (string role in roles)
+        foreach (string role in localUser.Roles.Select(r => r.Name))
         {
             authClaims.Add(new Claim(ClaimTypes.Role, role));
         }

@@ -4,7 +4,7 @@ public class Ban
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public string UserName { get; set; }
+    public Guid UserId { get; set; }
 
     public BanDuration Duration { get; set; }
 
