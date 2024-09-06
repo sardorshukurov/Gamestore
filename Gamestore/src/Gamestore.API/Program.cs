@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
 using Gamestore.API.Middlewares;
 using Gamestore.BLL;
+using Gamestore.Common.Common;
 using Gamestore.Common.Helpers;
 using Gamestore.DAL;
 using Gamestore.DAL.Data;
@@ -50,8 +51,8 @@ builder.Services.AddBusinessLogicServices();
 // adding mongodb
 builder.Services
     .AddMongo("Northwind")
-    .AddMongoRepository<Order>("orders")
-    .AddMongoRepository<Product>("products");
+    .AddMongoRepository<Order>(MongoCollectionsHolder.Orders)
+    .AddMongoRepository<Product>(MongoCollectionsHolder.Products);
 
 // adding validators
 builder.Services.RegisterValidators();

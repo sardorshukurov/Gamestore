@@ -20,17 +20,18 @@ public class GameManager(
 {
     public async Task<IEnumerable<OrderResponse>> GetOrdersHistoryAsync(DateTime start, DateTime end)
     {
-        var orders = (await orderRepository.GetAllByFilterAsync(
-                o => o.Date >= start && o.Date <= end))
-            .Select(o => o.ToResponse());
+        // Defining tasks without awaiting them immediately allows them to run concurrently
+        var orderTask = orderRepository.GetAllByFilterAsync(o => o.Date >= start && o.Date <= end);
+        var northwindOrderTask = orderNorthwindRepository.GetAllByFilterAsync(o => o.OrderDate >= start && o.OrderDate <= end);
 
-        var northwindOrders = (await orderNorthwindRepository.GetAllByFilterAsync(
-            o => o.OrderDate >= start && o.OrderDate <= end))
-            .Select(o => o.ToResponse());
+        // Await all tasks to complete
+        await Task.WhenAll(orderTask, northwindOrderTask);
 
-        var result = new List<OrderResponse>();
-        result.AddRange(orders);
-        result.AddRange(northwindOrders);
+        // Process results after all tasks have completed
+        var orders = orderTask.Result.Select(o => o.ToResponse());
+        var northwindOrders = northwindOrderTask.Result.Select(o => o.ToResponse());
+
+        var result = orders.Concat(northwindOrders);
 
         return result;
     }
